@@ -1,0 +1,171 @@
+{
+  "screenshotfeatures.gui.title.configs": "ScreenshotFeatures configs",
+
+  "screenshotfeatures.config.ingametools.name.openConfig":"openConfig",
+
+  "screenshotfeatures.config.ingametools.name.dofLock":"dofLock",
+  "screenshotfeatures.config.ingametools.name.dofOverride":"dofOverride",
+  "screenshotfeatures.config.ingametools.name.dofOverrideValue":"dofOverrideValue",
+  "screenshotfeatures.config.ingametools.name.dofStep":"dofStep",
+  "screenshotfeatures.config.ingametools.name.dofModifier":"dofModifier",
+
+  "screenshotfeatures.config.ingametools.name.timeOverride":"timeOverride",
+  "screenshotfeatures.config.ingametools.name.timeOverrideValue":"timeOverrideValue",
+  "screenshotfeatures.config.ingametools.name.timeStep":"timeStep",
+  "screenshotfeatures.config.ingametools.name.timeModifier":"timeModifier",
+
+  "screenshotfeatures.config.ingametools.name.weatherOverride":"weatherOverride",
+  "screenshotfeatures.config.ingametools.name.weatherOverrideValue":"weatherOverrideValue",
+  "screenshotfeatures.config.ingametools.name.weatherOverrideCycle":"weatherOverrideCycle",
+
+  "screenshotfeatures.config.ingametools.name.precipitationForce":"precipitationForce",
+  "screenshotfeatures.config.ingametools.name.precipitationForceType":"precipitationForceType",
+
+  "screenshotfeatures.config.ingametools.name.rainForce":"rainForce",
+
+  "screenshotfeatures.config.ingametools.name.allowMWheelChangeValue":"allowMWheelChangeValue",
+  "screenshotfeatures.config.ingametools.name.mWheelMultiplier":"mWheelMultiplier",
+
+  "screenshotfeatures.config.ingametools.name.increaseValue":"increaseValue",
+  "screenshotfeatures.config.ingametools.name.decreaseValue":"decreaseValue",
+
+  "screenshotfeatures.config.ingametools.name.largeValueModifier":"largeValueModifier",
+  "screenshotfeatures.config.ingametools.name.smallValueModifier":"smallValueModifier",
+
+  "screenshotfeatures.config.ingametools.name.largeValueMultiplier":"largeValueMultiplier",
+  "screenshotfeatures.config.ingametools.name.smallValueMultiplier":"smallValueMultiplier",
+
+  "screenshotfeatures.config.ingametools.name.forceSettings":"forceSettings",
+
+  
+  
+  
+  "screenshotfeatures.config.metadata.name.tagScreenshots":"tagScreenshots",
+  "screenshotfeatures.config.metadata.name.coordinates":"coordinates",
+  "screenshotfeatures.config.metadata.name.worldData":"worldData",
+  "screenshotfeatures.config.metadata.name.worldSeed":"worldSeed",
+  "screenshotfeatures.config.metadata.name.time":"time",
+  "screenshotfeatures.config.metadata.name.shaderPack":"shaderPack",
+  "screenshotfeatures.config.metadata.name.shaderPackSettings":"shaderPackSettings",
+  "screenshotfeatures.config.metadata.name.shaderPackHash":"shaderPackHash",
+  "screenshotfeatures.config.metadata.name.shaderPackCommit":"shaderPackCommit",
+  "screenshotfeatures.config.metadata.name.shaderPackDiff":"shaderPackDiff",
+  "screenshotfeatures.config.metadata.name.resourcePacks":"resourcePacks",
+  "screenshotfeatures.config.metadata.name.modList":"modList",
+  "screenshotfeatures.config.metadata.name.mcVersion":"mcVersion",
+  "screenshotfeatures.config.metadata.name.displaySettings":"displaySettings",
+
+  
+  
+  
+  "screenshotfeatures.config.screenshotsaving.name.useCustomScreenshotDirectory":"useCustomScreenshotDirectory",
+  "screenshotfeatures.config.screenshotsaving.name.customScreenshotDirectory":"customScreenshotDirectory",
+  "screenshotfeatures.config.screenshotsaving.name.renameScreenshots":"renameScreenshots",
+  "screenshotfeatures.config.screenshotsaving.name.screenshotNamingSchema":"screenshotNamingSchema",
+
+
+
+
+
+
+
+
+
+
+  "screenshotfeatures.gui.title.ingametools": "Ingame Tools",
+
+  "screenshotfeatures.config.ingametools.comment.openConfig": "Opens the ScreenshotFeatures config",
+
+  "screenshotfeatures.config.ingametools.comment.dofLock": "Locks the current depth of field to it's current value when enabled",
+  "screenshotfeatures.config.ingametools.comment.dofOverride": "Overrides the current depth of field to dofOverrideVale when enabled (Overrides dofLock)",
+  "screenshotfeatures.config.ingametools.comment.dofOverrideValue": "Value to override depth of field into (scale is unknown)",
+  "screenshotfeatures.config.ingametools.comment.dofStep": "Multiplier for how much the depth of field changes",
+  "screenshotfeatures.config.ingametools.comment.dofModifier": "Key to be held down to change the depth of field override value",
+
+  "screenshotfeatures.config.ingametools.comment.timeOverride": "Overrides the current time to timeOverrideValue when enabled\n(MULTIPLAYER ONLY)",
+  "screenshotfeatures.config.ingametools.comment.timeOverrideValue": "Value to override time into (is in ticks)\n(MULTIPLAYER ONLY)",
+  "screenshotfeatures.config.ingametools.comment.timeStep": "Multiplier for how much the time changes\n(MULTIPLAYER ONLY)",
+  "screenshotfeatures.config.ingametools.comment.timeModifier": "Key to be held down to change the time override value\n(MULTIPLAYER ONLY)",
+
+  "screenshotfeatures.config.ingametools.comment.weatherOverride": "Overrides the current weather to weatherOverrideVale when enabled\n(MULTIPLAYER ONLY)",
+  "screenshotfeatures.config.ingametools.comment.weatherOverrideValue": "Value to override weather into\n(MULTIPLAYER ONLY)",
+  "screenshotfeatures.config.ingametools.comment.weatherOverrideCycle": "Hotkey to cycle through override weathers\n(MULTIPLAYER ONLY)",
+
+  "screenshotfeatures.config.ingametools.comment.precipitationForce": "Forces precipitation everywhere",
+  "screenshotfeatures.config.ingametools.comment.precipitationForceType": "Overrides the precipitation type everywhere (NO_OP does nothing)",
+
+  "screenshotfeatures.config.ingametools.comment.rainForce": "Forces enabling of rain (Effect unknown)\n(MULTIPLAYER ONLY)",
+
+  "screenshotfeatures.config.ingametools.comment.allowMWheelChangeValue": "Enables using the scroll wheel to change values",
+  "screenshotfeatures.config.ingametools.comment.mWheelMultiplier": "Scroll wheel value changing multiplier",
+
+  "screenshotfeatures.config.ingametools.comment.increaseValue": "Keybind to increase the value (Usage: hold down a modifier key, then click this key to increase the value)",
+  "screenshotfeatures.config.ingametools.comment.decreaseValue": "Keybind to decrease the value (Usage: hold down a modifier key, then click this key to decrease the value)",
+
+  "screenshotfeatures.config.ingametools.comment.largeValueModifier": "When held, multiplies the step of the value change by largeValueMultiplier",
+  "screenshotfeatures.config.ingametools.comment.smallValueModifier": "When held, multiplies the step of the value change by smallValueMultiplier",
+
+  "screenshotfeatures.config.ingametools.comment.largeValueMultiplier": "When largeValueModifier is held, multiplies the step of the value change by this",
+  "screenshotfeatures.config.ingametools.comment.smallValueMultiplier": "When smallValueModifier is held, multiplies the step of the value change by this",
+
+  "screenshotfeatures.config.ingametools.comment.forceSettings": "Enables the (MULTIPLAYER ONLY) settings to work in singleplayer mode\n(WARNING) Will affect your world! (WARNING)",
+
+
+
+  "screenshotfeatures.gui.title.metadata": "Screenshot metadata",
+
+  "screenshotfeatures.config.metadata.comment.tagScreenshots": "Tags Screenshots With Metadata (embeds data into multiple exif fields)",
+  "screenshotfeatures.config.metadata.comment.coordinates": "Coordinate Data",
+  "screenshotfeatures.config.metadata.comment.location": "Saves player location (x, y, z, pitch, yaw)",
+  "screenshotfeatures.config.metadata.comment.cameraData": "Saves camera settings, such as gamma, fov (SAVES CAMERA LOCATION)",
+  "screenshotfeatures.config.metadata.comment.worldData": "World data, includes world name, time, and lunar time.",
+  "screenshotfeatures.config.metadata.comment.mcVersion": "Saves the current minecraft version",
+  "screenshotfeatures.config.metadata.comment.shaderPackName": "Saves the current shader pack name (required for settings loading)",
+  "screenshotfeatures.config.metadata.comment.shaderPackSettings": "Saves all shader pack settings (required for settings loading)",
+  "screenshotfeatures.config.metadata.comment.shaderPackHash": "Saves the MD5, SHA256, and XXH32 hashes of the shader pack",
+  "screenshotfeatures.config.metadata.comment.shaderPackCommit": "Saves the commit hash of the shader pack (only applies to git repo shader packs (as a folder))",
+  "screenshotfeatures.config.metadata.comment.shaderPackDiff": "Saves a diff of the shader pack from it's latest commit",
+  "screenshotfeatures.config.metadata.comment.resourcePacks": "Saves a list of all resource packs",
+  "screenshotfeatures.config.metadata.comment.worldSeed": "Saves the world seed (Singleplayer Only)",
+
+
+
+  "screenshotfeatures.gui.title.screenshotsaving": "Screenshot saving",
+
+  "screenshotfeatures.config.screenshotsaving.comment.useCustomScreenshotDirectory": "Enables the custom screenshot directory",
+  "screenshotfeatures.config.screenshotsaving.comment.customScreenshotDirectory": "Directory to save screenshots in (only applies if useCustomScreenshotDirectory is enabled)\nKeep the leading './' to keep it in the game folder directory",
+  "screenshotfeatures.config.screenshotsaving.comment.renameScreenshots": "Enables custom screenshot file naming",
+  "screenshotfeatures.config.screenshotsaving.comment.screenshotNamingSchema": "Available templates:\n<datetime> -> Minecraft's default screenshot naming format.\n  <world> -> The name of the world in Single Player, and the name of the server in Multiplayer.\n  <version> -> The version of Minecraft the screenshot was taken on. (Ex. 1.19.2)\n  <x>, <y>, and <z> -> The respective coordinates of where the screenshot was taken.\n  <shader> -> The active Shader pack. (requires Iris Shaders)\n  <player> -> Your Minecraft username.",
+
+
+  "screenshotfeatures.gui.title.screenshotviewer": "Screenshot viewing",
+
+  "screenshotfeatures.gui.description.screenshotviewer0": "Drag and drop a tagged png file here to see the metadata. Click the buttons to copy the contents.",
+  "screenshotfeatures.gui.description.screenshotviewer1": "If nothing shows up, you've likely dragged too many files/the wrong type of file, or there is just no metadata.",
+
+
+  "screenshotfeatures.messages.errorInvalidScreenshotLocation": "Couldn't save screenshot to custom location, defaulting to default location. Check your config!\nError logged into logs.",
+
+
+
+  "screenshotfeatures.gui.title.orthocameraintegration": "Ortho Camera Integration",
+
+  "screenshotfeatures.config.orthocameraintegration.comment.configEnabled": "Enables modifying the ortho camera mod configuration (if the mod is loaded at all)",
+
+
+  "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %.5f",
+  "screenshotfeatures.messages.timeOverrideValueChange": "Time override: %d",
+
+  "screenshotfeatures.messages.orthoScaleXValueChange": "Ortho X scale: %d",
+  "screenshotfeatures.messages.orthoScaleYValueChange": "Ortho Y scale: %d",
+  "screenshotfeatures.messages.orthoMinDistanceValueChange": "Ortho min distance/near plane: %d",
+  "screenshotfeatures.messages.orthoMaxDistanceValueChange": "Ortho max distance/far plane: %d",
+
+  "screenshotfeatures.text.types.true": "TRUE",
+  "screenshotfeatures.text.types.false": "FALSE",
+  "screenshotfeatures.text.types.clear": "CLEAR",
+  "screenshotfeatures.text.types.rain": "RAIN",
+  "screenshotfeatures.text.types.thunder": "THUNDER",
+  "screenshotfeatures.text.types.snow": "SNOW",
+  "screenshotfeatures.text.types.no_op": "NO CHANGE"
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "screenshotfeatures",
+  "version": "${version}",
+  "name": "Screenshot Features",
+  "description": "QOL and extras for shader screenshot taking",
+  "authors": [
+    "kidofcubes"
+  ],
+  "license": "GPL-3.0",
+  "icon": "assets/screenshotfeatures/icon.png",
+  "environment": "client",
+  "custom": {
+    "mc-publish": {
+      "quilt": true
+    }
+  },
+  "entrypoints": {
+    "client": [
+      "io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures"
+    ],
+    "modmenu": [
+      "io.github.kidofcubes.screenshotfeatures.integrations.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "screenshotfeatures.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": ">=${minecraft_version}",
+    "malilib": ">=0.26.6",
+    "iris": ">=1.9.6",
+    "modmenu": ">=16.0.0-rc.1",
+    "java": ">=21"
+  }
+}

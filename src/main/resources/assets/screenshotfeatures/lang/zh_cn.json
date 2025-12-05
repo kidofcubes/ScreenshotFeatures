@@ -1,0 +1,158 @@
+{
+  "screenshotfeatures.gui.title.configs": "ScreenshotFeatures 配置界面",
+
+  "screenshotfeatures.config.ingametools.name.openConfig": "开开设置",
+
+  "screenshotfeatures.config.ingametools.name.dofLock": "嗦景深",
+  "screenshotfeatures.config.ingametools.name.dofOverride": "覆盖景深",
+  "screenshotfeatures.config.ingametools.name.dofOverrideValue": "覆盖景深数",
+  "screenshotfeatures.config.ingametools.name.dofStep": "景深数增乘数",
+  "screenshotfeatures.config.ingametools.name.dofModifier": "改景深数按键",
+
+  "screenshotfeatures.config.ingametools.name.timeOverride": "覆盖时间",
+  "screenshotfeatures.config.ingametools.name.timeOverrideValue": "覆盖时间数",
+  "screenshotfeatures.config.ingametools.name.timeStep": "时间数增乘数",
+  "screenshotfeatures.config.ingametools.name.timeModifier": "改时间数按键",
+
+  "screenshotfeatures.config.ingametools.name.weatherOverride": "覆盖天气",
+  "screenshotfeatures.config.ingametools.name.weatherOverrideValue": "覆盖天气类",
+  "screenshotfeatures.config.ingametools.name.weatherOverrideCycle": "改覆盖天气类按键",
+
+  "screenshotfeatures.config.ingametools.name.precipitationForce": "强制降水",
+  "screenshotfeatures.config.ingametools.name.precipitationForceType": "强制降水类",
+
+  "screenshotfeatures.config.ingametools.name.rainForce": "强制雨",
+
+  "screenshotfeatures.config.ingametools.name.allowMWheelChangeValue": "允许鼠标滚轮改变数",
+  "screenshotfeatures.config.ingametools.name.mWheelMultiplier": "鼠标滚轮改变数乘数",
+
+  "screenshotfeatures.config.ingametools.name.increaseValue": "增加数按键",
+  "screenshotfeatures.config.ingametools.name.decreaseValue": "减少数按键",
+
+  "screenshotfeatures.config.ingametools.name.largeValueModifier": "粗调按键",
+  "screenshotfeatures.config.ingametools.name.smallValueModifier": "细调按键",
+
+  "screenshotfeatures.config.ingametools.name.largeValueMultiplier": "粗调乘数",
+  "screenshotfeatures.config.ingametools.name.smallValueMultiplier": "细调乘数",
+
+  "screenshotfeatures.config.ingametools.name.forceSettings": "强制用设置",
+
+
+
+
+  "screenshotfeatures.config.metadata.name.tagScreenshots": "嵌入数据到截图里 (必须开开来用下面的)",
+  "screenshotfeatures.config.metadata.name.coordinates": "存位置",
+  "screenshotfeatures.config.metadata.name.worldName": "存世界名",
+  "screenshotfeatures.config.metadata.name.time": "存时间",
+  "screenshotfeatures.config.metadata.name.shaderPack": "存光影包名字",
+  "screenshotfeatures.config.metadata.name.shaderPackSettings": "存光影包设置",
+  "screenshotfeatures.config.metadata.name.shaderPackHash": "存光影包哈希值",
+  "screenshotfeatures.config.metadata.name.shaderPackCommit": "存光影包git commit/提交哈希值",
+  "screenshotfeatures.config.metadata.name.shaderPackDiff": "存光影包git diff/变化",
+  "screenshotfeatures.config.metadata.name.resourcePacks": "存资源包名字",
+  "screenshotfeatures.config.metadata.name.seed": "存世界种",
+  "screenshotfeatures.config.metadata.name.mcVersion": "存游戏版本",
+  "screenshotfeatures.config.metadata.name.displaySettings": "存其他显示设置",
+
+
+
+
+  "screenshotfeatures.config.screenshotsaving.name.useCustomScreenshotDirectory": "用自定截图文件位置",
+  "screenshotfeatures.config.screenshotsaving.name.customScreenshotDirectory": "自定截图文件位置",
+  "screenshotfeatures.config.screenshotsaving.name.renameScreenshots": "用自定截图文件名",
+  "screenshotfeatures.config.screenshotsaving.name.screenshotNamingSchema": "自定截图文件名",
+
+
+
+
+
+
+
+
+
+
+  "screenshotfeatures.gui.title.ingametools": "游戏内截图工具",
+
+  "screenshotfeatures.config.ingametools.comment.openConfig": "Opens the ScreenshotFeatures config",
+
+  "screenshotfeatures.config.ingametools.comment.dofLock": "Locks the current depth of field to it's current value when enabled",
+  "screenshotfeatures.config.ingametools.comment.dofOverride": "Overrides the current depth of field to dofOverrideVale when enabled (Overrides dofLock)",
+  "screenshotfeatures.config.ingametools.comment.dofOverrideValue": "Value to override depth of field into (scale is unknown)",
+  "screenshotfeatures.config.ingametools.comment.dofStep": "Multiplier for how much the depth of field changes",
+  "screenshotfeatures.config.ingametools.comment.dofModifier": "Key to be held down to change the depth of field override value",
+
+  "screenshotfeatures.config.ingametools.comment.timeOverride": "Overrides the current time to timeOverrideValue when enabled\n(只能在多人模式使用)",
+  "screenshotfeatures.config.ingametools.comment.timeOverrideValue": "Value to override time into (is in ticks)\n(只能在多人模式使用)",
+  "screenshotfeatures.config.ingametools.comment.timeStep": "Multiplier for how much the time changes\n(只能在多人模式使用)",
+  "screenshotfeatures.config.ingametools.comment.timeModifier": "Key to be held down to change the time override value\n(只能在多人模式使用)",
+
+  "screenshotfeatures.config.ingametools.comment.weatherOverride": "Overrides the current weather to weatherOverrideVale when enabled\n(只能在多人模式使用)",
+  "screenshotfeatures.config.ingametools.comment.weatherOverrideValue": "Value to override weather into\n(只能在多人模式使用)",
+  "screenshotfeatures.config.ingametools.comment.weatherOverrideCycle": "Hotkey to cycle through override weathers\n(只能在多人模式使用)",
+
+  "screenshotfeatures.config.ingametools.comment.precipitationForce": "Forces precipitation everywhere",
+  "screenshotfeatures.config.ingametools.comment.precipitationForceType": "Overrides the precipitation type everywhere (NO_OP does nothing)",
+
+  "screenshotfeatures.config.ingametools.comment.rainForce": "Forces enabling of rain (Effect unknown)\n(只能在多人模式使用)",
+
+  "screenshotfeatures.config.ingametools.comment.allowMWheelChangeValue": "Enables using the scroll wheel to change values",
+  "screenshotfeatures.config.ingametools.comment.mWheelMultiplier": "Scroll wheel value changing multiplier",
+
+  "screenshotfeatures.config.ingametools.comment.increaseValue": "按键来增加数 (按下一个设置值的按键然后再一起按这个键来增加数)",
+  "screenshotfeatures.config.ingametools.comment.decreaseValue": "按键来减少数 (按下一个设置值的按键然后再一起按这个键来减少数)",
+
+  "screenshotfeatures.config.ingametools.comment.largeValueModifier": "按键按的时候会把数变的量乘粗调乘数",
+  "screenshotfeatures.config.ingametools.comment.smallValueModifier": "按键按的时候会把数变的量乘细调乘数",
+
+  "screenshotfeatures.config.ingametools.comment.largeValueMultiplier": "When largeValueModifier is held, multiplies the step of the value change by this",
+  "screenshotfeatures.config.ingametools.comment.smallValueMultiplier": "When smallValueModifier is held, multiplies the step of the value change by this",
+
+  "screenshotfeatures.config.ingametools.comment.forceSettings": "让 (只能在多人模式使用) 的设置在单人模式可以使用\n(警告) 会真的改变你的世界的! (警告)",
+
+
+
+  "screenshotfeatures.gui.title.metadata": "截图保存数据设置",
+
+  "screenshotfeatures.config.metadata.comment.tagScreenshots": "Tags Screenshots With Metadata (embeds data into multiple exif fields)",
+  "screenshotfeatures.config.metadata.comment.coordinates": "Coordinate Data",
+  "screenshotfeatures.config.metadata.comment.worldName": "World Name",
+  "screenshotfeatures.config.metadata.comment.time": "Saves the time",
+  "screenshotfeatures.config.metadata.comment.mcVersion": "Saves the current minecraft version",
+  "screenshotfeatures.config.metadata.comment.shaderPack": "Saves the current shader pack name",
+  "screenshotfeatures.config.metadata.comment.shaderPackSettings": "Saves all shader pack settings",
+  "screenshotfeatures.config.metadata.comment.shaderPackHash": "保存光影的 MD5, SHA256, 和 XXH32 哈希值",
+  "screenshotfeatures.config.metadata.comment.shaderPackCommit": "Saves the commit hash of the shader pack (only applies to git repo shader packs (as a folder))",
+  "screenshotfeatures.config.metadata.comment.shaderPackDiff": "Saves a diff of the shader pack from it's latest commit",
+  "screenshotfeatures.config.metadata.comment.resourcePacks": "Saves a list of all resource packs",
+  "screenshotfeatures.config.metadata.comment.seed": "(只能在单人模式使用)",
+  "screenshotfeatures.config.metadata.comment.displaySettings": "Saves other misc display settings",
+
+
+
+  "screenshotfeatures.gui.title.screenshotsaving": "截图保存位置设置",
+
+  "screenshotfeatures.config.screenshotsaving.comment.useCustomScreenshotDirectory": "Enables the custom screenshot directory",
+  "screenshotfeatures.config.screenshotsaving.comment.customScreenshotDirectory": "保存开始的 './' 来用游戏的位置",
+  "screenshotfeatures.config.screenshotsaving.comment.renameScreenshots": "Enables custom screenshot file naming",
+  "screenshotfeatures.config.screenshotsaving.comment.screenshotNamingSchema": "可用的占位:\n<datetime> -> 缺省游戏用的时间文字\n  <world> -> 单人模式会用世界名字 多人模式会用服务器名字\n  <version> -> 游戏版本 (Ex. 1.19.2)\n  <x>, <y>, and <z> -> 截图时候的位置.\n  <shader> -> 目前使用的光影名字 (需要 Iris)\n  <player> -> 你的用户名.",
+
+
+  "screenshotfeatures.gui.title.screenshotviewer": "看截图数据",
+
+  "screenshotfeatures.gui.description.screenshotviewer0": "拖放有嵌入数据的png文件来看数据 按按钮来复制到剪贴板",
+  "screenshotfeatures.gui.description.screenshotviewer1": "加入拖放后没有结果，你有可能拉得太多文件或者错文件种或者就没有嵌入数据",
+
+
+  "screenshotfeatures.messages.errorInvalidScreenshotLocation": "保存不了文件到自定的位置 存到缺省的位置了。 检查你的设置! 错误写道日志了.",
+
+  "screenshotfeatures.messages.dofOverrideValueChange": "覆盖景深: %.5f",
+  "screenshotfeatures.messages.timeOverrideValueChange": "覆盖时间: %d",
+
+  "screenshotfeatures.text.types.true": "开",
+  "screenshotfeatures.text.types.false": "关",
+  "screenshotfeatures.text.types.clear": "晴",
+  "screenshotfeatures.text.types.rain": "雨",
+  "screenshotfeatures.text.types.thunder": "雷",
+  "screenshotfeatures.text.types.snow": "雪",
+  "screenshotfeatures.text.types.no_op": "不改"
+}

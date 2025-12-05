@@ -1,0 +1,19 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.kidofcubes.screenshotfeatures.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "GameRendererMixin",
+        "IrisDepthMixin",
+        "IrisMixin",
+        "IrisShaderMenuMixin",
+        "ScreenshotMixin",
+        "TimeChangerMixin",
+        "WeatherChangerWeatherRenderingMixin",
+        "WeatherChangerWorldMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+  }
+}
