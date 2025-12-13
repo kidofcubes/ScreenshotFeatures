@@ -23,30 +23,51 @@ public class ConfigsGui extends GuiConfigsBase {
 
     @Override
     public void initGui() {
-        if(tab == ConfigGuiTab.SCREENSHOTVIEWER){
+        if(tab == ConfigGuiTab.SCREENSHOT_VIEWER){
             GuiBase.openGui(new GuiScreenshotViewer());
+            return;
+        }else if(tab == ConfigGuiTab.CAMERA_MATRIX_EDITOR){
+            GuiBase.openGui(new CameraMatrixEditorGui());
             return;
         }
         super.initGui();
 
         this.clearOptions();
 
-        int x = 10;
-        int y = 26;
+        createTabButtons(this, 10, 26);
+    }
+
+
+
+    public static void createTabButtons(GuiBase gui, int x, int y){
+        int rows = 1;
 
         for (ConfigGuiTab tab : ConfigGuiTab.values())
         {
-            x += this.createButton(x, y, -1, tab) + 2;
+            int width = gui.getStringWidth(tab.getDisplayName()) + 10;
+
+            if (x >= gui.width - width - 10)
+            {
+                x = 10;
+                y += 22;
+                ++rows;
+            }
+
+            x += createTabButton(gui, x, y, width, tab);
         }
     }
-
-    private int createButton(int x, int y, int width, ConfigGuiTab tab)
-    {
+    public static int createTabButton(GuiBase gui, int x, int y, int width, ConfigGuiTab tab) {
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, tab.getDisplayName());
         button.setEnabled(ConfigsGui.tab != tab);
-        this.addButton(button, new ButtonListener(tab, this));
+        gui.addButton(button, new IButtonActionListener() {
+            @Override
+            public void actionPerformedWithButton(ButtonBase buttonBase, int i) {
+                ConfigsGui.tab = tab;
+                GuiBase.openGui(new ConfigsGui());
+            }
+        });
 
-        return button.getWidth();
+        return button.getWidth() + 2;
     }
 
     @Override
@@ -55,43 +76,15 @@ public class ConfigsGui extends GuiConfigsBase {
         List<? extends IConfigBase> configs;
         ConfigGuiTab tab = ConfigsGui.tab;
 
-        if (tab == ConfigGuiTab.INGAMETOOLS) {
-            configs = Configs.IngameTools.OPTIONS;
-        } else if (tab==ConfigGuiTab.METADATA) {
-            configs = Configs.Metadata.OPTIONS;
-        }else if (tab==ConfigGuiTab.SCREENSHOTSAVING) {
-            configs = Configs.ScreenshotSaving.OPTIONS;
-        } else if (tab==ConfigGuiTab.ORTHOCAMERAINTEGRATION) {
-            configs = Configs.OrthoCameraIntegration.OPTIONS;
-        }else{
-            return Collections.emptyList();
-        }
+        configs = switch(tab){
+            case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
+            case METADATA -> Configs.Metadata.OPTIONS;
+            case SCREENSHOTSAVING -> Configs.ScreenshotSaving.OPTIONS;
+//            case ORTHOCAMERAINTEGRATION -> Configs.OrthoCameraIntegration.OPTIONS;
+            default -> Collections.emptyList();
+        };
 
         return ConfigOptionWrapper.createFor(configs);
-    }
-
-    private static class ButtonListener implements IButtonActionListener
-    {
-        private final ConfigsGui parent;
-        private final ConfigGuiTab tab;
-
-        public ButtonListener(ConfigGuiTab tab, ConfigsGui parent) {
-            this.tab = tab;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-            ConfigsGui.tab = this.tab;
-            if(this.tab == ConfigGuiTab.SCREENSHOTVIEWER){
-                GuiBase.openGui(new GuiScreenshotViewer());
-                return;
-            }
-
-            this.parent.reCreateListWidget(); // apply the new config width
-            this.parent.getListWidget().resetScrollbarPosition();
-            this.parent.initGui();
-        }
     }
 
     public enum ConfigGuiTab
@@ -99,8 +92,9 @@ public class ConfigsGui extends GuiConfigsBase {
         INGAMETOOLS ("screenshotfeatures.gui.title.ingametools"),
         METADATA ("screenshotfeatures.gui.title.metadata"),
         SCREENSHOTSAVING ("screenshotfeatures.gui.title.screenshotsaving"),
-        SCREENSHOTVIEWER ("screenshotfeatures.gui.title.screenshotviewer"),
-        ORTHOCAMERAINTEGRATION ("screenshotfeatures.gui.title.orthocameraintegration");
+        SCREENSHOT_VIEWER("screenshotfeatures.gui.title.screenshotviewer"),
+//        ORTHOCAMERAINTEGRATION ("screenshotfeatures.gui.title.orthocameraintegration"),
+        CAMERA_MATRIX_EDITOR("screenshotfeatures.gui.title.cameramatrixeditor");
 
         private final String translationKey;
 

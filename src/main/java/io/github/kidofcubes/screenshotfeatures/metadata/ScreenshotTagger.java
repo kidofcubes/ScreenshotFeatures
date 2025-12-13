@@ -4,7 +4,7 @@ import com.google.gson.*;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import io.github.kidofcubes.screenshotfeatures.integrations.ShaderIntegration;
-import io.github.kidofcubes.screenshotfeatures.mixin.GameRendererMixin;
+import io.github.kidofcubes.screenshotfeatures.mixin.GameRendererAccessorMixin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePack;
@@ -49,7 +49,6 @@ public class ScreenshotTagger {
 
         float tickProgress = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false);
 
-        //add compatability to pre 1.7 screenshots at some point
         tags.add(ScreenshotFeatures.MOD_ID, gson.toJsonTree(Map.of(
                 "version",FabricLoader.getInstance().getModContainer(ScreenshotFeatures.MOD_ID).get().getMetadata().getVersion().getFriendlyString()
         )));
@@ -72,7 +71,7 @@ public class ScreenshotTagger {
                     "pitch", client.gameRenderer.getCamera().getPitch(),
                     "gamma", client.options.getGamma().getValue(),
                     "configuredFov", client.options.getFov().getValue(),
-                    "fov", ((GameRendererMixin)client.gameRenderer).getFovThing(client.gameRenderer.getCamera(), client.getRenderTickCounter().getTickProgress(false), true)
+                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.getCamera(), client.getRenderTickCounter().getTickProgress(false), true)
             ));
         }
         ServerWorld serverWorld = null;

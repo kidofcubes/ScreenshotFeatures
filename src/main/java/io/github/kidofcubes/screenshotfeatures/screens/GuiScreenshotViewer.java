@@ -2,7 +2,6 @@ package io.github.kidofcubes.screenshotfeatures.screens;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -23,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static io.github.kidofcubes.screenshotfeatures.screens.ConfigsGui.createTabButtons;
+
 public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.MetadataEntry, GuiScreenshotViewer.MetadataEntryWidget, WidgetListBase<GuiScreenshotViewer.MetadataEntry, GuiScreenshotViewer.MetadataEntryWidget>> implements ISelectionListener<GuiScreenshotViewer.MetadataEntry> {
     public GuiScreenshotViewer() {
         this(10,88);
@@ -33,7 +34,7 @@ public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.Metadat
     @Override
     public void initGui()
     {
-        ConfigsGui.tab = ConfigsGui.ConfigGuiTab.SCREENSHOTVIEWER;
+        ConfigsGui.tab = ConfigsGui.ConfigGuiTab.SCREENSHOT_VIEWER;
 
         super.initGui();
 
@@ -41,7 +42,7 @@ public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.Metadat
 
         this.clearWidgets();
         this.clearButtons();
-        this.createTabButtons();
+        createTabButtons(this,10,26);
         this.getListWidget().refreshEntries();
         this.addLabel(18,53,-1,14,0xFFFFFFFF,StringUtils.translate("screenshotfeatures.gui.description.screenshotviewer0"));
         this.addLabel(18,68,-1,14,0xFFFFFFFF,StringUtils.translate("screenshotfeatures.gui.description.screenshotviewer1"));
@@ -78,38 +79,6 @@ public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.Metadat
     }
 
 
-    private void createTabButtons(){
-        int x = 10;
-        int y = 26;
-        int rows = 1;
-
-        for (ConfigsGui.ConfigGuiTab tab : ConfigsGui.ConfigGuiTab.values())
-        {
-            int width = this.getStringWidth(tab.getDisplayName()) + 10;
-
-            if (x >= this.width - width - 10)
-            {
-                x = 10;
-                y += 22;
-                ++rows;
-            }
-
-            x += this.createTabButton(x, y, width, tab);
-        }
-    }
-    protected int createTabButton(int x, int y, int width, ConfigsGui.ConfigGuiTab tab) {
-        ButtonGeneric button = new ButtonGeneric(x, y, width, 20, tab.getDisplayName());
-        button.setEnabled(ConfigsGui.tab != tab);
-        this.addButton(button, new IButtonActionListener() {
-            @Override
-            public void actionPerformedWithButton(ButtonBase buttonBase, int i) {
-                ConfigsGui.tab = tab;
-                GuiBase.openGui(new ConfigsGui());
-            }
-        });
-
-        return button.getWidth() + 2;
-    }
 
     @Override
     protected WidgetListBase<MetadataEntry, MetadataEntryWidget> createListWidget(int listX, int listY) {
