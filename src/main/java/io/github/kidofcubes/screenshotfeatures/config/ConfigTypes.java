@@ -98,4 +98,22 @@ public class ConfigTypes {
             };
         }
     }
+
+    public static class MatrixSettingsApplyType extends SimpleOptions<MatrixSettingsApplyType> {
+        private MatrixSettingsApplyType(String name, int index) {
+            super(name, index);
+        }
+        public static final MatrixSettingsApplyType BOTH = new MatrixSettingsApplyType("BOTH",0);
+        public static final MatrixSettingsApplyType WIDTH = new MatrixSettingsApplyType("WIDTH",1);
+        public static final MatrixSettingsApplyType HEIGHT = new MatrixSettingsApplyType("HEIGHT",2);
+
+        @Override
+        public MatrixSettingsApplyType[] values() {
+            return new MatrixSettingsApplyType[]{
+                    BOTH,
+                    WIDTH,
+                    HEIGHT
+            };
+        }
+    }
 }

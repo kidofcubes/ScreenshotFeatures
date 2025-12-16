@@ -127,7 +127,7 @@ public class Configs implements IConfigHandler {
         }
     }
 
-    public static class OrthoCameraIntegration {
+    public static class CameraMatrix {
         private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
         public static final ImmutableList<IConfigBase> OPTIONS;
 
@@ -135,7 +135,7 @@ public class Configs implements IConfigHandler {
         public static final ImmutableList<IHotkey> HOTKEYS;
 
         private static <T extends ConfigBase<?>> T setupConfig(T thing){
-            autoCommentAndNameWithGroup(thing, "orthocameraintegration");
+            autoCommentAndNameWithGroup(thing, "cameramatrix");
             OPTIONS_BUILDER.add(thing);
             if(thing instanceof IHotkey iHotkey){
                 HOTKEYS_BUILDER.add(iHotkey);
@@ -144,21 +144,15 @@ public class Configs implements IConfigHandler {
         }
 
 
-        public static final ConfigBooleanHotkeyed CONFIG_ENABLED = setupConfig(new ConfigBooleanHotkeyed("configEnabled", false, ""));
-        public static final ConfigBooleanHotkeyed ORTHO_ENABLED = setupConfig(new ConfigBooleanHotkeyed("orthoEnabled", false, ""));
-        public static final ConfigBooleanHotkeyed FIXED_CAMERA = setupConfig(new ConfigBooleanHotkeyed("fixedCamera", false, ""));
-        public static final ConfigFloat X_SCALE = setupConfig(new ConfigFloat("xScale", 3.0F, ""));
-        public static final ConfigHotkey X_SCALE_MODIFIER = setupConfig(new ConfigHotkey("xScaleModifier", ""));
-        public static final ConfigFloat X_SCALE_STEP = setupConfig(new ConfigFloat("xScaleStep", 1.0f, -Float.MAX_VALUE, Float.MAX_VALUE,  ""));
-        public static final ConfigFloat Y_SCALE = setupConfig(new ConfigFloat("yScale", 3.0F, ""));
-        public static final ConfigHotkey Y_SCALE_MODIFIER = setupConfig(new ConfigHotkey("yScaleModifier", ""));
-        public static final ConfigFloat Y_SCALE_STEP = setupConfig(new ConfigFloat("yScaleStep", 1.0f, -Float.MAX_VALUE, Float.MAX_VALUE,  ""));
-        public static final ConfigFloat MIN_DISTANCE = setupConfig(new ConfigFloat("minDistance", -1000.0F, -Float.MAX_VALUE, Float.MAX_VALUE, ""));
-        public static final ConfigHotkey MIN_DISTANCE_MODIFIER = setupConfig(new ConfigHotkey("minDistanceModifier", ""));
-        public static final ConfigFloat MIN_DISTANCE_STEP = setupConfig(new ConfigFloat("minDistanceStep", 1.0F, -Float.MAX_VALUE, Float.MAX_VALUE, ""));
-        public static final ConfigFloat MAX_DISTANCE = setupConfig(new ConfigFloat("maxDistance", -1000.0F, -Float.MAX_VALUE, Float.MAX_VALUE, ""));
-        public static final ConfigHotkey MAX_DISTANCE_MODIFIER = setupConfig(new ConfigHotkey("maxDistanceModifier", ""));
-        public static final ConfigFloat MAX_DISTANCE_STEP = setupConfig(new ConfigFloat("maxDistanceStep", 1.0F, -Float.MAX_VALUE, Float.MAX_VALUE, ""));
+        public static final ConfigBooleanHotkeyed PULL_MATRIX = setupConfig(new ConfigBooleanHotkeyed("pullMatrix", false, ""));
+        public static final ConfigBooleanHotkeyed OVERRIDE_MATRIX = setupConfig(new ConfigBooleanHotkeyed("overrideMatrix", false, ""));
+        public static final ConfigDouble MATRIX_WIDTH = setupConfig(new ConfigDouble("matrixDesiredWidth", 1600, ""));
+        public static final ConfigDouble MATRIX_HEIGHT = setupConfig(new ConfigDouble("matrixDesiredHeight", 900, ""));
+        public static final ConfigDouble MATRIX_PERSPECTIVE_SETTINGS_DISTANCE = setupConfig(new ConfigDouble("matrixSettingDistance", 1024, ""));
+        public static final ConfigDouble MATRIX_NEAR = setupConfig(new ConfigDouble("matrixNear", 0.01,  -Double.MAX_VALUE, Double.MAX_VALUE, ""));
+        public static final ConfigDouble MATRIX_FAR = setupConfig(new ConfigDouble("matrixFar", 8192, ""));
+        public static final ConfigOptionList MATRIX_SETTINGS_APPLY = setupConfig(new ConfigOptionList("matrixSettingsApply", MatrixSettingsApplyType.WIDTH));
+        public static final ConfigBooleanHotkeyed ALWAYS_APPLY_MATRIX = setupConfig(new ConfigBooleanHotkeyed("alwaysApplyMatrix", false, ""));
 
         static {
             OPTIONS = OPTIONS_BUILDER.build();
@@ -180,7 +174,7 @@ public class Configs implements IConfigHandler {
                 ConfigUtils.readConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
                 ConfigUtils.readConfigBase(root, "ScreenshotSaving", Configs.ScreenshotSaving.OPTIONS);
-                ConfigUtils.readConfigBase(root, "OrthoCameraIntegration", Configs.OrthoCameraIntegration.OPTIONS);
+                ConfigUtils.readConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
             }
         }
     }
@@ -195,7 +189,7 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
             ConfigUtils.writeConfigBase(root, "ScreenshotSaving", Configs.ScreenshotSaving.OPTIONS);
-            ConfigUtils.writeConfigBase(root, "OrthoCameraIntegration", Configs.OrthoCameraIntegration.OPTIONS);
+            ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

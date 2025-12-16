@@ -62,6 +62,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         });
         FabrishotIntegration.register();
         OrthoCameraIntegration.register();
+        CameraMatrixManager.register();
 
         LOGGER.info("ScreenshotFeatures loaded.");
     }
@@ -85,26 +86,26 @@ public class ScreenshotFeatures implements ClientModInitializer {
             used=true;
         }
 
-        if(Configs.OrthoCameraIntegration.X_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
-            Configs.OrthoCameraIntegration.X_SCALE.setFloatValue(Configs.OrthoCameraIntegration.X_SCALE.getFloatValue()+(float)(modifier*Configs.OrthoCameraIntegration.X_SCALE_STEP.getFloatValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleXValueChange",Configs.OrthoCameraIntegration.X_SCALE.getFloatValue()),true);
-            used = true;
-        }
-        if(Configs.OrthoCameraIntegration.Y_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
-            Configs.OrthoCameraIntegration.Y_SCALE.setFloatValue(Configs.OrthoCameraIntegration.Y_SCALE.getFloatValue() + (float)(modifier*Configs.OrthoCameraIntegration.Y_SCALE_STEP.getFloatValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleYValueChange",Configs.OrthoCameraIntegration.Y_SCALE.getFloatValue()), true);
-            used=true;
-        }
-        if(Configs.OrthoCameraIntegration.MIN_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
-            Configs.OrthoCameraIntegration.MIN_DISTANCE.setFloatValue(Configs.OrthoCameraIntegration.MIN_DISTANCE.getFloatValue() + (float)(modifier*Configs.OrthoCameraIntegration.MIN_DISTANCE_STEP.getFloatValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMinDistanceValueChange",Configs.OrthoCameraIntegration.MIN_DISTANCE.getFloatValue()), true);
-            used=true;
-        }
-        if(Configs.OrthoCameraIntegration.MAX_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
-            Configs.OrthoCameraIntegration.MAX_DISTANCE.setFloatValue(Configs.OrthoCameraIntegration.MAX_DISTANCE.getFloatValue() + (float)(modifier*Configs.OrthoCameraIntegration.MAX_DISTANCE_STEP.getFloatValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMaxDistanceValueChange",Configs.OrthoCameraIntegration.MAX_DISTANCE.getFloatValue()), true);
-            used=true;
-        }
+//        if(Configs.CameraMatrix.X_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
+//            Configs.CameraMatrix.X_SCALE.setFloatValue(Configs.CameraMatrix.X_SCALE.getFloatValue()+(float)(modifier*Configs.CameraMatrix.X_SCALE_STEP.getFloatValue()));
+//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleXValueChange",Configs.CameraMatrix.X_SCALE.getFloatValue()),true);
+//            used = true;
+//        }
+//        if(Configs.CameraMatrix.Y_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
+//            Configs.CameraMatrix.Y_SCALE.setFloatValue(Configs.CameraMatrix.Y_SCALE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.Y_SCALE_STEP.getFloatValue()));
+//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleYValueChange",Configs.CameraMatrix.Y_SCALE.getFloatValue()), true);
+//            used=true;
+//        }
+//        if(Configs.CameraMatrix.MIN_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
+//            Configs.CameraMatrix.MIN_DISTANCE.setFloatValue(Configs.CameraMatrix.MIN_DISTANCE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.MIN_DISTANCE_STEP.getFloatValue()));
+//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMinDistanceValueChange",Configs.CameraMatrix.MIN_DISTANCE.getFloatValue()), true);
+//            used=true;
+//        }
+//        if(Configs.CameraMatrix.MAX_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
+//            Configs.CameraMatrix.MAX_DISTANCE.setFloatValue(Configs.CameraMatrix.MAX_DISTANCE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.MAX_DISTANCE_STEP.getFloatValue()));
+//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMaxDistanceValueChange",Configs.CameraMatrix.MAX_DISTANCE.getFloatValue()), true);
+//            used=true;
+//        }
         return used;
     }
 
@@ -114,7 +115,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
             for (IHotkey hotkey : Configs.IngameTools.HOTKEYS) {
                 manager.addKeybindToMap(hotkey.getKeybind());
             }
-            for (IHotkey hotkey : Configs.OrthoCameraIntegration.HOTKEYS) {
+            for (IHotkey hotkey : Configs.CameraMatrix.HOTKEYS) {
                 manager.addKeybindToMap(hotkey.getKeybind());
             }
         }
@@ -122,7 +123,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         @Override
         public void addHotkeys(IKeybindManager manager) {
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.ingame_hotkeys", Configs.IngameTools.HOTKEYS);
-            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.orthocameraintegration_hotkeys", Configs.OrthoCameraIntegration.HOTKEYS);
+            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.orthocameraintegration_hotkeys", Configs.CameraMatrix.HOTKEYS);
         }
 
         @Override

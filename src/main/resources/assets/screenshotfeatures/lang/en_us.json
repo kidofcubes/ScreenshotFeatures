@@ -148,9 +148,12 @@
 
 
 
-  "screenshotfeatures.gui.title.orthocameraintegration": "Ortho Camera Integration",
+  "screenshotfeatures.gui.title.cameramatrix": "Camera matrix",
 
-  "screenshotfeatures.config.orthocameraintegration.comment.configEnabled": "Enables modifying the ortho camera mod configuration (if the mod is loaded at all)",
+  "screenshotfeatures.gui.cameramatrix.applyWidth": "applyWidth",
+  "screenshotfeatures.gui.cameramatrix.applyHeight": "applyHeight",
+  "screenshotfeatures.gui.cameramatrix.applyOnlyWidth": "applyOnlyWidth",
+  "screenshotfeatures.gui.cameramatrix.applyOnlyHeight": "applyOnlyHeight",
 
 
   "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %.5f",
