@@ -52,26 +52,27 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         this.clearWidgets();
         this.clearButtons();
         createTabButtons(this,10,26);
-        widget = new CameraMatrixEditorWidget(375,150,this.width-405,this.height-(10+150));
+        widget = new CameraMatrixEditorWidget(375,75,this.width-405,this.height-(10+75));
         this.addWidget(widget);
 
 
         this.addButton(new ButtonGeneric(375,75,100, false, "screenshotfeatures.gui.cameramatrix.applyWidth"), (button,mouseButton) -> {
-            setPerspectiveDimensions(Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(), Configs.CameraMatrix.MATRIX_WIDTH.getDefaultDoubleValue(), -1);
+            updateMatrix(true,false,true);
         });
 
         this.addButton(new ButtonGeneric(500,75,100, false, "screenshotfeatures.gui.cameramatrix.applyHeight"), (button,mouseButton) -> {
-            setPerspectiveDimensions(Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(), -1, Configs.CameraMatrix.MATRIX_HEIGHT.getDefaultDoubleValue());
+            updateMatrix(false,true,true);
         });
 
 
         this.addButton(new ButtonGeneric(375,100,100, false, "screenshotfeatures.gui.cameramatrix.applyOnlyWidth"), (button,mouseButton) -> {
-            setPerspectiveDimensions(Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(), Configs.CameraMatrix.MATRIX_WIDTH.getDefaultDoubleValue(), -2);
+            updateMatrix(true,false,false);
         });
 
         this.addButton(new ButtonGeneric(500,100,100, false, "screenshotfeatures.gui.cameramatrix.applyOnlyHeight"), (button,mouseButton) -> {
-            setPerspectiveDimensions(Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(), -2, Configs.CameraMatrix.MATRIX_HEIGHT.getDefaultDoubleValue());
+            updateMatrix(false,true,false);
         });
+
 
         this.addButton(new ButtonGeneric(375,125,100, false, "screenshotfeatures.gui.cameramatrix.setOrthogonal"), (button,mouseButton) -> {
             CameraMatrixManager.initOrthogonal();
@@ -80,8 +81,30 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         this.addButton(new ButtonGeneric(500,125,100, false, "screenshotfeatures.gui.cameramatrix.setPerspective"), (button,mouseButton) -> {
             CameraMatrixManager.initPerspective();
         });
-    }
 
+
+        this.addButton(new ButtonGeneric(375,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioWidth"), (button,mouseButton) -> {
+            System.out.println("RATIO IS "+((double)this.client.getWindow().getFramebufferHeight() / (double)this.client.getWindow().getFramebufferWidth()));
+            skipResponse = true;
+            Configs.CameraMatrix.MATRIX_HEIGHT.setDoubleValue(
+                    Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue() *
+                            ((double)this.client.getWindow().getFramebufferHeight() / this.client.getWindow().getFramebufferWidth())
+            );
+            skipResponse = false;
+            dirtyConfig = true;
+        });
+
+        this.addButton(new ButtonGeneric(500,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight"), (button,mouseButton) -> {
+            System.out.println("RATIO IS "+((double)this.client.getWindow().getFramebufferWidth() / (double)this.client.getWindow().getFramebufferHeight()));
+            skipResponse = true;
+            Configs.CameraMatrix.MATRIX_WIDTH.setDoubleValue(
+                    Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue() *
+                            ((double)this.client.getWindow().getFramebufferWidth() / (double)this.client.getWindow().getFramebufferHeight())
+            );
+            skipResponse = false;
+            dirtyConfig = true;
+        });
+    }
 
     int mouseX=0;
     int mouseY=0;
@@ -95,6 +118,16 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
     @Override
     public List<ConfigOptionWrapper> getConfigs(){
         return ConfigOptionWrapper.createFor(Configs.CameraMatrix.OPTIONS);
+    }
+
+    @Override
+    public void render(DrawContext drawContext,int mouseX,int mouseY,float partialTicks){
+        if(dirtyConfig){
+            this.reCreateListWidget();
+            this.getListWidget().resize(mc, width, height);
+            dirtyConfig = false;
+        }
+        super.render(drawContext,mouseX,mouseY,partialTicks);
     }
 
     //todo editor for projection matrices and orth matrices
@@ -285,7 +318,9 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             Vector3d point = allPoints.get(index);
 
 
-            Vector3d point0 = clamped(matrixToClip(new Vector3d(point)));
+            Vector3d point0 = matrixToClip(new Vector3d(point));
+            point0.x = clamp(point0.x,-1.0f,1.0f);
+            point0.y = clamp(point0.y,-1.0f,1.0f);
             Vector3d viewSpacePoint = matrixToView(new Vector3d(point));
             String name = switch(index){
                 case 0  -> "Bottom Left Far";

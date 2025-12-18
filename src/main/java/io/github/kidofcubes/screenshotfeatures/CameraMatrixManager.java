@@ -1,6 +1,5 @@
 package io.github.kidofcubes.screenshotfeatures;
 
-import io.github.kidofcubes.screenshotfeatures.config.ConfigTypes;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -16,77 +15,83 @@ public class CameraMatrixManager {
 
     public static void register(){
         Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.setValueChangeCallback(config -> {
-            if(!Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()){
-                updateMatrix();
+            if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
+                updateMatrix(true, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_WIDTH.setValueChangeCallback(config -> {
-            if(!Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()){
-                updateMatrix();
+            if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
+                updateMatrix(true, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_HEIGHT.setValueChangeCallback(config -> {
-            if(!Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()){
-                updateMatrix();
+            if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
+                updateMatrix(true, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_FAR.setValueChangeCallback(config -> {
-            if(!Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()){
-                updateMatrix();
+            if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
+                updateMatrix(false, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_NEAR.setValueChangeCallback(config -> {
-            if(!Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()){
-                updateMatrix();
+            if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
+                updateMatrix(false, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
+
+        // because who wants this on when they open the game???
+        Configs.CameraMatrix.OVERRIDE_MATRIX.setBooleanValue(false);
+        initOrthogonal();
+        updateMatrix(true,true,false);
     }
 
     public static double orthogonalWidth=10;
     public static double orthogonalHeight=10;
     public static double orthogonalNear=0.1;
     public static double orthogonalFar=10.0;
+    public static boolean dirtyConfig = false;
+    public static boolean skipResponse = false;
 
-    private static void updateMatrix(){
+    public static void updateMatrix(boolean width,boolean height,boolean keepAspectRatio){
 
-        if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
-            if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.BOTH){
-                CameraMatrixManager.setPerspectiveDimensions(
-                        Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(),
-                        Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue(),
-                        Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue()
-                );
-            }else if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.WIDTH){
-                CameraMatrixManager.setPerspectiveDimensions(
-                        Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(),
-                        Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue(),
-                        -1
-                );
-            }else if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.HEIGHT){
-                CameraMatrixManager.setPerspectiveDimensions(
-                        Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue(),
-                        -1,
-                        Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue()
-                );
-            }
-        }else if((CameraMatrixManager.matrix.properties() | PROPERTY_AFFINE) > 0){ //assuming its orthogonal
-            if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.BOTH){
+        if((CameraMatrixManager.matrix.properties() & PROPERTY_PERSPECTIVE) > 0){
+            CameraMatrixManager.setPerspectiveDimensions(width,height,keepAspectRatio);
+        }else if((CameraMatrixManager.matrix.properties() & PROPERTY_AFFINE) > 0){ //assuming its orthogonal
+            System.out.println("orthogonal");
+            orthogonalNear = Configs.CameraMatrix.MATRIX_NEAR.getDoubleValue();
+            orthogonalFar = Configs.CameraMatrix.MATRIX_FAR.getDoubleValue();
+            if(width&&height){
                 orthogonalWidth = Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue();
                 orthogonalHeight = Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue();
-            }else if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.WIDTH){
+            }else if(width){
                 double origWidth = orthogonalWidth;
                 orthogonalWidth = Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue();
-                orthogonalHeight *= orthogonalWidth/origWidth;
-            }else if(Configs.CameraMatrix.MATRIX_SETTINGS_APPLY.getOptionListValue()==ConfigTypes.MatrixSettingsApplyType.HEIGHT){
+                if(keepAspectRatio){
+                    orthogonalHeight *= orthogonalWidth/origWidth;
+                    skipResponse=true;
+                    Configs.CameraMatrix.MATRIX_HEIGHT.setDoubleValue(orthogonalHeight);
+                    skipResponse=false;
+                    dirtyConfig = true;
+                }
+
+            }else if(height){
                 double origHeight = orthogonalHeight;
                 orthogonalHeight = Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue();
-                orthogonalWidth *= orthogonalHeight/origHeight;
+                if(keepAspectRatio){
+                    orthogonalWidth *= orthogonalHeight/origHeight;
+                    skipResponse=true;
+                    Configs.CameraMatrix.MATRIX_WIDTH.setDoubleValue(orthogonalWidth);
+                    skipResponse=false;
+                    dirtyConfig = true;
+                }
             }
             CameraMatrixManager.matrix.setOrtho(
                     -orthogonalWidth/2, orthogonalWidth/2,
                     -orthogonalHeight/2, orthogonalHeight/2,
                     orthogonalNear, orthogonalFar
             );
+
         }
     }
     public static void initPerspective(){
@@ -112,27 +117,34 @@ public class CameraMatrixManager {
         );
     }
 
-    /// set width or height to -1 to scale same amount, set to -2 to skip
-    public static void setPerspectiveDimensions(double dist, double desiredWidth, double desiredHeight){
-        if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
-            Vector3d corner = CameraMatrixManager.matrixToView(new Vector3d(-1,-1,CameraMatrixManager.matrix.transformProject(new Vector3d(0,0,-dist)).z));
+    public static void setPerspectiveDimensions(boolean updateWidth, boolean updateHeight, boolean keepAspectRatio){
+        if((CameraMatrixManager.matrix.properties() & PROPERTY_PERSPECTIVE) > 0){
+            Vector3d corner = CameraMatrixManager.matrixToView(new Vector3d(-1,-1,CameraMatrixManager.matrix.transformProject(new Vector3d(0,0,-Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue())).z));
             double origWidth = (corner.x)*-2f;
-            double widthMultiplier = (origWidth/desiredWidth); //suprisingly accurate???
+            double widthMultiplier = (origWidth/Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue()); //suprisingly accurate???
 
             double origHeight = (corner.y)*-2f;
-            double heightMultiplier = (origHeight/desiredHeight); //suprisingly accurate???
-            if(desiredWidth>0 && desiredHeight>0){
+            double heightMultiplier = (origHeight/Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue());
+            if(updateWidth&&updateHeight){
                 CameraMatrixManager.matrix.set(0,0,(widthMultiplier*CameraMatrixManager.matrix.get(0,0)));
                 CameraMatrixManager.matrix.set(1,1,(heightMultiplier*CameraMatrixManager.matrix.get(1,1)));
-            }else if(desiredWidth>0){
+            }else if(updateWidth){
                 CameraMatrixManager.matrix.set(0,0,(widthMultiplier*CameraMatrixManager.matrix.get(0,0)));
-                if(desiredHeight==-1){
+                if(keepAspectRatio){
                     CameraMatrixManager.matrix.set(1,1,(widthMultiplier*CameraMatrixManager.matrix.get(1,1)));
+                    skipResponse=true;
+                    Configs.CameraMatrix.MATRIX_HEIGHT.setDoubleValue(widthMultiplier*Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue());
+                    skipResponse=false;
+                    dirtyConfig=true;
                 }
-            }else if(desiredHeight>0){
+            }else if(updateHeight){
                 CameraMatrixManager.matrix.set(1,1,(heightMultiplier*CameraMatrixManager.matrix.get(1,1)));
-                if(desiredWidth==-1){
+                if(keepAspectRatio){
                     CameraMatrixManager.matrix.set(0,0,(heightMultiplier*CameraMatrixManager.matrix.get(0,0)));
+                    skipResponse=true;
+                    Configs.CameraMatrix.MATRIX_WIDTH.setDoubleValue(heightMultiplier*Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue());
+                    skipResponse=false;
+                    dirtyConfig=true;
                 }
             }
             CameraMatrixManager.matrix.determineProperties();
@@ -140,22 +152,7 @@ public class CameraMatrixManager {
     }
 
 
-
-    public static Vector3d clamped(Vector3d vec){
-        vec.x = Math.clamp(vec.x,-1.0f,1.0f);
-        vec.y = Math.clamp(vec.y,-1.0f,1.0f);
-        return vec;
-    }
-
     public static Vector3d matrixToView(Vector3d vector3f){
         return CameraMatrixManager.matrix.invert(new Matrix4d()).transformProject(vector3f).mul(1.0f,1.0f,1.0f);
-    }
-    public void test(){
-//        new Matrix4f().setOrtho(
-//                -width, width,
-//                -height, height,
-//                min, max
-//        );
-
     }
 }

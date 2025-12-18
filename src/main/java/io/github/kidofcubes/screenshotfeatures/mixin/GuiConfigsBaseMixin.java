@@ -19,7 +19,6 @@ public abstract class GuiConfigsBaseMixin extends GuiListBase<GuiConfigsBase.Con
 
     @Inject(method = "onKeyTyped", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
     public void onKeyTyped(KeyInput input,CallbackInfoReturnable<Boolean> cir) {
-        System.out.println("KLAHDFKLJAHDFLKJA");
         cir.setReturnValue(super.onKeyTyped(input));
         cir.cancel();
     }

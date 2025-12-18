@@ -154,6 +154,10 @@
   "screenshotfeatures.gui.cameramatrix.applyHeight": "applyHeight",
   "screenshotfeatures.gui.cameramatrix.applyOnlyWidth": "applyOnlyWidth",
   "screenshotfeatures.gui.cameramatrix.applyOnlyHeight": "applyOnlyHeight",
+  "screenshotfeatures.gui.cameramatrix.setOrthogonal": "setOrthogonal",
+  "screenshotfeatures.gui.cameramatrix.setPerspective": "setPerspective",
+  "screenshotfeatures.gui.cameramatrix.applyAspectRatioWidth": "applyAspectRatioWidth",
+  "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight": "applyAspectRatioHeight",
 
 
   "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %.5f",

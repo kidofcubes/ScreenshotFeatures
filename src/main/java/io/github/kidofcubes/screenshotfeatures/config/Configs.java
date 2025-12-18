@@ -146,13 +146,14 @@ public class Configs implements IConfigHandler {
 
         public static final ConfigBooleanHotkeyed PULL_MATRIX = setupConfig(new ConfigBooleanHotkeyed("pullMatrix", false, ""));
         public static final ConfigBooleanHotkeyed OVERRIDE_MATRIX = setupConfig(new ConfigBooleanHotkeyed("overrideMatrix", false, ""));
+        public static final ConfigBooleanHotkeyed KEEP_ASPECT_RATIO = setupConfig(new ConfigBooleanHotkeyed("keepAspectRatio", true, ""));
         public static final ConfigDouble MATRIX_WIDTH = setupConfig(new ConfigDouble("matrixDesiredWidth", 1600, ""));
         public static final ConfigDouble MATRIX_HEIGHT = setupConfig(new ConfigDouble("matrixDesiredHeight", 900, ""));
         public static final ConfigDouble MATRIX_PERSPECTIVE_SETTINGS_DISTANCE = setupConfig(new ConfigDouble("matrixSettingDistance", 1024, ""));
         public static final ConfigDouble MATRIX_NEAR = setupConfig(new ConfigDouble("matrixNear", 0.01,  -Double.MAX_VALUE, Double.MAX_VALUE, ""));
         public static final ConfigDouble MATRIX_FAR = setupConfig(new ConfigDouble("matrixFar", 8192, ""));
-        public static final ConfigOptionList MATRIX_SETTINGS_APPLY = setupConfig(new ConfigOptionList("matrixSettingsApply", MatrixSettingsApplyType.WIDTH));
         public static final ConfigBooleanHotkeyed ALWAYS_APPLY_MATRIX = setupConfig(new ConfigBooleanHotkeyed("alwaysApplyMatrix", false, ""));
+        public static final ConfigDouble ORTHOGONAL_OFFSET = setupConfig(new ConfigDouble("orthogonalOffset", 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, ""));
 
         static {
             OPTIONS = OPTIONS_BUILDER.build();
