@@ -124,7 +124,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
     public void render(DrawContext drawContext,int mouseX,int mouseY,float partialTicks){
         if(dirtyConfig){
             this.reCreateListWidget();
-            this.getListWidget().resize(mc, width, height);
+            this.getListWidget().resize(width, height);
             dirtyConfig = false;
         }
         super.render(drawContext,mouseX,mouseY,partialTicks);

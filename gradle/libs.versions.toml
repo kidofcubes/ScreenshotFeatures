@@ -1,17 +1,17 @@
 [versions]
-loom = "1.13-SNAPSHOT"
+loom = "1.15-SNAPSHOT"
 
-minecraft = "1.21.10"
-yarn = "1.21.10+build.3"
-loader = "0.18.1"
-fabric_api = "0.138.3+1.21.10"
+minecraft = "1.21.11"
+yarn = "1.21.11+build.4"
+loader = "0.18.6"
+fabric_api = "0.141.3+1.21.11"
 
 
-malilib = "0.26.6"
-modmenu = "16.0.0-rc.1"
-fabrishot = "1.16.3"
-iris = "1.9.6+1.21.10-fabric"
-sodium = "mc1.21.10-0.7.3-fabric"
+malilib = "0.26.7"
+modmenu = "17.0.0"
+fabrishot = "1.16.4"
+iris = "1.10.7+1.21.11-fabric"
+sodium = "mc1.21.11-0.8.7-fabric"
 
 
 jgit = "7.3.0.202506031305-r"

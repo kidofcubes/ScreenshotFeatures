@@ -87,7 +87,6 @@ public class ScreenshotTagger {
             }
             merge(tags, "worldData", Map.of(
                     "worldName", worldName,
-                    "lunarTime", client.world.getLunarTime(),
                     "time", client.world.getTime()
             ));
         }

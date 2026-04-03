@@ -23,6 +23,7 @@ public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
                     PrimitiveCodec.STRING.fieldOf("defaultHotkey").forGetter((get) -> get.keybind.getDefaultStringValue()),
                     PrimitiveCodec.DOUBLE.fieldOf("minValue").forGetter(ConfigDouble::getDoubleValue),
                     PrimitiveCodec.DOUBLE.fieldOf("maxValue").forGetter(ConfigDouble::getDoubleValue),
+//                    PrimitiveCodec.DOUBLE.fieldOf("multiplier").forGetter(ConfigDouble::getDoubleValue),
                     KeybindSettings.CODEC.fieldOf("keybindSettings").forGetter((get) -> get.keybind.getSettings()),
                     PrimitiveCodec.STRING.fieldOf("comment").forGetter((get) -> get.comment),
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter((get) -> get.prettyName),
@@ -45,38 +46,39 @@ public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue, KeybindSettings.DEFAULT, comment, StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, KeybindSettings.DEFAULT, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment,String prettyName) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue, KeybindSettings.DEFAULT, comment, prettyName, name);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, KeybindSettings.DEFAULT, comment, prettyName, name);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment,String prettyName,String translatedName) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue,  KeybindSettings.DEFAULT, comment, prettyName, translatedName);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier,  KeybindSettings.DEFAULT, comment, prettyName, translatedName);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey,KeybindSettings settings) {
-        this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE,  settings, name + " Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE, 1.0, settings, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue,  settings, comment, StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, settings, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment,String prettyName) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue,  settings, comment, prettyName, name);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, settings, comment, prettyName, name);
     }
 
     public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment,String prettyName,String translatedName) {
         super(name, defaultValue, minValue, maxValue, comment, prettyName, translatedName);
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         ScreenshotFeatures.adjustableValues.add(this);
+        this.step = multiplier;
 //        this.keybind.setCallback((keyAction,iKeybind) -> {});
     }
 
     private ConfigDoubleHotkeyed(String name,double defaultValue,double value,String defaultHotkey, double minValue, double maxValue, KeybindSettings settings,String comment,String prettyName,String translatedName) {
-        this(name, defaultValue, defaultHotkey, minValue, maxValue,  settings, comment, prettyName, translatedName);
+        this(name, defaultValue, defaultHotkey, minValue, maxValue, 1.0, settings, comment, prettyName, translatedName);
         this.setDoubleValue(value);
     }
 

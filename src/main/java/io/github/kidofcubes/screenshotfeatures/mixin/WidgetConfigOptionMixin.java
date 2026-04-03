@@ -57,8 +57,9 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
 
             GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
             field.setMaxLength(this.maxTextfieldTextLength);
-            field.setText(config.getStringValue());
-            ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);
+            field.setText(configDoubleHotkeyed.getStringValue());
+            ButtonGeneric resetButton = this.createResetButton(x, y, configDoubleHotkeyed);
+            ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(configDoubleHotkeyed, field, resetButton);
             this.addTextField(field, listenerChange);
 
             this.addButton(keybindButton, this.host.getButtonPressListener());
