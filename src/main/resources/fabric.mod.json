@@ -30,6 +30,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": ">=${minecraft_version}",
+    "mixinextras": ">=0.5.0",
     "malilib": ">=0.26.6",
     "iris": ">=1.9.6",
     "modmenu": ">=16.0.0-rc.1",

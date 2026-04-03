@@ -153,7 +153,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigDouble MATRIX_NEAR = setupConfig(new ConfigDouble("matrixNear", 0.01,  -Double.MAX_VALUE, Double.MAX_VALUE, ""));
         public static final ConfigDouble MATRIX_FAR = setupConfig(new ConfigDouble("matrixFar", 8192, ""));
         public static final ConfigBooleanHotkeyed ALWAYS_APPLY_MATRIX = setupConfig(new ConfigBooleanHotkeyed("alwaysApplyMatrix", false, ""));
-        public static final ConfigDouble ORTHOGONAL_OFFSET = setupConfig(new ConfigDouble("orthogonalOffset", 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, ""));
+        public static final ConfigDoubleHotkeyed ORTHOGONAL_OFFSET = setupConfig(new ConfigDoubleHotkeyed("orthogonalOffset", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE, ""));
 
         static {
             OPTIONS = OPTIONS_BUILDER.build();

@@ -9,10 +9,10 @@ import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.util.GuiUtils;
+import io.github.kidofcubes.screenshotfeatures.config.ConfigDoubleHotkeyed;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import io.github.kidofcubes.screenshotfeatures.screens.ConfigsGui;
 import io.github.kidofcubes.screenshotfeatures.integrations.FabrishotIntegration;
-import io.github.kidofcubes.screenshotfeatures.integrations.OrthoCameraIntegration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -35,6 +37,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
     public static MinecraftClient client;
     private static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
+    public static List<ConfigDoubleHotkeyed> adjustableValues = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
@@ -61,7 +64,6 @@ public class ScreenshotFeatures implements ClientModInitializer {
             }));
         });
         FabrishotIntegration.register();
-        OrthoCameraIntegration.register();
         CameraMatrixManager.register();
 
         LOGGER.info("ScreenshotFeatures loaded.");
@@ -74,6 +76,14 @@ public class ScreenshotFeatures implements ClientModInitializer {
             modifier *= Configs.IngameTools.SMALL_VALUE_MULTIPLIER.getDoubleValue();
         }
         boolean used = false;
+
+        for(ConfigDoubleHotkeyed value : adjustableValues){
+            if(value.getKeybind().isKeybindHeld()){
+                value.setDoubleValue(value.getDoubleValue() + modifier);
+                client.player.sendMessage(Text.translatable("screenshotfeatures.messages.asff",value.getDoubleValue()), true);
+                used=true;
+            }
+        }
 
         if(Configs.IngameTools.DOF_MODIFIER.getKeybind().isKeybindHeld()){
             Configs.IngameTools.DOF_OVERRIDE_VALUE.setDoubleValue(Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue() + (modifier*Configs.IngameTools.DOF_STEP.getDoubleValue()));
