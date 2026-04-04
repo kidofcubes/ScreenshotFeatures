@@ -13,8 +13,8 @@
         "IrisShaderMenuMixin",
         "ScreenshotMixin",
         "TimeChangerMixin",
-        "WeatherChangerWeatherRenderingMixin",
-        "WeatherChangerWorldMixin",
+        "WeatherChangerWeatherEffectRendererMixin",
+        "WeatherChangerLevelMixin",
         "WidgetConfigOptionMixin"
     ],
     "injectors": {

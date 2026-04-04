@@ -2,7 +2,7 @@
 loom = "1.15-SNAPSHOT"
 
 minecraft = "1.21.11"
-yarn = "1.21.11+build.4"
+#yarn = "1.21.11+build.4"
 loader = "0.18.6"
 fabric_api = "0.141.3+1.21.11"
 
@@ -24,7 +24,7 @@ jcpp = "1.4.14"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-yarn = { module = "net.fabricmc:yarn", version.ref = "yarn" }
+#yarn = { module = "net.fabricmc:yarn", version.ref = "yarn" }
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 

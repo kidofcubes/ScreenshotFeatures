@@ -50,7 +50,7 @@ public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.Metadat
     private final List<MetadataEntry> metadata = new ArrayList<>();
 
     @Override
-    public void onFilesDropped(List<Path> paths) {
+    public void onFilesDrop(List<Path> paths) {
         Path path = paths.get(0);
         if(!path.getFileName().toString().endsWith(".png")){
             return;
@@ -128,7 +128,7 @@ public class GuiScreenshotViewer extends GuiListBase<GuiScreenshotViewer.Metadat
             this.addButton(button, new IButtonActionListener() {
                 @Override
                 public void actionPerformedWithButton(ButtonBase buttonBase, int i) {
-                    ScreenshotFeatures.client.keyboard.setClipboard(entry.value);
+                    ScreenshotFeatures.client.keyboardHandler.setClipboard(entry.value);
 
                 }
             });

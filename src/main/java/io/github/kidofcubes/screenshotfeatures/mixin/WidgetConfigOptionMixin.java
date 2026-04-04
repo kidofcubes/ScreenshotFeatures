@@ -43,6 +43,8 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
     @Shadow
     protected abstract void addConfigTextFieldEntry(int x,int y,int resetX,int configWidth,int configHeight,IConfigValue config);
 
+    // TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
+// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
     @Expression("? instanceof ?")
     @Inject(method="addConfigOption", at=@At(value="MIXINEXTRAS:EXPRESSION", ordinal = 0), cancellable = true)
     void customConfigOptions(int x,int y,int labelWidth,int configWidth,IConfigBase config,CallbackInfo ci,@Local(name = "configHeight") int configHeight){
@@ -57,7 +59,7 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
 
             GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
             field.setMaxLength(this.maxTextfieldTextLength);
-            field.setText(configDoubleHotkeyed.getStringValue());
+            field.setValue(configDoubleHotkeyed.getStringValue());
             ButtonGeneric resetButton = this.createResetButton(x, y, configDoubleHotkeyed);
             ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(configDoubleHotkeyed, field, resetButton);
             this.addTextField(field, listenerChange);

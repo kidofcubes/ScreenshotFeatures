@@ -7,7 +7,7 @@ import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.irisshaders.iris.gui.element.ShaderPackSelectionList;
 import net.irisshaders.iris.gui.screen.ShaderPackScreen;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,13 +31,13 @@ public abstract class IrisShaderMenuMixin {
     public abstract void refreshForChangedPack();
 
     @Shadow
-    private Text notificationDialog;
+    private Component notificationDialog;
 
     @Shadow
     private int notificationDialogTimer;
 
     @Inject(
-            method = "onPackListFilesDrop",
+            method ="onPackListFilesDrop",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -52,19 +52,19 @@ public abstract class IrisShaderMenuMixin {
         try{
             JsonObject tags = ScreenshotTagger.getScreenshotTags(path.toFile());
             if(!tags.has("shader")){
-                notificationDialog = Text.of("Screenshot doesn't have appropriate metadata! ");
+                notificationDialog = Component.nullToEmpty("Screenshot doesn't have appropriate metadata! ");
                 notificationDialogTimer = 100;
                 callbackInfo.cancel();
                 return;
             }
             if(!tags.getAsJsonObject("shader").has("allSettings")){
-                notificationDialog = Text.of("Dragged screenshot doesn't have any settings! (Did you enable the shaderpack settings and shaderpack metadata options?)");
+                notificationDialog = Component.nullToEmpty("Dragged screenshot doesn't have any settings! (Did you enable the shaderpack settings and shaderpack metadata options?)");
                 notificationDialogTimer = 100;
                 callbackInfo.cancel();
                 return;
             }
             if(!tags.getAsJsonObject("shader").has("name")){
-                notificationDialog = Text.of("Dragged screenshot doesn't specify the shader name! (Did you enable the shaderpack settings and shaderpack metadata options?)");
+                notificationDialog = Component.nullToEmpty("Dragged screenshot doesn't specify the shader name! (Did you enable the shaderpack settings and shaderpack metadata options?)");
                 notificationDialogTimer = 100;
                 callbackInfo.cancel();
                 return;
@@ -75,8 +75,8 @@ public abstract class IrisShaderMenuMixin {
             String name = tags.getAsJsonObject("shader").get("name").getAsString();
 
             shaderPackList.select(name);
-            if(shaderPackList.getSelectedOrNull()==null || !((ShaderPackSelectionList.ShaderPackEntry)shaderPackList.getSelectedOrNull()).getPackName().equals(name)){
-                notificationDialog = Text.of("Shaderpack "+name+" doesn't exist in your shaderpacks folder!");
+            if(shaderPackList.getSelected()==null || !((ShaderPackSelectionList.ShaderPackEntry)shaderPackList.getSelected()).getPackName().equals(name)){
+                notificationDialog = Component.nullToEmpty("Shaderpack "+name+" doesn't exist in your shaderpacks folder!");
                 notificationDialogTimer = 100;
                 callbackInfo.cancel();
                 return;
@@ -92,15 +92,15 @@ public abstract class IrisShaderMenuMixin {
                 IrisApi.getInstance().getConfig().setShadersEnabledAndApply(enabled);
             }
 
-            this.shaderPackList.setApplied((ShaderPackSelectionList.ShaderPackEntry)shaderPackList.getSelectedOrNull());
+            this.shaderPackList.setApplied((ShaderPackSelectionList.ShaderPackEntry)shaderPackList.getSelected());
             Iris.getIrisConfig().setShaderPackName(name);
             IrisApi.getInstance().getConfig().setShadersEnabledAndApply(shaderPackList.getTopButtonRow().shadersEnabled);
             refreshForChangedPack();
 
-            notificationDialog = Text.of("Loaded Shaderpack options from screenshot successfully!");
+            notificationDialog = Component.nullToEmpty("Loaded Shaderpack options from screenshot successfully!");
             notificationDialogTimer = 100;
         }catch(Exception e){
-            notificationDialog = Text.of("Error occurred, check logs for details! "+e.getMessage());
+            notificationDialog = Component.nullToEmpty("Error occurred, check logs for details! "+e.getMessage());
             notificationDialogTimer = 100;
             ScreenshotFeatures.LOGGER.warn("Error loading/applying shaderpack options from screenshot: ",e);
         }

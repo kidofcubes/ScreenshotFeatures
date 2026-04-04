@@ -6,10 +6,10 @@ import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import io.github.kidofcubes.screenshotfeatures.integrations.ShaderIntegration;
 import io.github.kidofcubes.screenshotfeatures.mixin.GameRendererAccessorMixin;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.level.ServerWorldProperties;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ServerLevelData;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.NodeList;
 
@@ -41,13 +41,13 @@ public class ScreenshotTagger {
             orig.getAsJsonObject(key).add(entry.getKey(),entry.getValue());
         }
     }
-    public static JsonObject getTags(final MinecraftClient client) {
+    public static JsonObject getTags(final Minecraft client) {
         JsonObject tags = new JsonObject();
         if(client.player == null) {
             return tags;
         }
 
-        float tickProgress = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false);
+        float tickProgress = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
         tags.add(ScreenshotFeatures.MOD_ID, gson.toJsonTree(Map.of(
                 "version",FabricLoader.getInstance().getModContainer(ScreenshotFeatures.MOD_ID).get().getMetadata().getVersion().getFriendlyString()
@@ -58,47 +58,47 @@ public class ScreenshotTagger {
                     "x",client.player.getX(),
                     "y",client.player.getY(),
                     "z",client.player.getZ(),
-                    "yaw",client.player.getLerpedYaw(tickProgress),
-                    "pitch", client.player.getLerpedPitch(tickProgress)
+                    "yaw",client.player.getYRot(tickProgress),
+                    "pitch", client.player.getXRot(tickProgress)
             ));
         }
         if(Configs.Metadata.CAMERA_DATA.getBooleanValue()) {
             merge(tags, "cameraData", Map.of(
-                    "x", client.gameRenderer.getCamera().getCameraPos().x,
-                    "y", client.gameRenderer.getCamera().getCameraPos().y,
-                    "z", client.gameRenderer.getCamera().getCameraPos().z,
-                    "yaw", client.gameRenderer.getCamera().getCameraYaw(),
-                    "pitch", client.gameRenderer.getCamera().getPitch(),
-                    "gamma", client.options.getGamma().getValue(),
-                    "configuredFov", client.options.getFov().getValue(),
-                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.getCamera(), client.getRenderTickCounter().getTickProgress(false), true)
+                    "x", client.gameRenderer.getMainCamera().position().x,
+                    "y", client.gameRenderer.getMainCamera().position().y,
+                    "z", client.gameRenderer.getMainCamera().position().z,
+                    "yaw", client.gameRenderer.getMainCamera().yaw(),
+                    "pitch", client.gameRenderer.getMainCamera().xRot(),
+                    "gamma", client.options.gamma().get(),
+                    "configuredFov", client.options.fov().get(),
+                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.getMainCamera(), client.getDeltaTracker().getGameTimeDeltaPartialTick(false), true)
             ));
         }
-        ServerWorld serverWorld = null;
-        if (client.isInSingleplayer()){
-            serverWorld = client.getServer().getWorld(client.world.getRegistryKey());
+        ServerLevel serverWorld = null;
+        if (client.isLocalServer()){
+            serverWorld = client.getSingleplayerServer().getLevel(client.level.dimension());
         }
         if(Configs.Metadata.WORLD_DATA.getBooleanValue()) {
             String worldName;
-            if (client.isInSingleplayer()) {
-                worldName = ((ServerWorldProperties)serverWorld.getLevelProperties()).getLevelName();
+            if (client.isLocalServer()) {
+                worldName = ((ServerLevelData)serverWorld.getLevelData()).getLevelName();
             } else {
                 worldName = "MULTIPLAYER_WORLD_NAME";
             }
             merge(tags, "worldData", Map.of(
                     "worldName", worldName,
-                    "time", client.world.getTime()
+                    "time", client.level.getGameTime()
             ));
         }
         if(Configs.Metadata.WORLD_SEED.getBooleanValue()){
             merge(tags, "worldData", Map.of(
-                    "seed", client.isInSingleplayer() ? Long.toString(serverWorld.getSeed()) : "MULTIPLAYER_WORLD_SEED"
+                    "seed", client.isLocalServer() ? Long.toString(serverWorld.getSeed()) : "MULTIPLAYER_WORLD_SEED"
             ));
         }
         if(Configs.Metadata.RESOURCE_PACKS.getBooleanValue()) {
-            List<ResourcePack> resourcePacks = client.getResourceManager().streamResourcePacks().toList();
+            List<PackResources> resourcePacks = client.getResourceManager().listPacks().toList();
             merge(tags, "resourcePacks", Map.of(
-                    "ids", resourcePacks.stream().map(rp -> rp.getInfo().id()).toList()
+                    "ids", resourcePacks.stream().map(rp -> rp.location().id()).toList()
             ));
         }
         if(Configs.Metadata.MOD_LIST.getBooleanValue()) {
@@ -138,7 +138,7 @@ public class ScreenshotTagger {
         }
         if(Configs.Metadata.MC_VERSION.getBooleanValue()) {
             merge(tags, "mcData", Map.of(
-                    "version", client.getGameVersion()
+                    "version", client.getLaunchedVersion()
             ));
         }
 

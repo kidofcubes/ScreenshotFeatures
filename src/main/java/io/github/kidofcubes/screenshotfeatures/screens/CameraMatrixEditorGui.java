@@ -9,11 +9,11 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.CommonColors;
 import org.joml.*;
 
 import java.lang.Math;
@@ -84,22 +84,22 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
 
 
         this.addButton(new ButtonGeneric(375,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioWidth"), (button,mouseButton) -> {
-            System.out.println("RATIO IS "+((double)this.client.getWindow().getFramebufferHeight() / (double)this.client.getWindow().getFramebufferWidth()));
+            System.out.println("RATIO IS "+((double)this.minecraft.getWindow().getHeight() / (double)this.minecraft.getWindow().getWidth()));
             skipResponse = true;
             Configs.CameraMatrix.MATRIX_HEIGHT.setDoubleValue(
                     Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue() *
-                            ((double)this.client.getWindow().getFramebufferHeight() / this.client.getWindow().getFramebufferWidth())
+                            ((double)this.minecraft.getWindow().getHeight() / this.minecraft.getWindow().getWidth())
             );
             skipResponse = false;
             dirtyConfig = true;
         });
 
         this.addButton(new ButtonGeneric(500,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight"), (button,mouseButton) -> {
-            System.out.println("RATIO IS "+((double)this.client.getWindow().getFramebufferWidth() / (double)this.client.getWindow().getFramebufferHeight()));
+            System.out.println("RATIO IS "+((double)this.minecraft.getWindow().getWidth() / (double)this.minecraft.getWindow().getHeight()));
             skipResponse = true;
             Configs.CameraMatrix.MATRIX_WIDTH.setDoubleValue(
                     Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue() *
-                            ((double)this.client.getWindow().getFramebufferWidth() / (double)this.client.getWindow().getFramebufferHeight())
+                            ((double)this.minecraft.getWindow().getWidth() / (double)this.minecraft.getWindow().getHeight())
             );
             skipResponse = false;
             dirtyConfig = true;
@@ -121,7 +121,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
     }
 
     @Override
-    public void render(DrawContext drawContext,int mouseX,int mouseY,float partialTicks){
+    public void render(GuiGraphics drawContext,int mouseX,int mouseY,float partialTicks){
         if(dirtyConfig){
             this.reCreateListWidget();
             this.getListWidget().resize(width, height);
@@ -155,8 +155,8 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
 
 
         @Override
-        protected boolean onKeyTypedImpl(KeyInput input){
-            if(input.getKeycode() == KeyCodes.KEY_TAB){
+        protected boolean onKeyTypedImpl(KeyEvent input){
+            if(input.input() == KeyCodes.KEY_TAB){
                 if(!isShiftDown()){
                     this.index++;
                 }else{
@@ -165,12 +165,12 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 return true;
             }
 
-            if(input.getKeycode() == KeyCodes.KEY_SPACE){
+            if(input.input() == KeyCodes.KEY_SPACE){
                 this.drawTooltip = !this.drawTooltip;
                 return true;
             }
 
-            if(input.getKeycode() == KeyCodes.KEY_S){
+            if(input.input() == KeyCodes.KEY_S){
                 CameraMatrixManager.matrix = new Matrix4d().setPerspective((double)(PI*0.5),1,0.1f,8192.0f);
                 double far = CameraMatrixManager.matrix.get(3,2)/(CameraMatrixManager.matrix.get(2,2)+1.0);
                 System.out.println("FAR IS "+far);
@@ -178,7 +178,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 return true;
             }
 
-            if(input.getKeycode() == KeyCodes.KEY_A){
+            if(input.input() == KeyCodes.KEY_A){
                 if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
 //                    double far = (double)(matrix.get(3,2)/(matrix.get(2,2)+1.0));
 //                    far = -matrixToView(new Vector3d(-1,-1,1)).z;
@@ -201,12 +201,12 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 return true;
             }
 
-            if(input.getKeycode() == KeyCodes.KEY_D){
+            if(input.input() == KeyCodes.KEY_D){
 //                matrix.set(3,2,matrix.get(3,2)*(isShiftDown()?0.5f:2.0f));
                 return true;
             }
 
-            if(input.getKeycode() == KeyCodes.KEY_W){
+            if(input.input() == KeyCodes.KEY_W){
                 return true;
             }
 
@@ -234,7 +234,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         private int index = 0;
 
         @Override
-        protected boolean onMouseClickedImpl(Click click,boolean doubleClick){
+        protected boolean onMouseClickedImpl(MouseButtonEvent click,boolean doubleClick){
             if(click.button() == 0){
                 dragging = true;
                 prevMouseX = -1;
@@ -245,7 +245,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         }
 
         @Override
-        public void onMouseReleasedImpl(Click click){
+        public void onMouseReleasedImpl(MouseButtonEvent click){
             if(click.button() == 0){
                 dragging = false;
             }
@@ -266,9 +266,9 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 new Vector3d(1.0f,-1.0f,-1.0f)
         );
         @Override
-        public void render(DrawContext drawContext,int mouseX,int mouseY,boolean selected){
+        public void render(GuiGraphics drawContext,int mouseX,int mouseY,boolean selected){
             super.render(drawContext,mouseX,mouseY,selected);
-            this.drawContext.drawStrokedRectangle(x,y,width,height,Colors.WHITE);
+            this.drawContext.renderOutline(x,y,width,height,CommonColors.WHITE);
 
             if(dragging){
                 if(this.prevMouseX==-1){
@@ -340,17 +340,17 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 default -> "???";
             };
             if(drawTooltip){
-                drawContext.drawTooltip(textRenderer,
+                drawContext.setComponentTooltipForNextFrame(textRenderer,
                         List.of(
 //                            Text.of(String.format("%s x:%.2f y: %.2f z: %.2f (appr.)",name,viewSpacePoint.x,viewSpacePoint.y,viewSpacePoint.z))
-                                Text.of(String.format("%s (pos appx.)",name)),
-                                Text.of(String.format("x: %.10f",viewSpacePoint.x)),
-                                Text.of(String.format("y: %.10f",viewSpacePoint.y)),
-                                Text.of(String.format("z: %.10f",viewSpacePoint.z))
+                                Component.nullToEmpty(String.format("%s (pos appx.)",name)),
+                                Component.nullToEmpty(String.format("x: %.10f",viewSpacePoint.x)),
+                                Component.nullToEmpty(String.format("y: %.10f",viewSpacePoint.y)),
+                                Component.nullToEmpty(String.format("z: %.10f",viewSpacePoint.z))
                         ),
                         sx(point0),sy(point0));
             }
-            drawContext.drawStrokedRectangle(sx(point0)-5,sy(point0)-5,10,10,Colors.WHITE);
+            drawContext.renderOutline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
             Vector3d sidePoint;
 
             double scale = cameraPosition.distance(viewSpacePoint)/5.0f;
@@ -359,17 +359,17 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(scale,0.0f,0.0f));
             drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFFFF0000, 2);
             drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredTextWithShadow(textRenderer, "+X", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawContext.drawCenteredString(textRenderer, "+X", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,scale,0.0f));
             drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFF00FF00, 2);
             drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredTextWithShadow(textRenderer, "+Y", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawContext.drawCenteredString(textRenderer, "+Y", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,0.0f,scale));
             drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFF0000FF, 2);
             drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredTextWithShadow(textRenderer, "+Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawContext.drawCenteredString(textRenderer, "+Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
 
 
@@ -410,10 +410,10 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             return (int)(Math.round(vector3f.y*(height/2.0f)) + ((height/2) + y));
         }
 
-        private void drawLine(DrawContext drawContext, Vector3d point0, Vector3d point1, int color){
+        private void drawLine(GuiGraphics drawContext,Vector3d point0,Vector3d point1,int color){
             drawLine(drawContext, point0, point1, color, 0.5f);
         }
-        private void drawLine(DrawContext drawContext, Vector3d point0, Vector3d point1, int color, double radius){
+        private void drawLine(GuiGraphics drawContext,Vector3d point0,Vector3d point1,int color,double radius){
             drawLine(drawContext,sx(point0),sy(point0),sx(point1),sy(point1),color,radius);
         }
         private double clampMult(Vector2d v, Vector2d d){
@@ -438,7 +438,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             assert num>=0.0f;
             return num;
         }
-        private void drawLine(DrawContext drawContext, int x0, int y0, int x1, int y1, int color, double radius){
+        private void drawLine(GuiGraphics drawContext,int x0,int y0,int x1,int y1,int color,double radius){
 //            x0 = Math.clamp(x0,0,width);
 //            x1 = Math.clamp(x1,0,width);
 //            y0 = Math.clamp(y0,0,height);

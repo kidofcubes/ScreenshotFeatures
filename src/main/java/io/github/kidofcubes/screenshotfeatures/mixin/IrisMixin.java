@@ -16,7 +16,7 @@ import java.util.Map;
 @Mixin(value = Iris.class, remap = false)
 public abstract class IrisMixin {
     @Inject(
-            method = "loadExternalShaderpack",
+            method ="loadExternalShaderpack",
             at = @At("TAIL"),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
@@ -27,7 +27,7 @@ public abstract class IrisMixin {
     }
 
     @Inject(
-            method = "setShadersDisabled",
+            method ="setShadersDisabled",
             at = @At("HEAD")
     )
     private static void unloadShaderPack(CallbackInfo ci){

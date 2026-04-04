@@ -106,27 +106,6 @@ public class Configs implements IConfigHandler {
         }
     }
 
-    public static class ScreenshotSaving {
-        private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
-        public static final ImmutableList<IConfigBase> OPTIONS;
-
-        private static <T extends ConfigBase<?>> T setupConfig(T thing){
-            autoCommentAndNameWithGroup(thing, "screenshotsaving");
-            OPTIONS_BUILDER.add(thing);
-            return thing;
-        }
-
-
-        public static final ConfigBoolean USE_CUSTOM_SCREENSHOT_DIRECTORY = setupConfig(new ConfigBoolean( "useCustomScreenshotDirectory", false));
-        public static final ConfigString SCREENSHOT_DIRECTORY = setupConfig(new ConfigString( "customScreenshotDirectory", "./screenshots/"));
-        public static final ConfigBoolean RENAME_SCREENSHOTS = setupConfig(new ConfigBoolean( "renameScreenshots", true));
-        public static final ConfigString SCREENSHOT_NAMING_SCHEMA = setupConfig(new ConfigString( "screenshotNamingSchema", "<datetime>-tagged"));
-
-        static {
-            OPTIONS = OPTIONS_BUILDER.build();
-        }
-    }
-
     public static class CameraMatrix {
         private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
         public static final ImmutableList<IConfigBase> OPTIONS;
@@ -174,7 +153,6 @@ public class Configs implements IConfigHandler {
 
                 ConfigUtils.readConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
-                ConfigUtils.readConfigBase(root, "ScreenshotSaving", Configs.ScreenshotSaving.OPTIONS);
                 ConfigUtils.readConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
             }
         }
@@ -189,7 +167,6 @@ public class Configs implements IConfigHandler {
 
             ConfigUtils.writeConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
-            ConfigUtils.writeConfigBase(root, "ScreenshotSaving", Configs.ScreenshotSaving.OPTIONS);
             ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));

@@ -2,12 +2,12 @@ package io.github.kidofcubes.screenshotfeatures.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import com.mojang.blaze3d.systems.ProjectionType;
+import com.mojang.blaze3d.ProjectionType;
 import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.DeltaTracker;
 import org.joml.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +24,7 @@ import static org.joml.Matrix4dc.PROPERTY_PERSPECTIVE;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    @Inject(method = "renderWorld", at = @At(value="INVOKE", target = "Lnet/minecraft/client/render/RawProjectionMatrix;set(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;", shift = At.Shift.BEFORE))
+    @Inject(method ="renderLevel", at = @At(value="INVOKE", target ="Lnet/minecraft/client/renderer/PerspectiveProjectionMatrixBuffer;getBuffer(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;", shift = At.Shift.BEFORE))
     private void overrideMatrix(CallbackInfo ci, @Local(name = "matrix4f") LocalRef<Matrix4f> matrix4f) {
 
         if(Configs.CameraMatrix.PULL_MATRIX.getBooleanValue()){
@@ -36,14 +36,14 @@ public abstract class GameRendererMixin {
     }
 
 
-    @Inject(method = "getBasicProjectionMatrix", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method ="getProjectionMatrix", at = @At(value = "HEAD"), cancellable = true)
     public void getBasicProjectionMatrix(float fovDegrees,CallbackInfoReturnable<Matrix4f> cir) {
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             cir.setReturnValue(new Matrix4f(CameraMatrixManager.matrix));
         }
     }
 
-    @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setProjectionMatrix(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lcom/mojang/blaze3d/systems/ProjectionType;)V"), index = 1)
+    @ModifyArg(method ="renderLevel", at = @At(value = "INVOKE", target ="Lcom/mojang/blaze3d/systems/RenderSystem;setProjectionMatrix(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lcom/mojang/blaze3d/ProjectionType;)V"), index = 1)
     ProjectionType setMatrixOption(ProjectionType projectionType) {
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             if((CameraMatrixManager.matrix.properties() & PROPERTY_PERSPECTIVE) > 0){
@@ -56,13 +56,13 @@ public abstract class GameRendererMixin {
     }
     @Final
     @Shadow
-    private Camera camera;
+    private Camera mainCamera;
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V", shift = At.Shift.AFTER), cancellable = true)
-    public void thing(RenderTickCounter renderTickCounter,CallbackInfo ci){
+    @Inject(method ="renderLevel", at = @At(value = "INVOKE", target ="Lnet/minecraft/client/Camera;update(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.AFTER), cancellable = true)
+    public void thing(DeltaTracker renderTickCounter,CallbackInfo ci){
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
-            Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(camera.getRotation()));
-            ((CameraAccessor)camera).setPosInvoker(camera.getCameraPos().add(translation.x, translation.y, translation.z));
+            Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(mainCamera.rotation()));
+            ((CameraAccessor)mainCamera).setPosInvoker(mainCamera.position().add(translation.x, translation.y, translation.z));
         }
     }
 }

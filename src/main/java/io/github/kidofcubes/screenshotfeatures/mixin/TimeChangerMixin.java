@@ -1,16 +1,16 @@
 package io.github.kidofcubes.screenshotfeatures.mixin;
 
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.multiplayer.ClientLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ClientWorld.Properties.class)
+@Mixin(ClientLevel.ClientLevelData.class)
 public class TimeChangerMixin {
     @Inject(
-            method = "getTimeOfDay",
+            method ="getDayTime",
             at = @At("HEAD"),
             cancellable = true
     )

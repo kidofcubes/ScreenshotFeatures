@@ -79,7 +79,6 @@ public class ConfigsGui extends GuiConfigsBase {
         configs = switch(tab){
             case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
             case METADATA -> Configs.Metadata.OPTIONS;
-            case SCREENSHOTSAVING -> Configs.ScreenshotSaving.OPTIONS;
 //            case ORTHOCAMERAINTEGRATION -> Configs.CameraMatrix.OPTIONS;
             default -> Collections.emptyList();
         };

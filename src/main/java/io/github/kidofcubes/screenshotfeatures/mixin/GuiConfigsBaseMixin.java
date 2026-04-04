@@ -5,7 +5,7 @@ import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,8 +17,8 @@ public abstract class GuiConfigsBaseMixin extends GuiListBase<GuiConfigsBase.Con
         super(listX,listY);
     }
 
-    @Inject(method = "onKeyTyped", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
-    public void onKeyTyped(KeyInput input,CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method ="onKeyTyped", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
+    public void onKeyTyped(KeyEvent input,CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(super.onKeyTyped(input));
         cir.cancel();
     }

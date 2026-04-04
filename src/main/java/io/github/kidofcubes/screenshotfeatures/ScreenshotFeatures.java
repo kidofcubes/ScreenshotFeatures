@@ -17,10 +17,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.ScreenshotRecorder;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Screenshot;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,20 +28,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 @Environment(EnvType.CLIENT)
 public class ScreenshotFeatures implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("ScreenshotFeatures");
-    public static MinecraftClient client;
+    public static Minecraft client;
     private static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
     public static List<ConfigDoubleHotkeyed> adjustableValues = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
-        client = MinecraftClient.getInstance();
+        client = Minecraft.getInstance();
         registerScreenshotCommands();
         InitializationHandler.getInstance().registerInitializationHandler(() -> {
             ConfigManager.getInstance().registerConfigHandler(ScreenshotFeatures.MOD_ID, new Configs());
@@ -80,19 +80,19 @@ public class ScreenshotFeatures implements ClientModInitializer {
         for(ConfigDoubleHotkeyed value : adjustableValues){
             if(value.getKeybind().isKeybindHeld()){
                 value.setDoubleValue(value.getDoubleValue() + modifier);
-                client.player.sendMessage(Text.translatable("screenshotfeatures.messages.asff",value.getDoubleValue()), true);
+                client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.asff",value.getDoubleValue()), true);
                 used=true;
             }
         }
 
         if(Configs.IngameTools.DOF_MODIFIER.getKeybind().isKeybindHeld()){
             Configs.IngameTools.DOF_OVERRIDE_VALUE.setDoubleValue(Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue() + (modifier*Configs.IngameTools.DOF_STEP.getDoubleValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.dofOverrideValueChange",Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue()), true);
+            client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.dofOverrideValueChange",Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue()), true);
             used=true;
         }
         if(Configs.IngameTools.TIME_MODIFIER.getKeybind().isKeybindHeld()){
             Configs.IngameTools.TIME_OVERRIDE_VALUE.setIntegerValue(Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue() + (int)Math.round(modifier*Configs.IngameTools.TIME_STEP.getIntegerValue()));
-            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.timeOverrideValueChange",Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue()), true);
+            client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.timeOverrideValueChange",Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue()), true);
             used=true;
         }
 
@@ -152,7 +152,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> register(dispatcher));
     }
 
-    private void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         // Believe me, I dislike this code duplication, but every single way of
         // "aliasing" that I attempted through brigadier
         // didn't work out so well.
@@ -174,30 +174,30 @@ public class ScreenshotFeatures implements ClientModInitializer {
         );
     }
 
-    private int takeScreenshot(CommandContext<ServerCommandSource> context) {
-        if (context.getSource().isExecutedByPlayer()) {
-            ScreenshotRecorder.saveScreenshot(
+    private int takeScreenshot(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().isPlayer()) {
+            Screenshot.grab(
                     new File("."),
-                    client.getFramebuffer(),
-                    context.getSource()::sendMessage
+                    client.getMainRenderTarget(),
+                    context.getSource()::sendSystemMessage
             );
         } else {
-            context.getSource().sendMessage(Text.literal("This command can only be executed by players!"));
+            context.getSource().sendSystemMessage(Component.literal("This command can only be executed by players!"));
         }
         return 1;
     }
 
-    private int takeScreenshot(CommandContext<ServerCommandSource> context, String filename) {
-        if (context.getSource().isExecutedByPlayer()) {
-            ScreenshotRecorder.saveScreenshot(
+    private int takeScreenshot(CommandContext<CommandSourceStack> context,String filename) {
+        if (context.getSource().isPlayer()) {
+            Screenshot.grab(
                     new File("."),
                     filename,
-                    client.getFramebuffer(),
+                    client.getMainRenderTarget(),
                     1,
-                    context.getSource()::sendMessage
+                    context.getSource()::sendSystemMessage
             );
         } else {
-            context.getSource().sendMessage(Text.literal("This command can only be executed by players!"));
+            context.getSource().sendSystemMessage(Component.literal("This command can only be executed by players!"));
         }
         return 1;
     }
