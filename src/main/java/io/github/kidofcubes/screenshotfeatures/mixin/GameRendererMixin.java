@@ -7,7 +7,7 @@ import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ import static org.joml.Matrix4dc.PROPERTY_PERSPECTIVE;
 public abstract class GameRendererMixin {
 
     @Inject(method ="renderLevel", at = @At(value="INVOKE", target ="Lnet/minecraft/client/renderer/PerspectiveProjectionMatrixBuffer;getBuffer(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;", shift = At.Shift.BEFORE))
-    private void overrideMatrix(CallbackInfo ci, @Local(name = "matrix4f") LocalRef<Matrix4f> matrix4f) {
+    private void overrideMatrix(CallbackInfo ci, @Local LocalRef<Matrix4f> matrix4f) {
 
         if(Configs.CameraMatrix.PULL_MATRIX.getBooleanValue()){
             CameraMatrixManager.matrix = new Matrix4d(matrix4f.get());
@@ -58,11 +58,12 @@ public abstract class GameRendererMixin {
     @Shadow
     private Camera mainCamera;
 
-    @Inject(method ="renderLevel", at = @At(value = "INVOKE", target ="Lnet/minecraft/client/Camera;update(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.AFTER), cancellable = true)
-    public void thing(DeltaTracker renderTickCounter,CallbackInfo ci){
+    @Inject(method ="extractCamera", at = @At(value = "TAIL"), cancellable = true)
+    public void thing(float f,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(mainCamera.rotation()));
-            ((CameraAccessor)mainCamera).setPosInvoker(mainCamera.position().add(translation.x, translation.y, translation.z));
+//            ((CameraAccessor)mainCamera).setPosInvoker(mainCamera.position().add(translation.x, translation.y, translation.z));
+            cameraRenderState.pos = (cameraRenderState.pos.add(translation.x, translation.y, translation.z));
         }
     }
 }

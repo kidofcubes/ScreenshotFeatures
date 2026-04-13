@@ -19,6 +19,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 import fi.dy.masa.malilib.gui.widgets.WidgetConfigOptionBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetKeybindSettings;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptionsBase;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigDoubleHotkeyed;
 import org.spongepowered.asm.mixin.Final;
@@ -41,7 +42,7 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
     protected IKeybindConfigGui host;
 
     @Shadow
-    protected abstract void addConfigTextFieldEntry(int x,int y,int resetX,int configWidth,int configHeight,IConfigValue config);
+    protected abstract void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config, TextFieldType type);
 
     // TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
 // TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
@@ -54,7 +55,7 @@ public abstract class WidgetConfigOptionMixin extends WidgetConfigOptionBase<Gui
             int keybindX = x+mainWidth+-2;
             int keybindWidth = 64;
             int resetX = x + configWidth + 2;
-            this.addConfigTextFieldEntry(x, y, resetX, mainWidth, configHeight, (IConfigValue)config);
+            this.addConfigTextFieldEntry(x, y, resetX, mainWidth, configHeight, (IConfigValue)config, TextFieldType.DOUBLE);
             ConfigButtonKeybind keybindButton = new ConfigButtonKeybind(keybindX, y, keybindWidth, 20, configDoubleHotkeyed.getKeybind(), this.host);
 
             GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);

@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
@@ -265,10 +266,11 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 new Vector3d(1.0f,1.0f,-1.0f),
                 new Vector3d(1.0f,-1.0f,-1.0f)
         );
+
         @Override
-        public void render(GuiGraphics drawContext,int mouseX,int mouseY,boolean selected){
-            super.render(drawContext,mouseX,mouseY,selected);
-            this.drawContext.renderOutline(x,y,width,height,CommonColors.WHITE);
+        public void render(GuiContext ctx,int mouseX,int mouseY,boolean selected){
+            super.render(ctx,mouseX,mouseY,selected);
+            ctx.renderOutline(x,y,width,height,CommonColors.WHITE);
 
             if(dragging){
                 if(this.prevMouseX==-1){
@@ -284,24 +286,24 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             }
 
 
-            drawLine(drawContext,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(1.0f,-1.0f,-1.0f),0xFFFF0000);
+            drawLine(ctx,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(1.0f,-1.0f,-1.0f),0xFFFF0000);
 
-            drawLine(drawContext,matrixToClip(-1.0f,-1.0f,1.0f),matrixToClip(1.0f,-1.0f,1.0f),0xFFCC0099);
-            drawLine(drawContext,matrixToClip(-1.0f,1.0f,-1.0f),matrixToClip(1.0f,1.0f,-1.0f),0xFFCC9900);
-            drawLine(drawContext,matrixToClip(-1.0f,1.0f,1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFFCC9999);
+            drawLine(ctx,matrixToClip(-1.0f,-1.0f,1.0f),matrixToClip(1.0f,-1.0f,1.0f),0xFFCC0099);
+            drawLine(ctx,matrixToClip(-1.0f,1.0f,-1.0f),matrixToClip(1.0f,1.0f,-1.0f),0xFFCC9900);
+            drawLine(ctx,matrixToClip(-1.0f,1.0f,1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFFCC9999);
 
-            drawLine(drawContext,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(-1.0f,1.0f,-1.0f),0xFF00FF00);
+            drawLine(ctx,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(-1.0f,1.0f,-1.0f),0xFF00FF00);
 
-            drawLine(drawContext,matrixToClip(1.0f,-1.0f,-1.0f),matrixToClip(1.0f,1.0f,-1.0f),0xFF99CC00);
-            drawLine(drawContext,matrixToClip(-1.0f,-1.0f,1.0f),matrixToClip(-1.0f,1.0f,1.0f),0xFF00CC99);
-            drawLine(drawContext,matrixToClip(1.0f,-1.0f,1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFF99CC99);
+            drawLine(ctx,matrixToClip(1.0f,-1.0f,-1.0f),matrixToClip(1.0f,1.0f,-1.0f),0xFF99CC00);
+            drawLine(ctx,matrixToClip(-1.0f,-1.0f,1.0f),matrixToClip(-1.0f,1.0f,1.0f),0xFF00CC99);
+            drawLine(ctx,matrixToClip(1.0f,-1.0f,1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFF99CC99);
 
 
-            drawLine(drawContext,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(-1.0f,-1.0f,1.0f),0xFF0000FF);
+            drawLine(ctx,matrixToClip(-1.0f,-1.0f,-1.0f),matrixToClip(-1.0f,-1.0f,1.0f),0xFF0000FF);
 
-            drawLine(drawContext,matrixToClip(1.0f,-1.0f,-1.0f),matrixToClip(1.0f,-1.0f,1.0f),0xFF9900CC);
-            drawLine(drawContext,matrixToClip(-1.0f,1.0f,-1.0f),matrixToClip(-1.0f,1.0f,1.0f),0xFF0099CC);
-            drawLine(drawContext,matrixToClip(1.0f,1.0f,-1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFF9999CC);
+            drawLine(ctx,matrixToClip(1.0f,-1.0f,-1.0f),matrixToClip(1.0f,-1.0f,1.0f),0xFF9900CC);
+            drawLine(ctx,matrixToClip(-1.0f,1.0f,-1.0f),matrixToClip(-1.0f,1.0f,1.0f),0xFF0099CC);
+            drawLine(ctx,matrixToClip(1.0f,1.0f,-1.0f),matrixToClip(1.0f,1.0f,1.0f),0xFF9999CC);
 
 
             List<Vector3d> allPoints = new ArrayList<>(points);
@@ -340,7 +342,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 default -> "???";
             };
             if(drawTooltip){
-                drawContext.setComponentTooltipForNextFrame(textRenderer,
+                ctx.setComponentTooltipForNextFrame(textRenderer,
                         List.of(
 //                            Text.of(String.format("%s x:%.2f y: %.2f z: %.2f (appr.)",name,viewSpacePoint.x,viewSpacePoint.y,viewSpacePoint.z))
                                 Component.nullToEmpty(String.format("%s (pos appx.)",name)),
@@ -350,26 +352,26 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                         ),
                         sx(point0),sy(point0));
             }
-            drawContext.renderOutline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
+            ctx.renderOutline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
             Vector3d sidePoint;
 
             double scale = cameraPosition.distance(viewSpacePoint)/5.0f;
             //not perfect but good enough
 
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(scale,0.0f,0.0f));
-            drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFFFF0000, 2);
-            drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredString(textRenderer, "+X", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawLine(ctx,matrixToClip(new Vector3d(point)),sidePoint,0xFFFF0000, 2);
+            ctx.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
+            ctx.drawCenteredString(textRenderer, "+X", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,scale,0.0f));
-            drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFF00FF00, 2);
-            drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredString(textRenderer, "+Y", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawLine(ctx,matrixToClip(new Vector3d(point)),sidePoint,0xFF00FF00, 2);
+            ctx.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
+            ctx.drawCenteredString(textRenderer, "+Y", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
             sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,0.0f,scale));
-            drawLine(drawContext,matrixToClip(new Vector3d(point)),sidePoint,0xFF0000FF, 2);
-            drawContext.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            drawContext.drawCenteredString(textRenderer, "+Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            drawLine(ctx,matrixToClip(new Vector3d(point)),sidePoint,0xFF0000FF, 2);
+            ctx.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
+            ctx.drawCenteredString(textRenderer, "+Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
 
 
