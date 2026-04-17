@@ -126,11 +126,11 @@ public class Configs implements IConfigHandler {
         public static final ConfigBooleanHotkeyed PULL_MATRIX = setupConfig(new ConfigBooleanHotkeyed("pullMatrix", false, ""));
         public static final ConfigBooleanHotkeyed OVERRIDE_MATRIX = setupConfig(new ConfigBooleanHotkeyed("overrideMatrix", false, ""));
         public static final ConfigBooleanHotkeyed KEEP_ASPECT_RATIO = setupConfig(new ConfigBooleanHotkeyed("keepAspectRatio", true, ""));
-        public static final ConfigDouble MATRIX_WIDTH = setupConfig(new ConfigDouble("matrixDesiredWidth", 1600, ""));
-        public static final ConfigDouble MATRIX_HEIGHT = setupConfig(new ConfigDouble("matrixDesiredHeight", 900, ""));
-        public static final ConfigDouble MATRIX_PERSPECTIVE_SETTINGS_DISTANCE = setupConfig(new ConfigDouble("matrixSettingDistance", 1024, ""));
-        public static final ConfigDouble MATRIX_NEAR = setupConfig(new ConfigDouble("matrixNear", 0.01,  -Double.MAX_VALUE, Double.MAX_VALUE, ""));
-        public static final ConfigDouble MATRIX_FAR = setupConfig(new ConfigDouble("matrixFar", 8192, ""));
+        public static final ConfigAdjustableDouble MATRIX_WIDTH = setupConfig(new ConfigAdjustableDouble("matrixDesiredWidth", 1600, ""));
+        public static final ConfigAdjustableDouble MATRIX_HEIGHT = setupConfig(new ConfigAdjustableDouble("matrixDesiredHeight", 900, ""));
+        public static final ConfigAdjustableDouble MATRIX_PERSPECTIVE_SETTINGS_DISTANCE = setupConfig(new ConfigAdjustableDouble("matrixSettingDistance", 1024, ""));
+        public static final ConfigAdjustableDouble MATRIX_NEAR = setupConfig(new ConfigAdjustableDouble("matrixNear", 0.01, "",  -Double.MAX_VALUE, Double.MAX_VALUE, 1.0));
+        public static final ConfigAdjustableDouble MATRIX_FAR = setupConfig(new ConfigAdjustableDouble("matrixFar", 8192, ""));
         public static final ConfigBooleanHotkeyed ALWAYS_APPLY_MATRIX = setupConfig(new ConfigBooleanHotkeyed("alwaysApplyMatrix", false, ""));
         public static final ConfigAdjustableDouble ORTHOGONAL_OFFSET = setupConfig(new ConfigAdjustableDouble("orthogonalOffset", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE, 1.0));
 

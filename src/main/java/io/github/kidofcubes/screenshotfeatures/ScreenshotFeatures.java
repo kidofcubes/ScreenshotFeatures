@@ -95,27 +95,6 @@ public class ScreenshotFeatures implements ClientModInitializer {
             client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.timeOverrideValueChange",Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue()), true);
             used=true;
         }
-
-//        if(Configs.CameraMatrix.X_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
-//            Configs.CameraMatrix.X_SCALE.setFloatValue(Configs.CameraMatrix.X_SCALE.getFloatValue()+(float)(modifier*Configs.CameraMatrix.X_SCALE_STEP.getFloatValue()));
-//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleXValueChange",Configs.CameraMatrix.X_SCALE.getFloatValue()),true);
-//            used = true;
-//        }
-//        if(Configs.CameraMatrix.Y_SCALE_MODIFIER.getKeybind().isKeybindHeld()){
-//            Configs.CameraMatrix.Y_SCALE.setFloatValue(Configs.CameraMatrix.Y_SCALE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.Y_SCALE_STEP.getFloatValue()));
-//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoScaleYValueChange",Configs.CameraMatrix.Y_SCALE.getFloatValue()), true);
-//            used=true;
-//        }
-//        if(Configs.CameraMatrix.MIN_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
-//            Configs.CameraMatrix.MIN_DISTANCE.setFloatValue(Configs.CameraMatrix.MIN_DISTANCE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.MIN_DISTANCE_STEP.getFloatValue()));
-//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMinDistanceValueChange",Configs.CameraMatrix.MIN_DISTANCE.getFloatValue()), true);
-//            used=true;
-//        }
-//        if(Configs.CameraMatrix.MAX_DISTANCE_MODIFIER.getKeybind().isKeybindHeld()){
-//            Configs.CameraMatrix.MAX_DISTANCE.setFloatValue(Configs.CameraMatrix.MAX_DISTANCE.getFloatValue() + (float)(modifier*Configs.CameraMatrix.MAX_DISTANCE_STEP.getFloatValue()));
-//            client.player.sendMessage(Text.translatable("screenshotfeatures.messages.orthoMaxDistanceValueChange",Configs.CameraMatrix.MAX_DISTANCE.getFloatValue()), true);
-//            used=true;
-//        }
         return used;
     }
 

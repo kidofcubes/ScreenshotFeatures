@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.config.IConfigHotkey;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.hotkeys.*;
@@ -82,6 +83,7 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
         this.setDoubleValue(value);
     }
 
+    @Override
     public IKeybind getKeybind() {
         return this.keybind;
     }
@@ -89,32 +91,44 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
     public String getDefaultHotkey() {
         return this.keybind.getDefaultStringValue();
     }
-
-    public ConfigAdjustableDouble translatedName(String translatedName) {
-        return (ConfigAdjustableDouble)super.translatedName(translatedName);
-    }
-
-    public ConfigAdjustableDouble apply(String translationPrefix) {
-        return (ConfigAdjustableDouble)super.apply(translationPrefix);
-    }
-
+    @Override
     public boolean isModified() {
         return super.isModified() || this.getKeybind().isModified();
     }
 
+    @Override
+    public boolean isDirty() {
+        return this.getKeybind().isDirty() || super.isDirty();
+    }
+
+    @Override
+    public void markDirty(){
+        super.markDirty();
+        this.getKeybind().markDirty();
+    }
+
+    @Override
+    public void markClean(){
+        super.markClean();
+        this.getKeybind().markClean();
+    }
+
+    @Override
+    public void checkIfClean(){
+        if (this.isDirty())
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
+
+    @Override
     public void resetToDefault() {
         super.resetToDefault();
         this.keybind.resetToDefault();
     }
 
-    private void checkIfKeybindIsClean() {
-        if (this.keybind.isDirty()) {
-            this.keybind.markClean();
-            this.onValueChanged();
-        }
-
-    }
-
+    @Override
     public void setValueFromJsonElement(JsonElement element) {
         try {
             if (element.isJsonObject()) {
@@ -126,7 +140,6 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
                 if (JsonUtils.hasObject(obj, "hotkey")) {
                     JsonObject hotkeyObj = obj.getAsJsonObject("hotkey");
                     this.keybind.setValueFromJsonElement(hotkeyObj);
-                    this.checkIfKeybindIsClean();
                 }
             } else {
                 super.setValueFromJsonElement(element);
@@ -134,9 +147,9 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
         } catch (Exception e) {
             MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
-
     }
 
+    @Override
     public JsonElement getAsJsonElement() {
         JsonObject obj = new JsonObject();
         obj.add("value", super.getAsJsonElement());
