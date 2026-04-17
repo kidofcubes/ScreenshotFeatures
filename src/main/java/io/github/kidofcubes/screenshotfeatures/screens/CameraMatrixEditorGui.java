@@ -158,9 +158,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         @Override
         protected boolean onKeyTypedImpl(KeyEvent input){
             if(input.input() == KeyCodes.KEY_TAB){
-                if(isCtrlDown()){
-                    this.drawTooltip = !this.drawTooltip;
-                }else if(!isShiftDown()){
+                if(!isShiftDown()){
                     this.index++;
                 }else if(isShiftDown()){
                     this.index--;
@@ -173,45 +171,45 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 return true;
             }
 
-            if(input.input() == KeyCodes.KEY_S){
-                CameraMatrixManager.matrix = new Matrix4d().setPerspective((double)(PI*0.5),1,0.1f,8192.0f);
-                double far = CameraMatrixManager.matrix.get(3,2)/(CameraMatrixManager.matrix.get(2,2)+1.0);
-                System.out.println("FAR IS "+far);
-                System.out.println("OTHER FAR IS "+matrixToView(new Vector3d(-1,-1,1)));
-                return true;
-            }
-
-            if(input.input() == KeyCodes.KEY_A){
-                if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
-//                    double far = (double)(matrix.get(3,2)/(matrix.get(2,2)+1.0));
-//                    far = -matrixToView(new Vector3d(-1,-1,1)).z;
-//                    double near = -matrixToView(new Vector3d(-1,-1,-1)).z;
-
-
-
-//                    double origWidth = (matrixToView(new Vector3d(-1,-1,1)).x)*-2f;
-                    double origWidth = (matrixToView(new Vector3d(-1,-1,CameraMatrixManager.matrix.transformProject(new Vector3d(0,0,-(double)Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue())).z)).x)*-2f;
-
-                    double multiplier = (double)((double)origWidth/(Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue())); //suprisingly accurate???
-                    double origNum = CameraMatrixManager.matrix.get(0,0);
-                    CameraMatrixManager.matrix.set(0,0,(multiplier*origNum));
-//                    System.out.println("ORIG NUM: "+origNum+" NEW NUM: "+matrix.get(0,0));
-//                    System.out.println("MATRIX: \n"+matrix);
-
-                    CameraMatrixManager.matrix.determineProperties();
-                }
-//                matrix.set(2,2,matrix.get(2,2)*(isShiftDown()?0.5f:2.0f));
-                return true;
-            }
-
-            if(input.input() == KeyCodes.KEY_D){
-//                matrix.set(3,2,matrix.get(3,2)*(isShiftDown()?0.5f:2.0f));
-                return true;
-            }
-
-            if(input.input() == KeyCodes.KEY_W){
-                return true;
-            }
+//            if(input.input() == KeyCodes.KEY_S){
+//                CameraMatrixManager.matrix = new Matrix4d().setPerspective((double)(PI*0.5),1,0.1f,8192.0f);
+//                double far = CameraMatrixManager.matrix.get(3,2)/(CameraMatrixManager.matrix.get(2,2)+1.0);
+//                System.out.println("FAR IS "+far);
+//                System.out.println("OTHER FAR IS "+matrixToView(new Vector3d(-1,-1,1)));
+//                return true;
+//            }
+//
+//            if(input.input() == KeyCodes.KEY_A){
+//                if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
+////                    double far = (double)(matrix.get(3,2)/(matrix.get(2,2)+1.0));
+////                    far = -matrixToView(new Vector3d(-1,-1,1)).z;
+////                    double near = -matrixToView(new Vector3d(-1,-1,-1)).z;
+//
+//
+//
+////                    double origWidth = (matrixToView(new Vector3d(-1,-1,1)).x)*-2f;
+//                    double origWidth = (matrixToView(new Vector3d(-1,-1,CameraMatrixManager.matrix.transformProject(new Vector3d(0,0,-(double)Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue())).z)).x)*-2f;
+//
+//                    double multiplier = (double)((double)origWidth/(Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue())); //suprisingly accurate???
+//                    double origNum = CameraMatrixManager.matrix.get(0,0);
+//                    CameraMatrixManager.matrix.set(0,0,(multiplier*origNum));
+////                    System.out.println("ORIG NUM: "+origNum+" NEW NUM: "+matrix.get(0,0));
+////                    System.out.println("MATRIX: \n"+matrix);
+//
+//                    CameraMatrixManager.matrix.determineProperties();
+//                }
+////                matrix.set(2,2,matrix.get(2,2)*(isShiftDown()?0.5f:2.0f));
+//                return true;
+//            }
+//
+//            if(input.input() == KeyCodes.KEY_D){
+////                matrix.set(3,2,matrix.get(3,2)*(isShiftDown()?0.5f:2.0f));
+//                return true;
+//            }
+//
+//            if(input.input() == KeyCodes.KEY_W){
+//                return true;
+//            }
 
             return super.onKeyTypedImpl(input);
         }
@@ -344,15 +342,18 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 default -> "???";
             };
             if(drawTooltip){
-                ctx.setComponentTooltipForNextFrame(textRenderer,
-                        List.of(
-//                            Text.of(String.format("%s x:%.2f y: %.2f z: %.2f (appr.)",name,viewSpacePoint.x,viewSpacePoint.y,viewSpacePoint.z))
-                                Component.nullToEmpty(String.format("%s (pos appx.)",name)),
-                                Component.nullToEmpty(String.format("x: %.10f",viewSpacePoint.x)),
-                                Component.nullToEmpty(String.format("y: %.10f",viewSpacePoint.y)),
-                                Component.nullToEmpty(String.format("z: %.10f",viewSpacePoint.z))
-                        ),
-                        sx(point0),sy(point0));
+                int xOffset=10;
+                int yOffset=10;
+                for(var component: List.of(
+//                    Text.of(String.format("%s x:%.2f y: %.2f z: %.2f (appr.)",name,viewSpacePoint.x,viewSpacePoint.y,viewSpacePoint.z))
+                    Component.nullToEmpty(String.format("%s (pos appx.)",name)),
+                    Component.nullToEmpty(String.format("x: %.10f",viewSpacePoint.x)),
+                    Component.nullToEmpty(String.format("y: %.10f",viewSpacePoint.y)),
+                    Component.nullToEmpty(String.format("z: %.10f",viewSpacePoint.z))
+                )){
+                    ctx.drawString(textRenderer, component, sx(point0)+xOffset,sy(point0)+yOffset,0xFFFFFFFF);
+                    yOffset+=10;
+                }
             }
             ctx.renderOutline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
             Vector3d sidePoint;
@@ -370,10 +371,10 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             ctx.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
             ctx.drawCenteredString(textRenderer, "+Y", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
-            sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,0.0f,scale));
+            sidePoint = viewToClip(new Vector3d(viewSpacePoint).add(0.0f,0.0f,-scale));
             drawLine(ctx,matrixToClip(new Vector3d(point)),sidePoint,0xFF0000FF, 2);
             ctx.fill(sx(sidePoint)-8,sy(sidePoint)-1,sx(sidePoint)+8,sy(sidePoint)+9,0xAA000000);
-            ctx.drawCenteredString(textRenderer, "+Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
+            ctx.drawCenteredString(textRenderer, "-Z", sx(sidePoint),sy(sidePoint),0xFFFFFFFF);
 
 
 
