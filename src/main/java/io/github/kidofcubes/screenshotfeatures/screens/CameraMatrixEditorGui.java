@@ -158,9 +158,11 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         @Override
         protected boolean onKeyTypedImpl(KeyEvent input){
             if(input.input() == KeyCodes.KEY_TAB){
-                if(!isShiftDown()){
+                if(isCtrlDown()){
+                    this.drawTooltip = !this.drawTooltip;
+                }else if(!isShiftDown()){
                     this.index++;
-                }else{
+                }else if(isShiftDown()){
                     this.index--;
                 }
                 return true;

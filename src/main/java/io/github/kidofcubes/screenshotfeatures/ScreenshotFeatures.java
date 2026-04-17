@@ -9,7 +9,7 @@ import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.util.GuiUtils;
-import io.github.kidofcubes.screenshotfeatures.config.ConfigDoubleHotkeyed;
+import io.github.kidofcubes.screenshotfeatures.config.ConfigAdjustableDouble;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import io.github.kidofcubes.screenshotfeatures.screens.ConfigsGui;
 import io.github.kidofcubes.screenshotfeatures.integrations.FabrishotIntegration;
@@ -37,7 +37,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
     public static Minecraft client;
     private static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
-    public static List<ConfigDoubleHotkeyed> adjustableValues = new ArrayList<>();
+    public static List<ConfigAdjustableDouble> adjustableValues = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
@@ -77,10 +77,10 @@ public class ScreenshotFeatures implements ClientModInitializer {
         }
         boolean used = false;
 
-        for(ConfigDoubleHotkeyed value : adjustableValues){
+        for(ConfigAdjustableDouble value : adjustableValues){
             if(value.getKeybind().isKeybindHeld()){
                 value.setDoubleValue(value.getDoubleValue() + modifier);
-                client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.asff",value.getDoubleValue()), true);
+                client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.valueChange",value.getTranslatedName(),value.getDoubleValue()), true);
                 used=true;
             }
         }

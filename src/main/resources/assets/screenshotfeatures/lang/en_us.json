@@ -160,6 +160,7 @@
   "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight": "applyAspectRatioHeight",
 
 
+  "screenshotfeatures.messages.valueChange": "Set %s to: %.5f",
   "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %.5f",
   "screenshotfeatures.messages.timeOverrideValueChange": "Time override: %d",
 

@@ -16,7 +16,9 @@
         "WeatherChangerLevelMixin",
         "WeatherChangerWeatherEffectRendererMixin",
         "WidgetConfigOptionMixin",
-        "VoxyRenderSystemMixin"
+        "VoxyRenderSystemMixin",
+        "CommonUniformsMixin",
+        "StandardMacrosMixin"
     ],
     "injectors": {
         "defaultRequire": 1

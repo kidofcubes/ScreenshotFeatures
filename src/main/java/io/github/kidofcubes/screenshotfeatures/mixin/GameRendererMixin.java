@@ -58,7 +58,7 @@ public abstract class GameRendererMixin {
     @Shadow
     private Camera mainCamera;
 
-    @Inject(method ="extractCamera", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method ="extractCamera", at = @At(value = "TAIL"))
     public void thing(float f,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(mainCamera.rotation()));

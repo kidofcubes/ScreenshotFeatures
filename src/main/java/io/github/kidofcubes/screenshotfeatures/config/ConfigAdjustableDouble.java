@@ -14,8 +14,8 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 
-public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
-    public static final Codec<ConfigDoubleHotkeyed> CODEC = RecordCodecBuilder.create((instance) ->
+public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
+    public static final Codec<ConfigAdjustableDouble> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
                     PrimitiveCodec.DOUBLE.fieldOf("defaultValue").forGetter(ConfigDouble::getDefaultDoubleValue),
@@ -28,48 +28,48 @@ public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
                     PrimitiveCodec.STRING.fieldOf("comment").forGetter((get) -> get.comment),
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter((get) -> get.prettyName),
                     PrimitiveCodec.STRING.fieldOf("translatedName").forGetter((get) -> get.translatedName)
-            ).apply(instance, ConfigDoubleHotkeyed::new)
+            ).apply(instance, ConfigAdjustableDouble::new)
     );
     protected final IKeybind keybind;
     protected double step;
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey) {
         this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE, 1.0, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, 1.0, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,String comment) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, KeybindSettings.DEFAULT, comment, StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment,String prettyName) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,String comment,String prettyName) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, KeybindSettings.DEFAULT, comment, prettyName, name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, String comment,String prettyName,String translatedName) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,String comment,String prettyName,String translatedName) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier,  KeybindSettings.DEFAULT, comment, prettyName, translatedName);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey,KeybindSettings settings) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,KeybindSettings settings) {
         this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE, 1.0, settings, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,KeybindSettings settings,String comment) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, settings, comment, StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment,String prettyName) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,KeybindSettings settings,String comment,String prettyName) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, multiplier, settings, comment, prettyName, name);
     }
 
-    public ConfigDoubleHotkeyed(String name,double defaultValue,String defaultHotkey, double minValue, double maxValue, double multiplier, KeybindSettings settings,String comment,String prettyName,String translatedName) {
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue,double multiplier,KeybindSettings settings,String comment,String prettyName,String translatedName) {
         super(name, defaultValue, minValue, maxValue, comment, prettyName, translatedName);
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         ScreenshotFeatures.adjustableValues.add(this);
@@ -77,7 +77,7 @@ public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
 //        this.keybind.setCallback((keyAction,iKeybind) -> {});
     }
 
-    private ConfigDoubleHotkeyed(String name,double defaultValue,double value,String defaultHotkey, double minValue, double maxValue, KeybindSettings settings,String comment,String prettyName,String translatedName) {
+    private ConfigAdjustableDouble(String name,double defaultValue,double value,String defaultHotkey,double minValue,double maxValue,KeybindSettings settings,String comment,String prettyName,String translatedName) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, 1.0, settings, comment, prettyName, translatedName);
         this.setDoubleValue(value);
     }
@@ -90,12 +90,12 @@ public class ConfigDoubleHotkeyed extends ConfigDouble implements IHotkey {
         return this.keybind.getDefaultStringValue();
     }
 
-    public ConfigDoubleHotkeyed translatedName(String translatedName) {
-        return (ConfigDoubleHotkeyed)super.translatedName(translatedName);
+    public ConfigAdjustableDouble translatedName(String translatedName) {
+        return (ConfigAdjustableDouble)super.translatedName(translatedName);
     }
 
-    public ConfigDoubleHotkeyed apply(String translationPrefix) {
-        return (ConfigDoubleHotkeyed)super.apply(translationPrefix);
+    public ConfigAdjustableDouble apply(String translationPrefix) {
+        return (ConfigAdjustableDouble)super.apply(translationPrefix);
     }
 
     public boolean isModified() {
