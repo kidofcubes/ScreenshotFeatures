@@ -36,6 +36,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
+    modImplementation(files("libs/voxy.jar")) //use modrinth later when its up to latest
 
     modApi(libs.malilib)
     modApi(libs.modmenu)

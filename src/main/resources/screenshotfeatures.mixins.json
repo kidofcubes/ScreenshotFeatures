@@ -13,9 +13,10 @@
         "IrisShaderMenuMixin",
         "ScreenshotMixin",
         "TimeChangerMixin",
-        "WeatherChangerWeatherEffectRendererMixin",
         "WeatherChangerLevelMixin",
-        "WidgetConfigOptionMixin"
+        "WeatherChangerWeatherEffectRendererMixin",
+        "WidgetConfigOptionMixin",
+        "VoxyRenderSystemMixin"
     ],
     "injectors": {
         "defaultRequire": 1
