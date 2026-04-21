@@ -18,7 +18,8 @@
         "WidgetConfigOptionMixin",
         "VoxyRenderSystemMixin",
         "CommonUniformsMixin",
-        "StandardMacrosMixin"
+        "StandardMacrosMixin",
+        "CameraMixin"
     ],
     "injectors": {
         "defaultRequire": 1

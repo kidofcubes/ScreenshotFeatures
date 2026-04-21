@@ -54,6 +54,8 @@ public class Configs implements IConfigHandler {
         public static final ConfigInteger TIME_OVERRIDE_VALUE = setupConfig(new ConfigInteger("timeOverrideValue", 0));
         public static final ConfigInteger TIME_STEP = setupConfig(new ConfigInteger("timeStep", 50)); //todo ConfigLong
         public static final ConfigHotkey TIME_MODIFIER = setupConfig(new ConfigHotkey("timeModifier", "RIGHT", KeybindSettings.MODIFIER_INGAME_EMPTY));
+        public static final ConfigBooleanHotkeyed FOV_OVERRIDE = setupConfig(new ConfigBooleanHotkeyed("fovOverride", false, ""));
+        public static final ConfigAdjustableDouble FOV = setupConfig(new ConfigAdjustableDouble("fov", 70, "", -1.0));
         public static final ConfigBooleanHotkeyed WEATHER_OVERRIDE = setupConfig(new ConfigBooleanHotkeyed("weatherOverride", false, ""));
         public static final ConfigOptionList WEATHER_OVERRIDE_VALUE = setupConfig(new ConfigOptionList("weatherOverrideValue", WeatherTypes.CLEAR));
         public static final ConfigHotkey CYCLE_WEATHER_OVERRIDE = setupConfig(new ConfigHotkey("weatherOverrideCycle", ""));

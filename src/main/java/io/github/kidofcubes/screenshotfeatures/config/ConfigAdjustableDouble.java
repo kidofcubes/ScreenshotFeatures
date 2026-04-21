@@ -38,6 +38,10 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
         this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE, 1.0, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
 
+    public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey, double multiplier) {
+        this(name, defaultValue, defaultHotkey, Double.MIN_VALUE, Double.MAX_VALUE, multiplier, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigAdjustableDouble(String name,double defaultValue,String defaultHotkey,double minValue,double maxValue) {
         this(name, defaultValue, defaultHotkey, minValue, maxValue, 1.0, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
     }
@@ -125,7 +129,7 @@ public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
     @Override
     public void resetToDefault() {
         super.resetToDefault();
-        this.keybind.resetToDefault();
+//        this.keybind.resetToDefault();
     }
 
     @Override

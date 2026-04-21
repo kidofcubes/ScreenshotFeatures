@@ -95,7 +95,7 @@ public class CameraMatrixManager {
         }
     }
     public static void initPerspective(){
-        CameraMatrixManager.matrix.setPerspective(Math.PI/2, Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue()/Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue(), 0.1, 10);
+//        CameraMatrixManager.matrix.setPerspective(Math.PI/2, Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue()/Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue(), 0.1, 10);
         double multiplier = (Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue()/Configs.CameraMatrix.MATRIX_NEAR.getDoubleValue());
         CameraMatrixManager.matrix.setPerspectiveRect(
                 Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue()/(multiplier),

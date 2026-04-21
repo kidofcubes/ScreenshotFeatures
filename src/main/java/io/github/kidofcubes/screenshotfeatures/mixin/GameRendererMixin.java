@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -66,4 +67,22 @@ public abstract class GameRendererMixin {
             cameraRenderState.pos = (cameraRenderState.pos.add(translation.x, translation.y, translation.z));
         }
     }
+
+    @Inject(method="getFov", at=@At("HEAD"), cancellable=true)
+    public void getFov(CallbackInfoReturnable<Float> cir) {
+        if(Configs.IngameTools.FOV_OVERRIDE.getBooleanValue()){
+            cir.setReturnValue((float)Configs.IngameTools.FOV.getDoubleValue());
+        }
+    }
+
+    @ModifyVariable(method="getProjectionMatrixForCulling", at=@At("STORE"), index=2, argsOnly=false)
+    public float getProjectionMatrixForCulling(float g){
+        if(Configs.IngameTools.FOV_OVERRIDE.getBooleanValue()){
+            return (float)Configs.IngameTools.FOV.getDoubleValue();
+        }else{
+            return g;
+        }
+    }
+
+
 }
