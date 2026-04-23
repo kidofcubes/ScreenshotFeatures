@@ -1,7 +1,9 @@
 package io.github.kidofcubes.screenshotfeatures.mixin;
 
+import fi.dy.masa.malilib.config.IConfigBase;
 import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
+import io.github.kidofcubes.screenshotfeatures.config.ConfigAdjustableDouble;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.irisshaders.iris.gl.uniform.UniformHolder;
 import net.irisshaders.iris.gl.uniform.UniformUpdateFrequency;
@@ -31,6 +33,11 @@ public class CommonUniformsMixin {
                 return false;
             }
         });
+        for(IConfigBase config : Configs.ShaderOptions.OPTIONS){
+            if(config instanceof ConfigAdjustableDouble configAdjustableDouble){
+                uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME,configAdjustableDouble.getName(),configAdjustableDouble::getDoubleValue);
+            }
+        }
 
     }
 }

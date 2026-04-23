@@ -142,6 +142,48 @@ public class Configs implements IConfigHandler {
         }
     }
 
+    public static class ShaderOptions {
+        private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
+        public static final ImmutableList<IConfigBase> OPTIONS;
+
+        private static final ImmutableList.Builder<IHotkey> HOTKEYS_BUILDER = ImmutableList.builder();
+        public static final ImmutableList<IHotkey> HOTKEYS;
+
+        private static <T extends ConfigBase<?>> T setupConfig(T thing){
+            autoCommentAndNameWithGroup(thing, "customuniforms");
+            OPTIONS_BUILDER.add(thing);
+            if(thing instanceof IHotkey iHotkey){
+                HOTKEYS_BUILDER.add(iHotkey);
+            }
+            return thing;
+        }
+
+        //todo save these in screenshot tags as well maybe
+
+        public static final ConfigAdjustableDouble DOF_INTENSITY = setupConfig(new ConfigAdjustableDouble("DOF_INTENSITY", 1.0, ""));
+
+        public static final ConfigAdjustableDouble WEATHER_TEMPERATURE_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_TEMPERATURE_BIAS", 0.0, "" , -Double.MAX_VALUE, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble WEATHER_HUMIDITY_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_HUMIDITY_BIAS", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble WEATHER_WIND_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_WIND_BIAS", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE));
+
+        public static final ConfigAdjustableDouble WEATHER_TEMPERATURE_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_TEMPERATURE_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble WEATHER_HUMIDITY_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_HUMIDITY_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble WEATHER_WIND_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_WIND_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
+
+        public static final ConfigAdjustableDouble SWAY_STRENGTH = setupConfig(new ConfigAdjustableDouble("SWAY_STRENGTH", 1.0, ""));
+        public static final ConfigAdjustableDouble SWAY_SPACE_VARIATION_STRENGTH = setupConfig(new ConfigAdjustableDouble("SWAY_SPACE_VARIATION_STRENGTH", 1.0, "", 0.0, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble SWAY_SPACE_VARIATION_DIRECTION = setupConfig(new ConfigAdjustableDouble("SWAY_SPACE_VARIATION_DIRECTION", 1.0, "", 0.0, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble SWAY_TIME_VARIATION = setupConfig(new ConfigAdjustableDouble("SWAY_TIME_VARIATION", 1.0, "", 0.0, Double.MAX_VALUE));
+        public static final ConfigAdjustableDouble SWAY_ANGLE = setupConfig(new ConfigAdjustableDouble("SWAY_ANGLE", 1.0, "", 0.0, Double.MAX_VALUE));
+
+        //todo, add sunPathRotation override option?
+
+        static {
+            OPTIONS = OPTIONS_BUILDER.build();
+            HOTKEYS = HOTKEYS_BUILDER.build();
+        }
+    }
+
     public static void loadFromFile() {
         File configFile = new File(FileUtils.getConfigDirectoryAsPath().toFile(), CONFIG_FILE_NAME);
 
@@ -156,6 +198,7 @@ public class Configs implements IConfigHandler {
                 ConfigUtils.readConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
                 ConfigUtils.readConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
+                ConfigUtils.readConfigBase(root, "ShaderOptions", ShaderOptions.OPTIONS);
             }
         }
     }
@@ -170,6 +213,7 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
             ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
+            ConfigUtils.writeConfigBase(root, "ShaderOptions", ShaderOptions.OPTIONS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

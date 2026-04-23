@@ -79,6 +79,7 @@ public class ConfigsGui extends GuiConfigsBase {
         configs = switch(tab){
             case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
             case METADATA -> Configs.Metadata.OPTIONS;
+            case SHADER_OPTIONS -> Configs.ShaderOptions.OPTIONS;
 //            case ORTHOCAMERAINTEGRATION -> Configs.CameraMatrix.OPTIONS;
             default -> Collections.emptyList();
         };
@@ -93,7 +94,8 @@ public class ConfigsGui extends GuiConfigsBase {
         SCREENSHOTSAVING ("screenshotfeatures.gui.title.screenshotsaving"),
         SCREENSHOT_VIEWER("screenshotfeatures.gui.title.screenshotviewer"),
 //        ORTHOCAMERAINTEGRATION ("screenshotfeatures.gui.title.orthocameraintegration"),
-        CAMERA_MATRIX_EDITOR("screenshotfeatures.gui.title.cameramatrixeditor");
+        CAMERA_MATRIX_EDITOR("screenshotfeatures.gui.title.cameramatrixeditor"),
+        SHADER_OPTIONS ("screenshotfeatures.gui.title.shaderoptions");
 
         private final String translationKey;
 

@@ -16,21 +16,6 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 
 public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {
-    public static final Codec<ConfigAdjustableDouble> CODEC = RecordCodecBuilder.create((instance) ->
-            instance.group(
-                    PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
-                    PrimitiveCodec.DOUBLE.fieldOf("defaultValue").forGetter(ConfigDouble::getDefaultDoubleValue),
-                    PrimitiveCodec.DOUBLE.fieldOf("value").forGetter(ConfigDouble::getDoubleValue),
-                    PrimitiveCodec.STRING.fieldOf("defaultHotkey").forGetter((get) -> get.keybind.getDefaultStringValue()),
-                    PrimitiveCodec.DOUBLE.fieldOf("minValue").forGetter(ConfigDouble::getDoubleValue),
-                    PrimitiveCodec.DOUBLE.fieldOf("maxValue").forGetter(ConfigDouble::getDoubleValue),
-//                    PrimitiveCodec.DOUBLE.fieldOf("multiplier").forGetter(ConfigDouble::getDoubleValue),
-                    KeybindSettings.CODEC.fieldOf("keybindSettings").forGetter((get) -> get.keybind.getSettings()),
-                    PrimitiveCodec.STRING.fieldOf("comment").forGetter((get) -> get.comment),
-                    PrimitiveCodec.STRING.fieldOf("prettyName").forGetter((get) -> get.prettyName),
-                    PrimitiveCodec.STRING.fieldOf("translatedName").forGetter((get) -> get.translatedName)
-            ).apply(instance, ConfigAdjustableDouble::new)
-    );
     protected final IKeybind keybind;
     protected double step;
 
