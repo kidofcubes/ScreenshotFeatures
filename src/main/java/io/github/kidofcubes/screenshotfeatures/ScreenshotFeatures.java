@@ -157,7 +157,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         if (context.getSource().isPlayer()) {
             Screenshot.grab(
                     new File("."),
-                    client.getMainRenderTarget(),
+                    client.gameRenderer.mainRenderTarget(),
                     context.getSource()::sendSystemMessage
             );
         } else {
@@ -171,7 +171,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
             Screenshot.grab(
                     new File("."),
                     filename,
-                    client.getMainRenderTarget(),
+                    client.gameRenderer.mainRenderTarget(),
                     1,
                     context.getSource()::sendSystemMessage
             );

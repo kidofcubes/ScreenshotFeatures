@@ -3,16 +3,11 @@ package io.github.kidofcubes.screenshotfeatures.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.PrimitiveCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.IConfigHotkey;
-import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigDouble;
 import fi.dy.masa.malilib.hotkeys.*;
-import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 
 public class ConfigAdjustableDouble extends ConfigDouble implements IHotkey {

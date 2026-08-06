@@ -11,7 +11,6 @@ import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
@@ -122,13 +121,13 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
     }
 
     @Override
-    public void render(GuiGraphics drawContext,int mouseX,int mouseY,float partialTicks){
+    public void drawContents(GuiContext ctx,int mouseX,int mouseY,float partialTicks){
         if(dirtyConfig){
             this.reCreateListWidget();
             this.getListWidget().resize(width, height);
             dirtyConfig = false;
         }
-        super.render(drawContext,mouseX,mouseY,partialTicks);
+        super.drawContents(ctx,mouseX,mouseY,partialTicks);
     }
 
     //todo editor for projection matrices and orth matrices
@@ -270,7 +269,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         @Override
         public void render(GuiContext ctx,int mouseX,int mouseY,boolean selected){
             super.render(ctx,mouseX,mouseY,selected);
-            ctx.renderOutline(x,y,width,height,CommonColors.WHITE);
+            ctx.outline(x,y,width,height,CommonColors.WHITE);
 
             if(dragging){
                 if(this.prevMouseX==-1){
@@ -355,7 +354,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                     yOffset+=10;
                 }
             }
-            ctx.renderOutline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
+            ctx.outline(sx(point0)-5,sy(point0)-5,10,10,CommonColors.WHITE);
             Vector3d sidePoint;
 
             double scale = cameraPosition.distance(viewSpacePoint)/5.0f;
@@ -415,10 +414,10 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             return (int)(Math.round(vector3f.y*(height/2.0f)) + ((height/2) + y));
         }
 
-        private void drawLine(GuiGraphics drawContext,Vector3d point0,Vector3d point1,int color){
+        private void drawLine(GuiContext drawContext,Vector3d point0,Vector3d point1,int color){
             drawLine(drawContext, point0, point1, color, 0.5f);
         }
-        private void drawLine(GuiGraphics drawContext,Vector3d point0,Vector3d point1,int color,double radius){
+        private void drawLine(GuiContext drawContext,Vector3d point0,Vector3d point1,int color,double radius){
             drawLine(drawContext,sx(point0),sy(point0),sx(point1),sy(point1),color,radius);
         }
         private double clampMult(Vector2d v, Vector2d d){
@@ -443,7 +442,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
             assert num>=0.0f;
             return num;
         }
-        private void drawLine(GuiGraphics drawContext,int x0,int y0,int x1,int y1,int color,double radius){
+        private void drawLine(GuiContext drawContext,int x0,int y0,int x1,int y1,int color,double radius){
 //            x0 = Math.clamp(x0,0,width);
 //            x1 = Math.clamp(x1,0,width);
 //            y0 = Math.clamp(y0,0,height);

@@ -3,9 +3,12 @@ plugins {
     alias(libs.plugins.loom)
 }
 
-val mod_version: String by project
-val maven_group: String by project
-val archives_base_name: String by project
+val mod_version = project.property("mod_version")!!
+val maven_group = project.property("maven_group")!!
+val archives_base_name = project.property("archives_base_name")!!
+//val mod_version: String by project
+//val maven_group: String by project
+//val archives_base_name: String by project
 
 version = mod_version
 group = maven_group
@@ -33,17 +36,17 @@ repositories {
 dependencies {
     minecraft(libs.minecraft)
 //    mappings(variantOf(libs.yarn) { classifier("v2") })
-    mappings(loom.officialMojangMappings())
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
-    modImplementation(files("libs/voxy.jar")) //use modrinth later when its up to latest
+//    mappings(loom.officialMojangMappings())
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
 
-    modApi(libs.malilib)
-    modApi(libs.modmenu)
-    modImplementation(libs.fabrishot)
+    api(libs.malilib)
+    api(libs.modmenu)
+    implementation(libs.fabrishot)
 
-    modImplementation(libs.iris)
-    modImplementation(libs.sodium) //iris
+    implementation(libs.iris)
+    implementation(libs.sodium) //iris
+    implementation(libs.voxy)
 
     implementation(libs.antlr) //iris
     implementation(libs.glsl.transformer) //iris
@@ -70,7 +73,7 @@ tasks.processResources {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
     withSourcesJar()
 }

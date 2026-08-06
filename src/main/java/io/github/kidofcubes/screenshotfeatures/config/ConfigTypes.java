@@ -86,15 +86,13 @@ public class ConfigTypes {
         public static final PrecipitationType RAIN = new PrecipitationType("RAIN",0);
         public static final PrecipitationType SNOW = new PrecipitationType("SNOW",1);
         public static final PrecipitationType CLEAR = new PrecipitationType("CLEAR",2);
-        public static final PrecipitationType NO_OP = new PrecipitationType("NO_OP",3);
 
         @Override
         public PrecipitationType[] values() {
             return new PrecipitationType[]{
                     RAIN,
                     SNOW,
-                    CLEAR,
-                    NO_OP
+                    CLEAR
             };
         }
     }

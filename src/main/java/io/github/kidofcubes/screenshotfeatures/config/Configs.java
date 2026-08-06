@@ -10,7 +10,7 @@ import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigTypes.*;
 
@@ -60,7 +60,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigOptionList WEATHER_OVERRIDE_VALUE = setupConfig(new ConfigOptionList("weatherOverrideValue", WeatherTypes.CLEAR));
         public static final ConfigHotkey CYCLE_WEATHER_OVERRIDE = setupConfig(new ConfigHotkey("weatherOverrideCycle", ""));
         public static final ConfigBooleanHotkeyed FORCE_PRECIPITATION = setupConfig(new ConfigBooleanHotkeyed("precipitationForce", false, ""));
-        public static final ConfigOptionList PRECIPITATION_FORCE_TYPE = setupConfig(new ConfigOptionList("precipitationForceType", PrecipitationType.NO_OP, ""));
+        public static final ConfigOptionList PRECIPITATION_FORCE_TYPE = setupConfig(new ConfigOptionList("precipitationForceType", PrecipitationType.CLEAR, ""));
         public static final ConfigOptionList FORCE_RAIN = setupConfig(new ConfigOptionList("rainForce", OptionalBoolean.NO_OP));
         public static final ConfigBoolean ALLOW_MWHEEL_CHANGE_VALUE = setupConfig(new ConfigBoolean("allowMWheelChangeValue", true));
         public static final ConfigDouble MWHEEL_MULTIPLIER = setupConfig(new ConfigDouble("mWheelMultiplier", 1.0, -Double.MAX_VALUE, Double.MAX_VALUE));
@@ -185,11 +185,11 @@ public class Configs implements IConfigHandler {
     }
 
     public static void loadFromFile() {
-        File configFile = new File(FileUtils.getConfigDirectoryAsPath().toFile(), CONFIG_FILE_NAME);
+        File configFile = new File(FileUtils.getConfigDirectory().toFile(), CONFIG_FILE_NAME);
 
         if (configFile.exists() && configFile.isFile() && configFile.canRead())
         {
-            JsonElement element = JsonUtils.parseJsonFile(configFile);
+            JsonElement element = JsonUtils.parseJsonFile(configFile.toPath());
 
             if (element != null && element.isJsonObject())
             {
@@ -204,7 +204,7 @@ public class Configs implements IConfigHandler {
     }
 
     public static void saveToFile() {
-        File dir = FileUtils.getConfigDirectoryAsPath().toFile();
+        File dir = FileUtils.getConfigDirectory().toFile();
 
         if ((dir.exists() && dir.isDirectory()) || dir.mkdirs())
         {
@@ -215,7 +215,7 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
             ConfigUtils.writeConfigBase(root, "ShaderOptions", ShaderOptions.OPTIONS);
 
-            JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
+            JsonUtils.writeJsonToFile(root,new File(dir, CONFIG_FILE_NAME).toPath());
         }
     }
 

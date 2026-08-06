@@ -6,8 +6,9 @@ import com.mojang.blaze3d.ProjectionType;
 import io.github.kidofcubes.screenshotfeatures.CameraMatrixManager;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.joml.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +26,7 @@ import static org.joml.Matrix4dc.PROPERTY_PERSPECTIVE;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    @Inject(method ="renderLevel", at = @At(value="INVOKE", target ="Lnet/minecraft/client/renderer/PerspectiveProjectionMatrixBuffer;getBuffer(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;", shift = At.Shift.BEFORE))
+    @Inject(method ="renderLevel", at = @At(value="INVOKE", target ="Lnet/minecraft/client/renderer/ProjectionMatrixBuffer;getBuffer(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;", shift = At.Shift.BEFORE))
     private void overrideMatrix(CallbackInfo ci, @Local LocalRef<Matrix4f> matrix4f) {
 
         if(Configs.CameraMatrix.PULL_MATRIX.getBooleanValue()){
@@ -33,14 +34,6 @@ public abstract class GameRendererMixin {
         }
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             matrix4f.set(new Matrix4f(CameraMatrixManager.matrix));
-        }
-    }
-
-
-    @Inject(method ="getProjectionMatrix", at = @At(value = "HEAD"), cancellable = true)
-    public void getBasicProjectionMatrix(float fovDegrees,CallbackInfoReturnable<Matrix4f> cir) {
-        if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
-            cir.setReturnValue(new Matrix4f(CameraMatrixManager.matrix));
         }
     }
 
@@ -60,7 +53,7 @@ public abstract class GameRendererMixin {
     private Camera mainCamera;
 
     @Inject(method ="extractCamera", at = @At(value = "TAIL"))
-    public void thing(float f,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
+    public void thing(DeltaTracker deltaTracker,float worldPartialTicks,float cameraEntityPartialTicks,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(mainCamera.rotation()));
 //            ((CameraAccessor)mainCamera).setPosInvoker(mainCamera.position().add(translation.x, translation.y, translation.z));
@@ -68,7 +61,7 @@ public abstract class GameRendererMixin {
         }
     }
 
-    @Inject(method="getFov", at=@At("HEAD"), cancellable=true)
+    @Inject(method="extractOptions", at=@At("HEAD"), cancellable=true)
     public void getFov(CallbackInfoReturnable<Float> cir) {
         if(Configs.IngameTools.FOV_OVERRIDE.getBooleanValue()){
             cir.setReturnValue((float)Configs.IngameTools.FOV.getDoubleValue());

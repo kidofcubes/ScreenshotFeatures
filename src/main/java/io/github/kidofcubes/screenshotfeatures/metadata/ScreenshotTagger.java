@@ -64,14 +64,14 @@ public class ScreenshotTagger {
         }
         if(Configs.Metadata.CAMERA_DATA.getBooleanValue()) {
             merge(tags, "cameraData", Map.of(
-                    "x", client.gameRenderer.getMainCamera().position().x,
-                    "y", client.gameRenderer.getMainCamera().position().y,
-                    "z", client.gameRenderer.getMainCamera().position().z,
-                    "yaw", client.gameRenderer.getMainCamera().yaw(),
-                    "pitch", client.gameRenderer.getMainCamera().xRot(),
+                    "x", client.gameRenderer.mainCamera().position().x,
+                    "y", client.gameRenderer.mainCamera().position().y,
+                    "z", client.gameRenderer.mainCamera().position().z,
+                    "yaw", client.gameRenderer.mainCamera().yaw(),
+                    "pitch", client.gameRenderer.mainCamera().xRot(),
                     "gamma", client.options.gamma().get(),
                     "configuredFov", client.options.fov().get(),
-                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.getMainCamera(), client.getDeltaTracker().getGameTimeDeltaPartialTick(false), true)
+                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.mainCamera(), client.getDeltaTracker().getGameTimeDeltaPartialTick(false), true)
             ));
         }
         ServerLevel serverWorld = null;
