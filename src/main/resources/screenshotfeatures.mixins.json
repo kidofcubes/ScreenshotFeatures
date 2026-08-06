@@ -4,8 +4,6 @@
     "package": "io.github.kidofcubes.screenshotfeatures.mixin",
     "compatibilityLevel": "JAVA_21",
     "client": [
-        "CameraAccessor",
-        "GameRendererAccessorMixin",
         "GameRendererMixin",
         "GuiConfigsBaseMixin",
         "IrisDepthMixin",

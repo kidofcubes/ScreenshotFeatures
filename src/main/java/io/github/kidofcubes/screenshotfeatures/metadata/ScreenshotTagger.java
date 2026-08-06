@@ -4,7 +4,6 @@ import com.google.gson.*;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import io.github.kidofcubes.screenshotfeatures.integrations.ShaderIntegration;
-import io.github.kidofcubes.screenshotfeatures.mixin.GameRendererAccessorMixin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
@@ -71,7 +70,7 @@ public class ScreenshotTagger {
                     "pitch", client.gameRenderer.mainCamera().xRot(),
                     "gamma", client.options.gamma().get(),
                     "configuredFov", client.options.fov().get(),
-                    "fov", ((GameRendererAccessorMixin)client.gameRenderer).getFovThing(client.gameRenderer.mainCamera(), client.getDeltaTracker().getGameTimeDeltaPartialTick(false), true)
+                    "fov", client.gameRenderer.mainCamera().getFov()
             ));
         }
         ServerLevel serverWorld = null;

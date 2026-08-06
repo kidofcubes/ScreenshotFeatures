@@ -8,6 +8,7 @@ import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.OptionsRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.joml.*;
 import org.spongepowered.asm.mixin.Final;
@@ -53,29 +54,20 @@ public abstract class GameRendererMixin {
     private Camera mainCamera;
 
     @Inject(method ="extractCamera", at = @At(value = "TAIL"))
-    public void thing(DeltaTracker deltaTracker,float worldPartialTicks,float cameraEntityPartialTicks,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
+    public void translate(DeltaTracker deltaTracker,float worldPartialTicks,float cameraEntityPartialTicks,CallbackInfo ci,@Local CameraRenderState cameraRenderState){
         if(Configs.CameraMatrix.OVERRIDE_MATRIX.getBooleanValue()){
             Vector3d translation = new Vector3d(0,0,Configs.CameraMatrix.ORTHOGONAL_OFFSET.getDoubleValue()).rotate(new Quaterniond(mainCamera.rotation()));
-//            ((CameraAccessor)mainCamera).setPosInvoker(mainCamera.position().add(translation.x, translation.y, translation.z));
             cameraRenderState.pos = (cameraRenderState.pos.add(translation.x, translation.y, translation.z));
         }
     }
 
-    @Inject(method="extractOptions", at=@At("HEAD"), cancellable=true)
-    public void getFov(CallbackInfoReturnable<Float> cir) {
+    @Inject(method="extractOptions", at=@At("TAIL"))
+    public void getFov(CallbackInfo ci,@Local(name = "optionsState") OptionsRenderState state) {
         if(Configs.IngameTools.FOV_OVERRIDE.getBooleanValue()){
-            cir.setReturnValue((float)Configs.IngameTools.FOV.getDoubleValue());
+            state.fov = (int)Configs.IngameTools.FOV.getDoubleValue();
         }
     }
 
-    @ModifyVariable(method="getProjectionMatrixForCulling", at=@At("STORE"), index=2, argsOnly=false)
-    public float getProjectionMatrixForCulling(float g){
-        if(Configs.IngameTools.FOV_OVERRIDE.getBooleanValue()){
-            return (float)Configs.IngameTools.FOV.getDoubleValue();
-        }else{
-            return g;
-        }
-    }
 
 
 }

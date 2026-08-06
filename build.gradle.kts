@@ -42,7 +42,7 @@ dependencies {
 
     api(libs.malilib)
     api(libs.modmenu)
-    implementation(libs.fabrishot)
+//    implementation(libs.fabrishot)
 
     implementation(libs.iris)
     implementation(libs.sodium) //iris

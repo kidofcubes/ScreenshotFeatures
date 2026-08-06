@@ -77,22 +77,25 @@ public class ScreenshotFeatures implements ClientModInitializer {
         }
         boolean used = false;
 
+        assert client.player!=null;
         for(ConfigAdjustableDouble value : adjustableValues){
             if(value.getKeybind().isKeybindHeld()){
                 value.setDoubleValue(value.getDoubleValue() + modifier);
-                client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.valueChange",value.getTranslatedName(),value.getDoubleValue()), true);
+                String formattedFloat = String.format("%.5f",value.getDoubleValue());
+                client.player.sendOverlayMessage(Component.translatable("screenshotfeatures.messages.valueChange",value.getTranslatedName(),formattedFloat));
                 used=true;
             }
         }
 
         if(Configs.IngameTools.DOF_MODIFIER.getKeybind().isKeybindHeld()){
             Configs.IngameTools.DOF_OVERRIDE_VALUE.setDoubleValue(Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue() + (modifier*Configs.IngameTools.DOF_STEP.getDoubleValue()));
-            client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.dofOverrideValueChange",Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue()), true);
+            String formattedFloat = String.format("%.5f",Configs.IngameTools.DOF_OVERRIDE_VALUE.getDoubleValue());
+            client.player.sendOverlayMessage(Component.translatable("screenshotfeatures.messages.dofOverrideValueChange",formattedFloat));
             used=true;
         }
         if(Configs.IngameTools.TIME_MODIFIER.getKeybind().isKeybindHeld()){
             Configs.IngameTools.TIME_OVERRIDE_VALUE.setIntegerValue(Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue() + (int)Math.round(modifier*Configs.IngameTools.TIME_STEP.getIntegerValue()));
-            client.player.displayClientMessage(Component.translatable("screenshotfeatures.messages.timeOverrideValueChange",Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue()), true);
+            client.player.sendOverlayMessage(Component.translatable("screenshotfeatures.messages.timeOverrideValueChange",Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue()));
             used=true;
         }
         return used;

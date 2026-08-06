@@ -160,14 +160,14 @@
   "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight": "applyAspectRatioHeight",
 
 
-  "screenshotfeatures.messages.valueChange": "Set %s to: %.5f",
-  "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %.5f",
-  "screenshotfeatures.messages.timeOverrideValueChange": "Time override: %d",
+  "screenshotfeatures.messages.valueChange": "Set %1$s to: %2$s",
+  "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %s",
+  "screenshotfeatures.messages.timeOverrideValueChange": "Time override: %s",
 
-  "screenshotfeatures.messages.orthoScaleXValueChange": "Ortho X scale: %d",
-  "screenshotfeatures.messages.orthoScaleYValueChange": "Ortho Y scale: %d",
-  "screenshotfeatures.messages.orthoMinDistanceValueChange": "Ortho min distance/near plane: %d",
-  "screenshotfeatures.messages.orthoMaxDistanceValueChange": "Ortho max distance/far plane: %d",
+  "screenshotfeatures.messages.orthoScaleXValueChange": "Ortho X scale: %s",
+  "screenshotfeatures.messages.orthoScaleYValueChange": "Ortho Y scale: %s",
+  "screenshotfeatures.messages.orthoMinDistanceValueChange": "Ortho min distance/near plane: %s",
+  "screenshotfeatures.messages.orthoMaxDistanceValueChange": "Ortho max distance/far plane: %s",
 
   "screenshotfeatures.text.types.true": "TRUE",
   "screenshotfeatures.text.types.false": "FALSE",

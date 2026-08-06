@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 public class ScreenshotMixin {
     @Inject(
 //            method = "method_22691(Lnet/minecraft/client/texture/NativeImage;Ljava/io/File;Ljava/util/function/Consumer;)V",
-            method = "method_22691",
+            method = "lambda$grab$3",
             at = @At(value = "INVOKE", target ="Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )

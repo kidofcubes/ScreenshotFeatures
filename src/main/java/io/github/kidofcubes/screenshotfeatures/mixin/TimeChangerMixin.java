@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ClientLevel.ClientLevelData.class)
 public class TimeChangerMixin {
     @Inject(
-            method ="getDayTime",
+            method ="getGameTime",
             at = @At("HEAD"),
             cancellable = true
     )
-    public void getTimeOfDay(CallbackInfoReturnable<Long> cir) {
+    public void getGameTime(CallbackInfoReturnable<Long> cir) {
         if(Configs.IngameTools.TIME_OVERRIDE.getBooleanValue()) {
             cir.setReturnValue((long) Configs.IngameTools.TIME_OVERRIDE_VALUE.getIntegerValue());
         }
