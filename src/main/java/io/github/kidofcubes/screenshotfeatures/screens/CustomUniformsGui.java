@@ -152,7 +152,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
         public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
             String name = getSearchBarText().trim();
             if (!name.isEmpty()) {
-                ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(name);
+                ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(name, false);
                 if (entry != null) {
                     clearSearchBarText();
                     Configs.saveToFile();

@@ -63,13 +63,12 @@ public class ConfigNamedAdjustableDoubleList {
      * Adds a new entry with the given name and default values.
      * @return the created entry, or null if the name is invalid/duplicate
      */
-    public NamedEntry addEntry(String entryName) {
+    public NamedEntry addEntry(String entryName, boolean override) {
         if (entryName == null || entryName.isBlank()) return null;
         String key = entryName.trim();
         if (entries.containsKey(key)) return null;
 
-        System.out.println("CONSTRUCTED NAMED ENTRY FROM ADDING ENTRY");
-        NamedEntry entry = new NamedEntry(key);
+        NamedEntry entry = new NamedEntry(key, override);
         entries.put(key, entry);
 
         updateKeybinds();
@@ -136,7 +135,7 @@ public class ConfigNamedAdjustableDoubleList {
         for (Map.Entry<String, NamedEntry> mapEntry : entries.entrySet()) {
             JsonObject entryObj = new JsonObject();
             entryObj.addProperty("name", mapEntry.getKey());
-            entryObj.add("config", mapEntry.getValue().getConfig().getAsJsonElement());
+            entryObj.add("config", mapEntry.getValue().getAsJsonElement());
             entriesArray.add(entryObj);
         }
 
@@ -172,9 +171,8 @@ public class ConfigNamedAdjustableDoubleList {
             JsonElement configElement = entryObj.get("config");
 
             // Create the entry (this also registers it via ConfigAdjustableDouble constructor)
-            System.out.println("CONSTRUCTED NAMED ENTRY FROM JSON");
-            NamedEntry entry = entries.getOrDefault(entryName, new NamedEntry(entryName));
-            entry.getConfig().setValueFromJsonElement(configElement);
+            NamedEntry entry = entries.getOrDefault(entryName, new NamedEntry(entryName, false));
+            entry.setValueFromJsonElement(configElement);
             entries.put(entryName, entry);
         }
         for(String entry: entries.keySet()){
@@ -191,9 +189,10 @@ public class ConfigNamedAdjustableDoubleList {
      */
     public static class NamedEntry {
         private final String name;
+        public boolean override;
         private final ConfigAdjustableDouble config;
 
-        public NamedEntry(String name) {
+        public NamedEntry(String name, boolean override) {
             this.name = name;
             // Create a ConfigAdjustableDouble with the entry name, default value 0.0, no default hotkey
             this.config = new ConfigAdjustableDouble(
@@ -207,6 +206,20 @@ public class ConfigNamedAdjustableDoubleList {
                     name,           // pretty name
                     name            // translated name
             );
+            this.override = override;
+        }
+
+        public void setValueFromJsonElement(JsonElement jsonElement){
+            var object = jsonElement.getAsJsonObject();
+            override = object.get("override").getAsBoolean();
+            this.config.setValueFromJsonElement(object.get("config"));
+        }
+
+        public JsonElement getAsJsonElement() {
+            JsonObject object = new JsonObject();
+            object.addProperty("override", override);
+            object.add("config", this.config.getAsJsonElement());
+            return object;
         }
 
         public String getName() {

@@ -18,7 +18,8 @@
         "VoxyRenderSystemMixin",
         "WeatherChangerLevelMixin",
         "WeatherEffectRendererMixin",
-        "WidgetConfigOptionMixin"
+        "WidgetConfigOptionMixin",
+        "ShaderPackMixin"
     ],
     "injectors": {
         "defaultRequire": 1
