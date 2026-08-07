@@ -111,7 +111,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
                 manager.addKeybindToMap(hotkey.getKeybind());
             }
             // Register keybinds from dynamic custom uniform entries
-            for (IHotkey hotkey : Configs.ShaderOptions.getAllHotkeys()) {
+            for (IHotkey hotkey : Configs.CustomUniforms.getAllHotkeys()) {
                 manager.addKeybindToMap(hotkey.getKeybind());
             }
         }
@@ -120,7 +120,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         public void addHotkeys(IKeybindManager manager) {
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.ingame_hotkeys", Configs.IngameTools.HOTKEYS);
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.orthocameraintegration_hotkeys", Configs.CameraMatrix.HOTKEYS);
-            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.custom_uniforms_hotkeys", Configs.ShaderOptions.getAllHotkeys());
+            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.custom_uniforms_hotkeys", Configs.CustomUniforms.getAllHotkeys());
         }
 
         @Override

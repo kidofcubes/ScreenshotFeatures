@@ -8,7 +8,6 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
-import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 
 import java.util.Collections;
@@ -31,7 +30,7 @@ public class ConfigsGui extends GuiConfigsBase {
             GuiBase.openGui(new CameraMatrixEditorGui());
             return;
         }else if(tab == ConfigGuiTab.SHADER_OPTIONS){
-            GuiBase.openGui(new CustomUniformsGui(Configs.ShaderOptions.CUSTOM_UNIFORMS));
+            GuiBase.openGui(new CustomUniformsGui(Configs.CustomUniforms.CUSTOM_UNIFORMS));
             return;
         }
         super.initGui();
@@ -83,7 +82,7 @@ public class ConfigsGui extends GuiConfigsBase {
         configs = switch(tab){
             case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
             case METADATA -> Configs.Metadata.OPTIONS;
-            case SHADER_OPTIONS -> Configs.ShaderOptions.OPTIONS;
+            case SHADER_OPTIONS -> Configs.CustomUniforms.OPTIONS;
 //            case ORTHOCAMERAINTEGRATION -> Configs.CameraMatrix.OPTIONS;
             default -> Collections.emptyList();
         };

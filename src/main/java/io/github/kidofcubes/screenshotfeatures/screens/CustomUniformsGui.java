@@ -28,7 +28,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
     private static boolean reflectionFailed = false;
 
     public CustomUniformsGui(ConfigNamedAdjustableDoubleList listManager) {
-        super(10, 50, ScreenshotFeatures.MOD_ID, null,
+        super(10, 70, ScreenshotFeatures.MOD_ID, null,
                 ScreenshotFeatures.MOD_ID + ".gui.title.customuniforms");
         this.listManager = listManager;
     }
@@ -46,7 +46,6 @@ public class CustomUniformsGui extends GuiConfigsBase {
         // Tab buttons from the main config GUI
         ConfigsGui.createTabButtons(this, 10, 26);
 
-        // Permanent "Add Entry" button
         addButtonAt(10, 50, "Add Entry", new AddEntryListener());
     }
 
@@ -60,7 +59,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
     @Override
     protected WidgetListConfigOptions createListWidget(int listX, int listY) {
         return new CustomUniformsListWidget(listX, listY,
-                this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), 0.f, this);
+                this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), 0.f, false, this);
     }
 
     @Override
@@ -179,7 +178,8 @@ public class CustomUniformsGui extends GuiConfigsBase {
             // Add X button for config entries (not label-only entries)
             if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG && wrapper.getConfig() != null) {
                 String entryName = wrapper.getConfig().getName();
-                int btnX = x + width - 22;
+//                int btnX = x + width - 22;
+                int btnX = x + 300;
                 int btnY = y + 1;
                 ButtonGeneric deleteBtn = new ButtonGeneric(btnX, btnY, -1, 18, "X");
                 this.addButton(deleteBtn, new DeleteEntryListener(parentGui, entryName));
@@ -194,8 +194,8 @@ public class CustomUniformsGui extends GuiConfigsBase {
         private final CustomUniformsGui parentGui;
 
         public CustomUniformsListWidget(int x, int y, int width, int height, int configWidth,
-                                        float zLevel, CustomUniformsGui parent) {
-            super(x, y, width, height, configWidth, zLevel, true, parent);
+                                        float zLevel, boolean useKeybindSearch, CustomUniformsGui parent) {
+            super(x, y, width, height, configWidth, zLevel, useKeybindSearch, parent);
             this.parentGui = parent;
         }
 

@@ -141,7 +141,7 @@ public class Configs implements IConfigHandler {
         }
     }
 
-    public static class ShaderOptions {
+    public static class CustomUniforms {
         private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
         public static final ImmutableList<IConfigBase> OPTIONS;
 
@@ -162,24 +162,6 @@ public class Configs implements IConfigHandler {
         // Dynamic custom uniforms list - users can add/remove entries from the GUI
         public static final ConfigNamedAdjustableDoubleList CUSTOM_UNIFORMS = new ConfigNamedAdjustableDoubleList("customUniforms");
 
-        public static final ConfigAdjustableDouble DOF_INTENSITY = setupConfig(new ConfigAdjustableDouble("DOF_INTENSITY", 1.0, ""));
-
-        public static final ConfigAdjustableDouble WEATHER_TEMPERATURE_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_TEMPERATURE_BIAS", 0.0, "" , -Double.MAX_VALUE, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble WEATHER_HUMIDITY_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_HUMIDITY_BIAS", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble WEATHER_WIND_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_WIND_BIAS", 0.0, "", -Double.MAX_VALUE, Double.MAX_VALUE));
-
-        public static final ConfigAdjustableDouble WEATHER_TEMPERATURE_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_TEMPERATURE_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble WEATHER_HUMIDITY_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_HUMIDITY_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble WEATHER_WIND_VARIATION_SPEED = setupConfig(new ConfigAdjustableDouble("WEATHER_WIND_VARIATION_SPEED", 1.0, "", 0.0, Double.MAX_VALUE));
-
-        public static final ConfigAdjustableDouble SWAY_STRENGTH = setupConfig(new ConfigAdjustableDouble("SWAY_STRENGTH", 1.0, ""));
-        public static final ConfigAdjustableDouble SWAY_SPACE_VARIATION_STRENGTH = setupConfig(new ConfigAdjustableDouble("SWAY_SPACE_VARIATION_STRENGTH", 1.0, "", 0.0, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble SWAY_SPACE_VARIATION_DIRECTION = setupConfig(new ConfigAdjustableDouble("SWAY_SPACE_VARIATION_DIRECTION", 1.0, "", 0.0, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble SWAY_TIME_VARIATION = setupConfig(new ConfigAdjustableDouble("SWAY_TIME_VARIATION", 1.0, "", 0.0, Double.MAX_VALUE));
-        public static final ConfigAdjustableDouble SWAY_ANGLE = setupConfig(new ConfigAdjustableDouble("SWAY_ANGLE", 1.0, "", 0.0, Double.MAX_VALUE));
-
-        //todo, add sunPathRotation override option?
-
         static {
             OPTIONS = OPTIONS_BUILDER.build();
             HOTKEYS = HOTKEYS_BUILDER.build();
@@ -193,15 +175,6 @@ public class Configs implements IConfigHandler {
             allHotkeys.addAll(HOTKEYS);
             allHotkeys.addAll(CUSTOM_UNIFORMS.getHotkeys());
             return allHotkeys.build();
-        }
-
-        /**
-         * Returns all config options including those from dynamic custom uniform entries.
-         */
-        public static java.util.List<IConfigBase> getAllOptions() {
-            java.util.List<IConfigBase> allOptions = new java.util.ArrayList<>(OPTIONS);
-            allOptions.addAll(CUSTOM_UNIFORMS.getEntriesAsConfigBases());
-            return allOptions;
         }
     }
 
@@ -219,11 +192,10 @@ public class Configs implements IConfigHandler {
                 ConfigUtils.readConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
                 ConfigUtils.readConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
-                ConfigUtils.readConfigBase(root, "ShaderOptions", Configs.ShaderOptions.OPTIONS);
 
                 // Load dynamic custom uniforms
                 if (root.has("CustomUniforms")) {
-                    Configs.ShaderOptions.CUSTOM_UNIFORMS.setValueFromJsonElement(root.get("CustomUniforms"));
+                    CustomUniforms.CUSTOM_UNIFORMS.setValueFromJsonElement(root.get("CustomUniforms"));
                 }
             }
         }
@@ -239,10 +211,9 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
             ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
-            ConfigUtils.writeConfigBase(root, "ShaderOptions", Configs.ShaderOptions.OPTIONS);
 
             // Save dynamic custom uniforms
-            root.add("CustomUniforms", Configs.ShaderOptions.CUSTOM_UNIFORMS.getAsJsonElement());
+            root.add("CustomUniforms", CustomUniforms.CUSTOM_UNIFORMS.getAsJsonElement());
 
             JsonUtils.writeJsonToFile(root,new File(dir, CONFIG_FILE_NAME).toPath());
         }
