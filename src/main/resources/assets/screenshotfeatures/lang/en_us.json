@@ -146,7 +146,7 @@
 
 
 
-  "screenshotfeatures.gui.title.cameramatrix": "Camera matrix",
+  "screenshotfeatures.gui.title.cameramatrixeditor": "Camera matrix",
 
   "screenshotfeatures.gui.cameramatrix.applyWidth": "applyWidth",
   "screenshotfeatures.gui.cameramatrix.applyHeight": "applyHeight",
@@ -157,6 +157,7 @@
   "screenshotfeatures.gui.cameramatrix.applyAspectRatioWidth": "applyAspectRatioWidth",
   "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight": "applyAspectRatioHeight",
 
+  "screenshotfeatures.gui.title.customuniforms": "Custom Uniforms",
 
   "screenshotfeatures.messages.valueChange": "Set %1$s to: %2$s",
   "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %s",

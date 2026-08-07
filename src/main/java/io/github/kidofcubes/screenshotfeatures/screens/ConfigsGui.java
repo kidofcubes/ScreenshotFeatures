@@ -29,7 +29,7 @@ public class ConfigsGui extends GuiConfigsBase {
         }else if(tab == ConfigGuiTab.CAMERA_MATRIX_EDITOR){
             GuiBase.openGui(new CameraMatrixEditorGui());
             return;
-        }else if(tab == ConfigGuiTab.SHADER_OPTIONS){
+        }else if(tab == ConfigGuiTab.CUSTOM_UNIFORMS){
             GuiBase.openGui(new CustomUniformsGui(Configs.CustomUniforms.CUSTOM_UNIFORMS));
             return;
         }
@@ -82,7 +82,7 @@ public class ConfigsGui extends GuiConfigsBase {
         configs = switch(tab){
             case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
             case METADATA -> Configs.Metadata.OPTIONS;
-            case SHADER_OPTIONS -> Configs.CustomUniforms.OPTIONS;
+            case CUSTOM_UNIFORMS -> Configs.CustomUniforms.OPTIONS;
 //            case ORTHOCAMERAINTEGRATION -> Configs.CameraMatrix.OPTIONS;
             default -> Collections.emptyList();
         };
@@ -98,7 +98,7 @@ public class ConfigsGui extends GuiConfigsBase {
         SCREENSHOT_VIEWER("screenshotfeatures.gui.title.screenshotviewer"),
 //        ORTHOCAMERAINTEGRATION ("screenshotfeatures.gui.title.orthocameraintegration"),
         CAMERA_MATRIX_EDITOR("screenshotfeatures.gui.title.cameramatrixeditor"),
-        SHADER_OPTIONS ("screenshotfeatures.gui.title.shaderoptions");
+        CUSTOM_UNIFORMS("screenshotfeatures.gui.title.customuniforms");
 
         private final String translationKey;
 

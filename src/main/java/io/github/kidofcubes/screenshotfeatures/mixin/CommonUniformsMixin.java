@@ -32,10 +32,9 @@ public class CommonUniformsMixin {
                 return false;
             }
         });
-        for(IConfigBase config : Configs.CustomUniforms.OPTIONS){
-            if(config instanceof ConfigAdjustableDouble configAdjustableDouble){
-                uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME,configAdjustableDouble.getName(),configAdjustableDouble::getDoubleValue);
-            }
+        for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
+            System.out.println("updating uniform "+entry.getName()+" to "+entry.getValue());
+            uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME,entry.getName(),entry::getValue);
         }
 
     }

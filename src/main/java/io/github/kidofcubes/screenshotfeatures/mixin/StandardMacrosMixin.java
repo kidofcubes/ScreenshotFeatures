@@ -2,6 +2,7 @@ package io.github.kidofcubes.screenshotfeatures.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.irisshaders.iris.gl.shader.StandardMacros;
 import net.irisshaders.iris.helpers.StringPair;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +24,10 @@ public class StandardMacrosMixin {
     @Inject(method = "createStandardEnvironmentDefines", at = @At(value = "INVOKE", target = "Lnet/irisshaders/iris/gl/shader/StandardMacros;define(Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)V"))
     private static void injectScreenshotFeaturesDefine(CallbackInfoReturnable<ImmutableList<StringPair>> cir,@Local(name="standardDefines") ArrayList<StringPair> standardDefines) {
         define(standardDefines, "SCREENSHOT_FEATURES");
+        for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
+            define(standardDefines, "SCREENSHOT_FEATURES_CUSTOM_UNIFORM_"+entry.getName());
+            System.out.println("defined "+"SCREENSHOT_FEATURES_CUSTOM_UNIFORM_"+entry.getName());
+        }
     }
 
 }

@@ -35,7 +35,7 @@ import static net.minecraft.commands.Commands.literal;
 public class ScreenshotFeatures implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("ScreenshotFeatures");
     public static Minecraft client;
-    private static final InputHandler inputHandler = new InputHandler();
+    public static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
     public static List<ConfigAdjustableDouble> adjustableValues = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class ScreenshotFeatures implements ClientModInitializer {
         @Override
         public void addHotkeys(IKeybindManager manager) {
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.ingame_hotkeys", Configs.IngameTools.HOTKEYS);
-            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.orthocameraintegration_hotkeys", Configs.CameraMatrix.HOTKEYS);
+            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.camera_matrix_hotkeys", Configs.CameraMatrix.HOTKEYS);
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.custom_uniforms_hotkeys", Configs.CustomUniforms.getAllHotkeys());
         }
 

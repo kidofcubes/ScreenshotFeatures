@@ -142,37 +142,37 @@ public class Configs implements IConfigHandler {
     }
 
     public static class CustomUniforms {
-        private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
-        public static final ImmutableList<IConfigBase> OPTIONS;
+//        private static final ImmutableList.Builder<IConfigBase> OPTIONS_BUILDER = ImmutableList.builder();
+//        public static final ImmutableList<IConfigBase> OPTIONS;
 
-        private static final ImmutableList.Builder<IHotkey> HOTKEYS_BUILDER = ImmutableList.builder();
-        public static final ImmutableList<IHotkey> HOTKEYS;
+//        private static final ImmutableList.Builder<IHotkey> HOTKEYS_BUILDER = ImmutableList.builder();
+//        public static final ImmutableList<IHotkey> HOTKEYS;
 
-        private static <T extends ConfigBase<?>> T setupConfig(T thing){
-            autoCommentAndNameWithGroup(thing, "customuniforms");
-            OPTIONS_BUILDER.add(thing);
-            if(thing instanceof IHotkey iHotkey){
-                HOTKEYS_BUILDER.add(iHotkey);
-            }
-            return thing;
-        }
+//        private static <T extends ConfigBase<?>> T setupConfig(T thing){
+//            autoCommentAndNameWithGroup(thing, "customuniforms");
+//            OPTIONS_BUILDER.add(thing);
+//            if(thing instanceof IHotkey iHotkey){
+//                HOTKEYS_BUILDER.add(iHotkey);
+//            }
+//            return thing;
+//        }
 
         //todo save these in screenshot tags as well maybe
 
         // Dynamic custom uniforms list - users can add/remove entries from the GUI
         public static final ConfigNamedAdjustableDoubleList CUSTOM_UNIFORMS = new ConfigNamedAdjustableDoubleList("customUniforms");
 
-        static {
-            OPTIONS = OPTIONS_BUILDER.build();
-            HOTKEYS = HOTKEYS_BUILDER.build();
-        }
+//        static {
+//            OPTIONS = OPTIONS_BUILDER.build();
+//            HOTKEYS = HOTKEYS_BUILDER.build();
+//        }
 
         /**
          * Returns all hotkeys including those from dynamic custom uniform entries.
          */
         public static ImmutableList<IHotkey> getAllHotkeys() {
             ImmutableList.Builder<IHotkey> allHotkeys = ImmutableList.builder();
-            allHotkeys.addAll(HOTKEYS);
+//            allHotkeys.addAll(HOTKEYS);
             allHotkeys.addAll(CUSTOM_UNIFORMS.getHotkeys());
             return allHotkeys.build();
         }

@@ -178,8 +178,8 @@ public class CustomUniformsGui extends GuiConfigsBase {
             // Add X button for config entries (not label-only entries)
             if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG && wrapper.getConfig() != null) {
                 String entryName = wrapper.getConfig().getName();
-//                int btnX = x + width - 22;
-                int btnX = x + 300;
+                int btnX = x + width - 22;
+//                int btnX = x + 300;
                 int btnY = y + 1;
                 ButtonGeneric deleteBtn = new ButtonGeneric(btnX, btnY, -1, 18, "X");
                 this.addButton(deleteBtn, new DeleteEntryListener(parentGui, entryName));
