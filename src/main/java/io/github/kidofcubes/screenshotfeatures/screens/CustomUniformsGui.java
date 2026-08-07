@@ -1,31 +1,41 @@
 package io.github.kidofcubes.screenshotfeatures.screens;
 
 import fi.dy.masa.malilib.config.IConfigBase;
-import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
-import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
+import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptionsBase;
+import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;
+import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
-import net.minecraft.client.input.CharacterEvent;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomUniformsGui extends GuiConfigsBase {
 
-    private final ConfigNamedAdjustableDoubleList listManager;
-    private GuiMode guiMode = GuiMode.NORMAL;
-    private GuiTextFieldGeneric nameField;
+    final ConfigNamedAdjustableDoubleList listManager;
+
+    // Reflection for accessing the search bar's raw text
+    private static Field fieldSearchBox;
+    private static boolean reflectionInitialized = false;
+    private static boolean reflectionFailed = false;
 
     public CustomUniformsGui(ConfigNamedAdjustableDoubleList listManager) {
         super(10, 50, ScreenshotFeatures.MOD_ID, null,
                 ScreenshotFeatures.MOD_ID + ".gui.title.customuniforms");
         this.listManager = listManager;
+    }
+
+    @Override
+    protected boolean useKeybindSearch() {
+        return true;
     }
 
     @Override
@@ -36,44 +46,11 @@ public class CustomUniformsGui extends GuiConfigsBase {
         // Tab buttons from the main config GUI
         ConfigsGui.createTabButtons(this, 10, 26);
 
-        // Management buttons below the tabs
-        int buttonY = 50;
-        int buttonX = 10;
-
-        switch (guiMode) {
-            case NORMAL -> {
-                buttonX += addButtonAt(buttonX, buttonY, "Add Entry", new AddEntryListener());
-                addButtonAt(buttonX, buttonY, "Remove Entry", new RemoveEntryListener());
-            }
-            case ADD_ENTRY -> {
-                nameField = new GuiTextFieldGeneric(buttonX, buttonY, 150, 20, this.font);
-                nameField.setMaxLength(64);
-                nameField.setSuggestion("Uniform name...");
-                this.addTextField(nameField, null);
-
-                buttonX += 155;
-                buttonX += addButtonAt(buttonX, buttonY, "Confirm Add", new ConfirmAddListener());
-                addButtonAt(buttonX, buttonY, "Cancel", new CancelListener());
-            }
-            case REMOVE_ENTRY -> {
-                nameField = new GuiTextFieldGeneric(buttonX, buttonY, 150, 20, this.font);
-                nameField.setMaxLength(64);
-                nameField.setSuggestion("Uniform name...");
-                this.addTextField(nameField, null);
-
-                buttonX += 155;
-                buttonX += addButtonAt(buttonX, buttonY, "Confirm Remove", new ConfirmRemoveListener());
-                addButtonAt(buttonX, buttonY, "Cancel", new CancelListener());
-            }
-        }
+        // Permanent "Add Entry" button
+        addButtonAt(10, 50, "Add Entry", new AddEntryListener());
     }
 
-    private int addButtonAt(int x, int y, String labelKey, IButtonActionListener listener) {
-        String label = StringUtils.translate(ScreenshotFeatures.MOD_ID + ".gui.button." + labelKey.toLowerCase().replace(" ", ""));
-        // Fallback if no translation is defined
-        if (label.equals(ScreenshotFeatures.MOD_ID + ".gui.button." + labelKey.toLowerCase().replace(" ", ""))) {
-            label = labelKey;
-        }
+    private int addButtonAt(int x, int y, String label, IButtonActionListener listener) {
         int width = this.getStringWidth(label) + 10;
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
         this.addButton(button, listener);
@@ -81,35 +58,89 @@ public class CustomUniformsGui extends GuiConfigsBase {
     }
 
     @Override
+    protected WidgetListConfigOptions createListWidget(int listX, int listY) {
+        return new CustomUniformsListWidget(listX, listY,
+                this.getBrowserWidth(), this.getBrowserHeight(), this.getConfigWidth(), 0.f, this);
+    }
+
+    @Override
     public List<ConfigOptionWrapper> getConfigs() {
         List<IConfigBase> entries = listManager.getEntriesAsConfigBases();
         if (entries.isEmpty()) {
-            // Show a label indicating no entries
             List<ConfigOptionWrapper> wrappers = new ArrayList<>();
-            wrappers.add(new ConfigOptionWrapper("No custom uniforms defined. Click 'Add Entry' to create one."));
+            wrappers.add(new ConfigOptionWrapper("No custom uniforms defined. Type a name in the search bar and click 'Add Entry'."));
             return wrappers;
         }
         return ConfigOptionWrapper.createFor(entries);
     }
 
-    private void switchToMode(GuiMode mode) {
-        this.guiMode = mode;
-        // Re-initialize the GUI to reflect the new mode
-        this.initGui();
-    }
+    /**
+     * Gets the raw search bar text via reflection on WidgetSearchBar.searchBox.
+     */
+    private String getSearchBarText() {
+        try {
+            if (this.getListWidget() == null) return "";
+            WidgetSearchBar searchBar = this.getListWidget().getSearchBarWidget();
+            if (searchBar == null) return "";
 
-    private enum GuiMode {
-        NORMAL,
-        ADD_ENTRY,
-        REMOVE_ENTRY
-    }
+            if (!reflectionInitialized) {
+                initReflection();
+            }
+            if (reflectionFailed) return "";
 
-    @Override
-    public boolean onCharTyped(CharacterEvent input){
-        if(this.nameField.active){
-            return this.nameField.charTyped(input);
+            net.minecraft.client.gui.components.EditBox searchBox =
+                    (net.minecraft.client.gui.components.EditBox) fieldSearchBox.get(searchBar);
+            if (searchBox == null) return "";
+
+            return searchBox.getValue();
+        } catch (Exception e) {
+            reflectionFailed = true;
+            ScreenshotFeatures.LOGGER.warn("Failed to access search bar text via reflection", e);
+            return "";
         }
-        return super.onCharTyped(input);
+    }
+
+    /**
+     * Clears the search bar text via reflection.
+     */
+    private void clearSearchBarText() {
+        try {
+            if (this.getListWidget() == null) return;
+            WidgetSearchBar searchBar = this.getListWidget().getSearchBarWidget();
+            if (searchBar == null) return;
+
+            if (!reflectionInitialized) {
+                initReflection();
+            }
+            if (reflectionFailed) return;
+
+            net.minecraft.client.gui.components.EditBox searchBox =
+                    (net.minecraft.client.gui.components.EditBox) fieldSearchBox.get(searchBar);
+            if (searchBox == null) return;
+
+            searchBox.setValue("");
+        } catch (Exception e) {
+            reflectionFailed = true;
+            ScreenshotFeatures.LOGGER.warn("Failed to clear search bar text via reflection", e);
+        }
+    }
+
+    private static void initReflection() {
+        try {
+            // WidgetSearchBar has protected field: searchBox (GuiTextFieldGeneric extends EditBox)
+            fieldSearchBox = WidgetSearchBar.class.getDeclaredField("searchBox");
+            fieldSearchBox.setAccessible(true);
+            reflectionInitialized = true;
+        } catch (Exception e) {
+            reflectionFailed = true;
+            ScreenshotFeatures.LOGGER.warn("Failed to initialize reflection for search bar access", e);
+        }
+    }
+
+    void refreshList() {
+        if (this.getListWidget() != null) {
+            this.getListWidget().refreshEntries();
+        }
     }
 
     // --- Action Listeners ---
@@ -117,53 +148,84 @@ public class CustomUniformsGui extends GuiConfigsBase {
     private class AddEntryListener implements IButtonActionListener {
         @Override
         public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            switchToMode(GuiMode.ADD_ENTRY);
-        }
-    }
-
-    private class RemoveEntryListener implements IButtonActionListener {
-        @Override
-        public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            switchToMode(GuiMode.REMOVE_ENTRY);
-        }
-    }
-
-    private class CancelListener implements IButtonActionListener {
-        @Override
-        public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            switchToMode(GuiMode.NORMAL);
-        }
-    }
-
-    private class ConfirmAddListener implements IButtonActionListener {
-        @Override
-        public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            if (nameField != null) {
-                String name = nameField.getValue().trim();
-                if (!name.isEmpty()) {
-                    ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(name);
-                    if (entry != null) {
-                        // Successfully added, save config
-                        Configs.saveToFile();
-                    }
-                }
-            }
-            switchToMode(GuiMode.NORMAL);
-        }
-    }
-
-    private class ConfirmRemoveListener implements IButtonActionListener {
-        @Override
-        public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            if (nameField != null) {
-                String name = nameField.getValue().trim();
-                if (!name.isEmpty()) {
-                    listManager.removeEntry(name);
-                    // Save config after removal
+            String name = getSearchBarText().trim();
+            if (!name.isEmpty()) {
+                ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(name);
+                if (entry != null) {
+                    clearSearchBarText();
                     Configs.saveToFile();
+                    refreshList();
                 }
             }
-            switchToMode(GuiMode.NORMAL);
+        }
+    }
+
+    /**
+     * Custom WidgetConfigOption that adds an X (delete) button next to each config row.
+     */
+    private static class CustomUniformsConfigOption extends WidgetConfigOption {
+        private final CustomUniformsGui parentGui;
+
+        public CustomUniformsConfigOption(int x, int y, int width, int height,
+                                          int labelWidth, int configWidth,
+                                          ConfigOptionWrapper wrapper, int listIndex,
+                                          IKeybindConfigGui host,
+                                          WidgetListConfigOptionsBase<?, ?> parent,
+                                          CustomUniformsGui parentGui) {
+            super(x, y, width, height, labelWidth, configWidth,
+                    wrapper, listIndex, host, parent);
+            this.parentGui = parentGui;
+
+            // Add X button for config entries (not label-only entries)
+            if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG && wrapper.getConfig() != null) {
+                String entryName = wrapper.getConfig().getName();
+                int btnX = x + width - 22;
+                int btnY = y + 1;
+                ButtonGeneric deleteBtn = new ButtonGeneric(btnX, btnY, -1, 18, "X");
+                this.addButton(deleteBtn, new DeleteEntryListener(parentGui, entryName));
+            }
+        }
+    }
+
+    /**
+     * Custom list widget that uses CustomUniformsConfigOption with X buttons.
+     */
+    private static class CustomUniformsListWidget extends WidgetListConfigOptions {
+        private final CustomUniformsGui parentGui;
+
+        public CustomUniformsListWidget(int x, int y, int width, int height, int configWidth,
+                                        float zLevel, CustomUniformsGui parent) {
+            super(x, y, width, height, configWidth, zLevel, true, parent);
+            this.parentGui = parent;
+        }
+
+        @Override
+        protected WidgetConfigOption createListEntryWidget(int x, int y, int listIndex,
+                                                           boolean isOdd, ConfigOptionWrapper wrapper) {
+            return new CustomUniformsConfigOption(x, y, this.browserEntryWidth,
+                    this.browserEntryHeight, this.maxLabelWidth, this.configWidth,
+                    wrapper, listIndex, this.parent, this, parentGui);
+        }
+    }
+
+    /**
+     * Listener for the X (delete) button on each row.
+     */
+    private static class DeleteEntryListener implements IButtonActionListener {
+        private final CustomUniformsGui gui;
+        private final String entryName;
+
+        DeleteEntryListener(CustomUniformsGui gui, String entryName) {
+            this.gui = gui;
+            this.entryName = entryName;
+        }
+
+        @Override
+        public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
+            if (gui.listManager.removeEntry(entryName)) {
+                Configs.saveToFile();
+                gui.refreshList();
+            }
         }
     }
 }

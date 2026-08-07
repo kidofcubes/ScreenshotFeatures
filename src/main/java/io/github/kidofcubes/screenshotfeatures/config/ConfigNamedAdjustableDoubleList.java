@@ -9,18 +9,20 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Manages a dynamic list of named ConfigAdjustableDouble entries.
+ * Manages a dynamic map of named ConfigAdjustableDouble entries.
  * Users can add/remove entries from the in-game GUI.
  * Each entry has a user-defined name, a double value, and a keybind.
  */
 public class ConfigNamedAdjustableDoubleList {
     private final String name;
-    private final List<NamedEntry> entries = new ArrayList<>();
-    private final List<IHotkey> hotkeys = new ArrayList<>();
+    private final Map<String, NamedEntry> entries = new LinkedHashMap<>();
 
     public ConfigNamedAdjustableDoubleList(String name) {
         this.name = name;
@@ -30,8 +32,8 @@ public class ConfigNamedAdjustableDoubleList {
         return name;
     }
 
-    public List<NamedEntry> getEntries() {
-        return Collections.unmodifiableList(entries);
+    public Collection<NamedEntry> getEntries() {
+        return Collections.unmodifiableCollection(entries.values());
     }
 
     /**
@@ -39,7 +41,7 @@ public class ConfigNamedAdjustableDoubleList {
      */
     public List<IConfigBase> getEntriesAsConfigBases() {
         List<IConfigBase> configs = new ArrayList<>();
-        for (NamedEntry entry : entries) {
+        for (NamedEntry entry : entries.values()) {
             configs.add(entry.getConfig());
         }
         return configs;
@@ -49,6 +51,10 @@ public class ConfigNamedAdjustableDoubleList {
      * Returns all hotkeys from entries for keybind registration.
      */
     public List<IHotkey> getHotkeys() {
+        List<IHotkey> hotkeys = new ArrayList<>();
+        for (NamedEntry entry : entries.values()) {
+            hotkeys.add(entry.getConfig());
+        }
         return Collections.unmodifiableList(hotkeys);
     }
 
@@ -58,49 +64,41 @@ public class ConfigNamedAdjustableDoubleList {
      */
     public NamedEntry addEntry(String entryName) {
         if (entryName == null || entryName.isBlank()) return null;
-        // Check for duplicate names
-        for (NamedEntry existing : entries) {
-            if (existing.getName().equalsIgnoreCase(entryName)) return null;
-        }
+        String key = entryName.trim();
+        if (entries.containsKey(key)) return null;
 
-        NamedEntry entry = new NamedEntry(entryName.trim());
-        entries.add(entry);
-        hotkeys.add(entry.getConfig());
+        NamedEntry entry = new NamedEntry(key);
+        entries.put(key, entry);
         // ConfigAdjustableDouble constructor already adds to adjustableValues
         return entry;
     }
 
     /**
-     * Removes an entry by its index.
-     * @return true if the entry was found and removed
-     */
-    public boolean removeEntry(int index) {
-        if (index < 0 || index >= entries.size()) return false;
-        NamedEntry entry = entries.remove(index);
-        hotkeys.remove(entry.getConfig());
-        ScreenshotFeatures.adjustableValues.remove(entry.getConfig());
-        return true;
-    }
-
-    /**
-     * Removes an entry by its name.
+     * Removes an entry by its name (case-insensitive).
      * @return true if the entry was found and removed
      */
     public boolean removeEntry(String entryName) {
-        for (int i = 0; i < entries.size(); i++) {
-            if (entries.get(i).getName().equalsIgnoreCase(entryName)) {
-                return removeEntry(i);
+        if (entryName == null || entryName.isBlank()) return false;
+        // Find the actual key (case-insensitive)
+        String actualKey = null;
+        for (String key : entries.keySet()) {
+            if (key.equalsIgnoreCase(entryName.trim())) {
+                actualKey = key;
+                break;
             }
         }
-        return false;
+        if (actualKey == null) return false;
+
+        NamedEntry entry = entries.remove(actualKey);
+        ScreenshotFeatures.adjustableValues.remove(entry.getConfig());
+        return true;
     }
 
     /**
      * Removes all entries and cleans up registrations.
      */
     public void clearEntries() {
-        for (NamedEntry entry : new ArrayList<>(entries)) {
-            hotkeys.remove(entry.getConfig());
+        for (NamedEntry entry : entries.values()) {
             ScreenshotFeatures.adjustableValues.remove(entry.getConfig());
         }
         entries.clear();
@@ -110,9 +108,10 @@ public class ConfigNamedAdjustableDoubleList {
      * Gets an entry by name (case-insensitive).
      */
     public NamedEntry getEntry(String entryName) {
-        for (NamedEntry entry : entries) {
-            if (entry.getName().equalsIgnoreCase(entryName)) {
-                return entry;
+        if (entryName == null) return null;
+        for (Map.Entry<String, NamedEntry> mapEntry : entries.entrySet()) {
+            if (mapEntry.getKey().equalsIgnoreCase(entryName.trim())) {
+                return mapEntry.getValue();
             }
         }
         return null;
@@ -128,10 +127,10 @@ public class ConfigNamedAdjustableDoubleList {
         JsonObject root = new JsonObject();
         JsonArray entriesArray = new JsonArray();
 
-        for (NamedEntry entry : entries) {
+        for (Map.Entry<String, NamedEntry> mapEntry : entries.entrySet()) {
             JsonObject entryObj = new JsonObject();
-            entryObj.addProperty("name", entry.getName());
-            entryObj.add("config", entry.getConfig().getAsJsonElement());
+            entryObj.addProperty("name", mapEntry.getKey());
+            entryObj.add("config", mapEntry.getValue().getConfig().getAsJsonElement());
             entriesArray.add(entryObj);
         }
 
@@ -158,12 +157,10 @@ public class ConfigNamedAdjustableDoubleList {
             String entryName = entryObj.get("name").getAsString();
             JsonElement configElement = entryObj.get("config");
 
-            // Create the entry (this also registers it)
+            // Create the entry (this also registers it via ConfigAdjustableDouble constructor)
             NamedEntry entry = new NamedEntry(entryName);
             entry.getConfig().setValueFromJsonElement(configElement);
-            entries.add(entry);
-            hotkeys.add(entry.getConfig());
-            // ConfigAdjustableDouble constructor already adds to adjustableValues
+            entries.put(entryName, entry);
         }
     }
 
