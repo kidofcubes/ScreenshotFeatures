@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientLevel.ClientLevelData.class)
-public class TimeChangerMixin {
+public class ClientLevelDataMixin {
     @Inject(
             method ="getGameTime",
             at = @At("HEAD"),

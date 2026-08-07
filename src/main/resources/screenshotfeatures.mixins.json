@@ -4,20 +4,21 @@
     "package": "io.github.kidofcubes.screenshotfeatures.mixin",
     "compatibilityLevel": "JAVA_21",
     "client": [
+        "CameraMixin",
+        "ClientClockManagerMixin",
+        "ClientLevelDataMixin",
+        "CommonUniformsMixin",
         "GameRendererMixin",
         "GuiConfigsBaseMixin",
         "IrisDepthMixin",
         "IrisMixin",
         "IrisShaderMenuMixin",
         "ScreenshotMixin",
-        "TimeChangerMixin",
-        "WeatherChangerLevelMixin",
-        "WeatherChangerWeatherEffectRendererMixin",
-        "WidgetConfigOptionMixin",
-        "VoxyRenderSystemMixin",
-        "CommonUniformsMixin",
         "StandardMacrosMixin",
-        "CameraMixin"
+        "VoxyRenderSystemMixin",
+        "WeatherChangerLevelMixin",
+        "WeatherEffectRendererMixin",
+        "WidgetConfigOptionMixin"
     ],
     "injectors": {
         "defaultRequire": 1

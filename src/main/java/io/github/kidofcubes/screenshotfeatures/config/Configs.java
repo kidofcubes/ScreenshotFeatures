@@ -61,7 +61,6 @@ public class Configs implements IConfigHandler {
         public static final ConfigHotkey CYCLE_WEATHER_OVERRIDE = setupConfig(new ConfigHotkey("weatherOverrideCycle", ""));
         public static final ConfigBooleanHotkeyed FORCE_PRECIPITATION = setupConfig(new ConfigBooleanHotkeyed("precipitationForce", false, ""));
         public static final ConfigOptionList PRECIPITATION_FORCE_TYPE = setupConfig(new ConfigOptionList("precipitationForceType", PrecipitationType.CLEAR, ""));
-        public static final ConfigOptionList FORCE_RAIN = setupConfig(new ConfigOptionList("rainForce", OptionalBoolean.NO_OP));
         public static final ConfigBoolean ALLOW_MWHEEL_CHANGE_VALUE = setupConfig(new ConfigBoolean("allowMWheelChangeValue", true));
         public static final ConfigDouble MWHEEL_MULTIPLIER = setupConfig(new ConfigDouble("mWheelMultiplier", 1.0, -Double.MAX_VALUE, Double.MAX_VALUE));
         public static final ConfigHotkey INCREASE_VALUE = setupConfig(new ConfigHotkey("increaseValue", "UP", KeybindSettings.PRESS_ALLOWEXTRA));

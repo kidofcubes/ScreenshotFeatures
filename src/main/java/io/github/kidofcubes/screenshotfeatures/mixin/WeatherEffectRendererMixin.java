@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(WeatherEffectRenderer.class)
-public abstract class WeatherChangerWeatherEffectRendererMixin {
+public abstract class WeatherEffectRendererMixin {
     @Redirect(method ="extractRenderState", at = @At(value = "INVOKE", target ="Lnet/minecraft/client/multiplayer/ClientLevel;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;"))
     private Biome.Precipitation getPrecipitation(ClientLevel instance,BlockPos pos){
         if(Configs.IngameTools.FORCE_PRECIPITATION.getBooleanValue()){

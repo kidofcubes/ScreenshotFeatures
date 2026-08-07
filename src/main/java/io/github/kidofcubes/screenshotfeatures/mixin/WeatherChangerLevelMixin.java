@@ -40,12 +40,4 @@ public abstract class WeatherChangerLevelMixin implements LevelAccessor, UUIDLoo
         if(!Configs.IngameTools.WEATHER_OVERRIDE.getBooleanValue() || (Minecraft.getInstance().isLocalServer() && !Configs.IngameTools.FORCE_SETTINGS.getBooleanValue())) return;
         cir.setReturnValue(Configs.IngameTools.WEATHER_OVERRIDE_VALUE.getOptionListValue()== WeatherTypes.THUNDER ? 1.0f : 0.0f);
     }
-
-    @Inject(method ="isRainingAt", at = @At("HEAD"), cancellable = true)
-    private void hasRain(BlockPos pos,CallbackInfoReturnable<Boolean> cir){
-        if(Configs.IngameTools.FORCE_RAIN.getOptionListValue() == OptionalBoolean.NO_OP || (Minecraft.getInstance().isLocalServer() && !Configs.IngameTools.FORCE_SETTINGS.getBooleanValue())) return;
-        cir.setReturnValue(Configs.IngameTools.FORCE_RAIN.getOptionListValue() == OptionalBoolean.TRUE);
-    }
-
-
 }

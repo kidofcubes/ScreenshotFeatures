@@ -94,8 +94,6 @@
   "screenshotfeatures.config.ingametools.comment.precipitationForce": "Forces precipitation everywhere",
   "screenshotfeatures.config.ingametools.comment.precipitationForceType": "Overrides the precipitation type everywhere (NO_OP does nothing)",
 
-  "screenshotfeatures.config.ingametools.comment.rainForce": "Forces enabling of rain (Effect unknown)\n(MULTIPLAYER ONLY)",
-
   "screenshotfeatures.config.ingametools.comment.allowMWheelChangeValue": "Enables using the scroll wheel to change values",
   "screenshotfeatures.config.ingametools.comment.mWheelMultiplier": "Scroll wheel value changing multiplier",
 
