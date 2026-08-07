@@ -17,6 +17,8 @@ public abstract class GuiConfigsBaseMixin extends GuiListBase<GuiConfigsBase.Con
         super(listX,listY);
     }
 
+    //what was this for again???
+
     @Inject(method ="onKeyTyped", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
     public void onKeyTyped(KeyEvent input,CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(super.onKeyTyped(input));

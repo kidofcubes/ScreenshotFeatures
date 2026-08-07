@@ -183,6 +183,17 @@ public class CustomUniformsGui extends GuiConfigsBase {
                 int btnY = y + 1;
                 ButtonGeneric deleteBtn = new ButtonGeneric(btnX, btnY, -1, 18, "X");
                 this.addButton(deleteBtn, new DeleteEntryListener(parentGui, entryName));
+                btnX-=100;
+                ButtonGeneric toggleOverride = new ButtonGeneric(btnX, btnY, -1, 18, "override: "+parentGui.listManager.getEntry(entryName).override){
+                    @Override
+                    public void updateDisplayString() {
+                        this.displayString = "override: "+parentGui.listManager.getEntry(entryName).override;
+                    }
+                };
+                this.addButton(toggleOverride,(_,_) -> {
+                    parentGui.listManager.getEntry(entryName).override = !parentGui.listManager.getEntry(entryName).override;
+                    toggleOverride.updateDisplayString();
+                });
             }
         }
     }
