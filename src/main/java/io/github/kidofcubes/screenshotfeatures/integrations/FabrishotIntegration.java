@@ -10,6 +10,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.IOException;
 import java.util.Map;
 
+//todo uncomment once fabrishot updates to 26.2
+
 public class FabrishotIntegration {
     public static boolean fabrishotPresent() {
         return FabricLoader.getInstance().isModLoaded("fabrishot");

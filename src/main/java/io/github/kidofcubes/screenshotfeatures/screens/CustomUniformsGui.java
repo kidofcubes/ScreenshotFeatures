@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptionsBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
+import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
@@ -22,13 +23,12 @@ public class CustomUniformsGui extends GuiConfigsBase {
 
     final ConfigNamedAdjustableDoubleList listManager;
 
-    // Reflection for accessing the search bar's raw text
     private static Field fieldSearchBox;
     private static boolean reflectionInitialized = false;
     private static boolean reflectionFailed = false;
 
     public CustomUniformsGui(ConfigNamedAdjustableDoubleList listManager) {
-        super(10, 70, ScreenshotFeatures.MOD_ID, null,
+        super(10, 90, ScreenshotFeatures.MOD_ID, null,
                 ScreenshotFeatures.MOD_ID + ".gui.title.customuniforms");
         this.listManager = listManager;
     }
@@ -46,12 +46,13 @@ public class CustomUniformsGui extends GuiConfigsBase {
         // Tab buttons from the main config GUI
         ConfigsGui.createTabButtons(this, 10, 26);
 
-        addButtonAt(10, 50, "Add Entry", new AddEntryListener());
+        addButtonAt(10, 70, StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry"), new AddEntryListener());
     }
 
     private int addButtonAt(int x, int y, String label, IButtonActionListener listener) {
         int width = this.getStringWidth(label) + 10;
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
+        button.setHoverStrings(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry.hover"));
         this.addButton(button, listener);
         return button.getWidth() + 4;
     }
@@ -67,7 +68,9 @@ public class CustomUniformsGui extends GuiConfigsBase {
         List<IConfigBase> entries = listManager.getEntriesAsConfigBases();
         if (entries.isEmpty()) {
             List<ConfigOptionWrapper> wrappers = new ArrayList<>();
-            wrappers.add(new ConfigOptionWrapper("No custom uniforms defined. Type a name in the search bar and click 'Add Entry'."));
+            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext0")));
+            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext1")));
+            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext2")));
             return wrappers;
         }
         return ConfigOptionWrapper.createFor(entries);
@@ -163,8 +166,6 @@ public class CustomUniformsGui extends GuiConfigsBase {
      * Custom WidgetConfigOption that adds an X (delete) button next to each config row.
      */
     private static class CustomUniformsConfigOption extends WidgetConfigOption {
-        private final CustomUniformsGui parentGui;
-
         public CustomUniformsConfigOption(int x, int y, int width, int height,
                                           int labelWidth, int configWidth,
                                           ConfigOptionWrapper wrapper, int listIndex,
@@ -173,7 +174,6 @@ public class CustomUniformsGui extends GuiConfigsBase {
                                           CustomUniformsGui parentGui) {
             super(x, y, width, height, labelWidth, configWidth,
                     wrapper, listIndex, host, parent);
-            this.parentGui = parentGui;
 
             // Add X button for config entries (not label-only entries)
             if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG && wrapper.getConfig() != null) {

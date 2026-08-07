@@ -82,7 +82,7 @@ public class ConfigsGui extends GuiConfigsBase {
         configs = switch(tab){
             case INGAMETOOLS -> Configs.IngameTools.OPTIONS;
             case METADATA -> Configs.Metadata.OPTIONS;
-            case CUSTOM_UNIFORMS -> Configs.CustomUniforms.OPTIONS;
+//            case CUSTOM_UNIFORMS -> Configs.CustomUniforms.OPTIONS;
 //            case ORTHOCAMERAINTEGRATION -> Configs.CameraMatrix.OPTIONS;
             default -> Collections.emptyList();
         };

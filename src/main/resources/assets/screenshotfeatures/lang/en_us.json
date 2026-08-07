@@ -106,7 +106,7 @@
   "screenshotfeatures.config.ingametools.comment.largeValueMultiplier": "When largeValueModifier is held, multiplies the step of the value change by this",
   "screenshotfeatures.config.ingametools.comment.smallValueMultiplier": "When smallValueModifier is held, multiplies the step of the value change by this",
 
-  "screenshotfeatures.config.ingametools.comment.forceSettings": "Enables the (MULTIPLAYER ONLY) settings to work in singleplayer mode\n(WARNING) Will affect your world! (WARNING)",
+  "screenshotfeatures.config.ingametools.comment.forceSettings": "Enables the (MULTIPLAYER ONLY) settings to work in singleplayer mode\n(WARNING) May affect your world save! (WARNING)",
 
 
 
@@ -158,6 +158,11 @@
   "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight": "applyAspectRatioHeight",
 
   "screenshotfeatures.gui.title.customuniforms": "Custom Uniforms",
+
+  "screenshotfeatures.gui.customuniforms.buttons.addentry": "Add Entry",
+  "screenshotfeatures.gui.customuniforms.placeholdertext0": "No custom uniforms defined. Type a name in the search bar and click 'Add Entry'.",
+  "screenshotfeatures.gui.customuniforms.placeholdertext1": "This interface allows for the definition of custom float uniforms for shaders,",
+  "screenshotfeatures.gui.customuniforms.placeholdertext2": "visit the mod page for more info on how to use this with your shader.",
 
   "screenshotfeatures.messages.valueChange": "Set %1$s to: %2$s",
   "screenshotfeatures.messages.dofOverrideValueChange": "DOF override: %s",

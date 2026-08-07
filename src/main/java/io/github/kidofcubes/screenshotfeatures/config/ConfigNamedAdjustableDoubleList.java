@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fi.dy.masa.malilib.config.IConfigBase;
+import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
@@ -67,30 +68,39 @@ public class ConfigNamedAdjustableDoubleList {
         String key = entryName.trim();
         if (entries.containsKey(key)) return null;
 
+        System.out.println("CONSTRUCTED NAMED ENTRY FROM ADDING ENTRY");
         NamedEntry entry = new NamedEntry(key);
         entries.put(key, entry);
+
+        updateKeybinds();
         // ConfigAdjustableDouble constructor already adds to adjustableValues
         return entry;
     }
 
+    private void updateKeybinds(){
+//        InputEventHandler.getKeybindManager().updateUsedKeys();
+
+        InputEventHandler.getKeybindManager().unregisterKeybindProvider(ScreenshotFeatures.inputHandler);
+        InputEventHandler.getInputManager().unregisterMouseInputHandler(ScreenshotFeatures.inputHandler);
+
+//        InputEventHandler.getKeybindManager().updateUsedKeys();
+
+        InputEventHandler.getKeybindManager().registerKeybindProvider(ScreenshotFeatures.inputHandler);
+        InputEventHandler.getInputManager().registerMouseInputHandler(ScreenshotFeatures.inputHandler);
+
+        InputEventHandler.getKeybindManager().updateUsedKeys();
+    }
+
     /**
-     * Removes an entry by its name (case-insensitive).
+     * Removes an entry by its name (case-sensitive).
      * @return true if the entry was found and removed
      */
     public boolean removeEntry(String entryName) {
         if (entryName == null || entryName.isBlank()) return false;
-        // Find the actual key (case-insensitive)
-        String actualKey = null;
-        for (String key : entries.keySet()) {
-            if (key.equalsIgnoreCase(entryName.trim())) {
-                actualKey = key;
-                break;
-            }
-        }
-        if (actualKey == null) return false;
 
-        NamedEntry entry = entries.remove(actualKey);
+        NamedEntry entry = entries.remove(entryName);
         ScreenshotFeatures.adjustableValues.remove(entry.getConfig());
+        updateKeybinds();
         return true;
     }
 
@@ -102,19 +112,15 @@ public class ConfigNamedAdjustableDoubleList {
             ScreenshotFeatures.adjustableValues.remove(entry.getConfig());
         }
         entries.clear();
+        updateKeybinds();
     }
 
     /**
-     * Gets an entry by name (case-insensitive).
+     * Gets an entry by name (case-sensitive).
      */
     public NamedEntry getEntry(String entryName) {
         if (entryName == null) return null;
-        for (Map.Entry<String, NamedEntry> mapEntry : entries.entrySet()) {
-            if (mapEntry.getKey().equalsIgnoreCase(entryName.trim())) {
-                return mapEntry.getValue();
-            }
-        }
-        return null;
+        return entries.get(entryName);
     }
 
     public int getEntryCount() {
@@ -139,14 +145,19 @@ public class ConfigNamedAdjustableDoubleList {
     }
 
     public void setValueFromJsonElement(JsonElement element) {
-        // Clear existing entries first
-        clearEntries();
+        if (element == null || !element.isJsonObject()) {
+            clearEntries();
+            return;
+        }
 
-        if (element == null || !element.isJsonObject()) return;
         JsonObject root = element.getAsJsonObject();
 
-        if (!root.has("entries") || !root.get("entries").isJsonArray()) return;
+        if (!root.has("entries") || !root.get("entries").isJsonArray()){
+            clearEntries();
+            return;
+        }
         JsonArray entriesArray = root.getAsJsonArray("entries");
+        List<String> addedNewEntries = new ArrayList<>();
 
         for (JsonElement entryElement : entriesArray) {
             if (!entryElement.isJsonObject()) continue;
@@ -155,13 +166,23 @@ public class ConfigNamedAdjustableDoubleList {
             if (!entryObj.has("name") || !entryObj.has("config")) continue;
 
             String entryName = entryObj.get("name").getAsString();
+
+            addedNewEntries.add(entryName);
+
             JsonElement configElement = entryObj.get("config");
 
             // Create the entry (this also registers it via ConfigAdjustableDouble constructor)
-            NamedEntry entry = new NamedEntry(entryName);
+            System.out.println("CONSTRUCTED NAMED ENTRY FROM JSON");
+            NamedEntry entry = entries.getOrDefault(entryName, new NamedEntry(entryName));
             entry.getConfig().setValueFromJsonElement(configElement);
             entries.put(entryName, entry);
         }
+        for(String entry: entries.keySet()){
+            if(!addedNewEntries.contains(entry)){
+                entries.remove(entry);
+            }
+        }
+        updateKeybinds();
     }
 
     /**
