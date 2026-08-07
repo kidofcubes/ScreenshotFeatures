@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
+import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 
 import java.util.Collections;
@@ -28,6 +29,9 @@ public class ConfigsGui extends GuiConfigsBase {
             return;
         }else if(tab == ConfigGuiTab.CAMERA_MATRIX_EDITOR){
             GuiBase.openGui(new CameraMatrixEditorGui());
+            return;
+        }else if(tab == ConfigGuiTab.SHADER_OPTIONS){
+            GuiBase.openGui(new CustomUniformsGui(Configs.ShaderOptions.CUSTOM_UNIFORMS));
             return;
         }
         super.initGui();

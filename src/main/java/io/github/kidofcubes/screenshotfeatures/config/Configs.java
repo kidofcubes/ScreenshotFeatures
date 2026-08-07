@@ -159,6 +159,9 @@ public class Configs implements IConfigHandler {
 
         //todo save these in screenshot tags as well maybe
 
+        // Dynamic custom uniforms list - users can add/remove entries from the GUI
+        public static final ConfigNamedAdjustableDoubleList CUSTOM_UNIFORMS = new ConfigNamedAdjustableDoubleList("customUniforms");
+
         public static final ConfigAdjustableDouble DOF_INTENSITY = setupConfig(new ConfigAdjustableDouble("DOF_INTENSITY", 1.0, ""));
 
         public static final ConfigAdjustableDouble WEATHER_TEMPERATURE_BIAS = setupConfig(new ConfigAdjustableDouble("WEATHER_TEMPERATURE_BIAS", 0.0, "" , -Double.MAX_VALUE, Double.MAX_VALUE));
@@ -181,6 +184,25 @@ public class Configs implements IConfigHandler {
             OPTIONS = OPTIONS_BUILDER.build();
             HOTKEYS = HOTKEYS_BUILDER.build();
         }
+
+        /**
+         * Returns all hotkeys including those from dynamic custom uniform entries.
+         */
+        public static ImmutableList<IHotkey> getAllHotkeys() {
+            ImmutableList.Builder<IHotkey> allHotkeys = ImmutableList.builder();
+            allHotkeys.addAll(HOTKEYS);
+            allHotkeys.addAll(CUSTOM_UNIFORMS.getHotkeys());
+            return allHotkeys.build();
+        }
+
+        /**
+         * Returns all config options including those from dynamic custom uniform entries.
+         */
+        public static java.util.List<IConfigBase> getAllOptions() {
+            java.util.List<IConfigBase> allOptions = new java.util.ArrayList<>(OPTIONS);
+            allOptions.addAll(CUSTOM_UNIFORMS.getEntriesAsConfigBases());
+            return allOptions;
+        }
     }
 
     public static void loadFromFile() {
@@ -197,7 +219,12 @@ public class Configs implements IConfigHandler {
                 ConfigUtils.readConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
                 ConfigUtils.readConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
-                ConfigUtils.readConfigBase(root, "ShaderOptions", ShaderOptions.OPTIONS);
+                ConfigUtils.readConfigBase(root, "ShaderOptions", Configs.ShaderOptions.OPTIONS);
+
+                // Load dynamic custom uniforms
+                if (root.has("CustomUniforms")) {
+                    Configs.ShaderOptions.CUSTOM_UNIFORMS.setValueFromJsonElement(root.get("CustomUniforms"));
+                }
             }
         }
     }
@@ -212,7 +239,10 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "IngameTools", Configs.IngameTools.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Metadata", Configs.Metadata.OPTIONS);
             ConfigUtils.writeConfigBase(root, "CameraMatrix", CameraMatrix.OPTIONS);
-            ConfigUtils.writeConfigBase(root, "ShaderOptions", ShaderOptions.OPTIONS);
+            ConfigUtils.writeConfigBase(root, "ShaderOptions", Configs.ShaderOptions.OPTIONS);
+
+            // Save dynamic custom uniforms
+            root.add("CustomUniforms", Configs.ShaderOptions.CUSTOM_UNIFORMS.getAsJsonElement());
 
             JsonUtils.writeJsonToFile(root,new File(dir, CONFIG_FILE_NAME).toPath());
         }

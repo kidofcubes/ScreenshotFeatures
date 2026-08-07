@@ -110,12 +110,17 @@ public class ScreenshotFeatures implements ClientModInitializer {
             for (IHotkey hotkey : Configs.CameraMatrix.HOTKEYS) {
                 manager.addKeybindToMap(hotkey.getKeybind());
             }
+            // Register keybinds from dynamic custom uniform entries
+            for (IHotkey hotkey : Configs.ShaderOptions.getAllHotkeys()) {
+                manager.addKeybindToMap(hotkey.getKeybind());
+            }
         }
 
         @Override
         public void addHotkeys(IKeybindManager manager) {
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.ingame_hotkeys", Configs.IngameTools.HOTKEYS);
             manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.orthocameraintegration_hotkeys", Configs.CameraMatrix.HOTKEYS);
+            manager.addHotkeysForCategory(MOD_ID, MOD_ID+".hotkeys.category.custom_uniforms_hotkeys", Configs.ShaderOptions.getAllHotkeys());
         }
 
         @Override

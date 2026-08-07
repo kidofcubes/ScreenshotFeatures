@@ -31,6 +31,13 @@ repositories {
         }
     }
     maven { url = uri("https://maven.terraformersmc.com/releases/") }
+//    maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://masa.dy.fi/maven/sakura-ryoko")
+        content {includeGroupAndSubgroups("fi.dy.masa")}
+    }
+    maven { url = uri("https://maven.fallenbreath.me/releases")
+        content {includeGroupAndSubgroups("me.fallenbreath")}
+    }
 }
 
 dependencies {

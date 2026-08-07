@@ -6,6 +6,7 @@ fabric_api = "0.156.0+26.2"
 
 
 malilib = "0.29.3"
+#malilib = "26.2-0.29.2"
 modmenu = "20.0.1"
 fabrishot = "1.17.0"
 iris = "1.11.2+26.2-fabric"
@@ -27,7 +28,9 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 
-malilib = { module = "maven.modrinth:malilib", version.ref = "malilib" }
+#malilib = { module = "maven.modrinth:malilib", version.ref = "malilib" }
+#malilib = { module = "com.github.sakura-ryoko:malilib", version.ref = "malilib" }
+malilib = { module = "fi.dy.masa.malilib:malilib-fabric-26.2", version.ref = "malilib" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 fabrishot = { module = "maven.modrinth:fabrishot", version.ref = "fabrishot" }
 iris = { module = "maven.modrinth:iris", version.ref = "iris" }
