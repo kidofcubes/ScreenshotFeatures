@@ -61,6 +61,10 @@ dependencies {
 
     implementation(libs.jgit)
     include(libs.jgit)
+
+    //debugging
+    implementation("io.github.java-diff-utils:java-diff-utils:4.12")
+    include("io.github.java-diff-utils:java-diff-utils:4.12")
 }
 
 tasks.processResources {

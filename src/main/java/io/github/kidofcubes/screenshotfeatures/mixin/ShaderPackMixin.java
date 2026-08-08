@@ -1,18 +1,18 @@
 package io.github.kidofcubes.screenshotfeatures.mixin;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.algorithm.DiffAlgorithmListener;
+import com.github.difflib.patch.Patch;
 import com.google.common.collect.Streams;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
-import net.irisshaders.iris.gl.uniform.UniformUpdateFrequency;
 import net.irisshaders.iris.helpers.StringPair;
 import net.irisshaders.iris.shaderpack.ShaderPack;
 import net.irisshaders.iris.shaderpack.include.AbsolutePackPath;
 import net.irisshaders.iris.shaderpack.include.IncludeProcessor;
 import net.irisshaders.iris.shaderpack.preprocessor.GlslCollectingListener;
 import org.anarres.cpp.*;
+import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,13 +21,17 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 @Mixin(value = ShaderPack.class, remap = false)
 public class ShaderPackMixin {
@@ -84,15 +88,39 @@ public class ShaderPackMixin {
     }
 
     @Inject(method="lambda$new$8", at=@At(value="RETURN", ordinal = 2), cancellable = true)
-    private static void unConst(CallbackInfoReturnable<String> cir){
+    private static void unConst(List disabledPrograms,IncludeProcessor includeProcessor,Iterable finalEnvironmentDefines1,AbsolutePackPath path,CallbackInfoReturnable<String> cir){
+        String origSource = cir.getReturnValue();
+        boolean toPrint = false;
+        String name="NULLNAME";
 
-        List<String> overridedUniforms = new ArrayList<>();
-        for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
-            if(entry.override){
-                overridedUniforms.add(entry.getName());
-            }
+        if(origSource.contains("CLOUDS_CIRRUS_ALTITUDE")){
+            toPrint=true;
+            name=path.getPathString().replace("/","-");
+
+//            try{
+//                byte[] hash = MessageDigest.getInstance("SHA-256").digest(origSource.getBytes());
+//                // Convert hash bytes to hex string
+//                StringBuilder hex = new StringBuilder();
+//                for(byte b : hash) hex.append(String.format("%02x",b));
+//                name = hex.toString().substring(60);
+//            }catch(NoSuchAlgorithmException e){
+//                throw new RuntimeException(e);
+//            }
+            System.out.println("====================================================");
+            System.out.println("STARTING UNCONST FOR "+name);
         }
 
+        List<String> overridedWithUniforms = new ArrayList<>();
+        for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
+            if(entry.override){
+                overridedWithUniforms.add(entry.getName());
+            }
+        }
+        String source = cir.getReturnValue();
+
+        source = source.replace("#version", "#warning IRIS_JCPP_GLSL_VERSION");
+        source = source.replace("#extension", "#warning IRIS_JCPP_GLSL_EXTENSION");
+        source = source.replace("\u0000", "");
         Preprocessor pp = new Preprocessor();
 
 //        try {
@@ -105,7 +133,7 @@ public class ShaderPackMixin {
 
         GlslCollectingListener listener = new GlslCollectingListener();
         pp.setListener(listener);
-        pp.addInput(new StringLexerSource(cir.getReturnValue(), true));
+        pp.addInput(new StringLexerSource(source, true));
         pp.addFeature(Feature.KEEPCOMMENTS);
 
         List<Token> tokenList = new ArrayList<>();
@@ -138,28 +166,198 @@ public class ShaderPackMixin {
             (x -> x.getType()==Token.CPPCOMMENT)
         );
         int searchingIndex = 0;
+        Map<String, List<Token>> toBeUnConsted = new HashMap<>();
+        AtomicInteger blocksDeep = new AtomicInteger(0);
         while(true){
-            List<Integer> matchedConst = matchIndex(tokenList, searchingIndex, x -> x.getType() == Token.WHITESPACE||x.getText().equals("-"), constMatch);
+            List<Integer> matchedConst = matchIndex(tokenList, searchingIndex, (i, x) -> {
+                if(i==0){
+                    if(x.getText().equals("{")){
+                        blocksDeep.getAndIncrement();
+                    }else if(x.getText().equals("}")){
+                        blocksDeep.getAndDecrement();
+                    }
+                }
+                return !x.getText().equals(";");
+            }, constMatch);
             if(matchedConst.getFirst()==-1){
                 break;
             }
 
             boolean unconst = false;
             for(int i=matchedConst.get(3)+1;i<matchedConst.get(4);i++){
-                if(overridedUniforms.contains(tokenList.get(i).getText())){
-                    unconst = true;
+                if(overridedWithUniforms.contains(tokenList.get(i).getText())){ //find consts effected by our #define removal
+                    if(blocksDeep.get()!=0){ //if inline const
+                        //just remove the const part, inlined ones will just work
+                        System.out.println("BLOCKSDEEP FIRST was "+blocksDeep+", signifying an inline const");
+                        for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                            System.out.print(tokenList.get(j).getText());
+                        }
+                        System.out.println();
+                        tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
+                    }else{
+                        //this is a root level const define, we need to substitute this in everywhere
+                        unconst = true;
+                    }
                     break;
                 }
             }
 
             if(unconst){
                 //todo remove the const definition, put it in parentheses, and replace usages of it everywhere else
+                List<Token> replacement = new ArrayList<>(tokenList.subList(matchedConst.get(3)+1, matchedConst.get(4)));
+                replacement.addFirst(new Token('(', -1, -1, "(", null));
+                replacement.add(new Token(')', -1, -1, ")", null));
+                toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
+
+                System.out.print("in FIRST\n\"");
+                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                    System.out.print(tokenList.get(j).getText());
+                }
+                System.out.println("\"");
+                System.out.println("replaced all of it with empty");
+                for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
+                    tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
+                }
 //                tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "uniform", null));
 
             }
 
             searchingIndex = matchedConst.getFirst() + 1;
         }
+        searchingIndex=0;
+        //technically, this should definitely be zero, but setting it here again just to be safe
+        blocksDeep.set(0);
+
+        //now we search for all root level consts that depend on things tobeunconsted, replace them, and delete them
+        while(true){
+            List<Integer> matchedConst = matchIndex(tokenList, searchingIndex, (i, x) -> {
+                if(i == 0){
+                    if(x.getText().equals("{")){
+                        blocksDeep.getAndIncrement();
+                    }else if(x.getText().equals("}")){
+                        blocksDeep.getAndDecrement();
+                    }
+                }
+
+                return !x.getText().equals(";");
+            }, constMatch);
+            if(matchedConst.getFirst()==-1){
+                break;
+            }
+
+            boolean unconst = false;
+            for(int i=matchedConst.get(3)+1;i<matchedConst.get(4);i++){
+                List<Token> toReplace = toBeUnConsted.get(tokenList.get(i).getText());
+                if(toReplace!=null){ //found usage of a tobeunconsted in this const
+                    System.out.println("in ");
+                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                        System.out.print(tokenList.get(j).getText());
+                    }
+                    System.out.println();
+                    System.out.println("replaced "+tokenList.get(i).getText()+" with ");
+                    for(Token token: toReplace){
+                        System.out.print(token.getText());
+                    }
+                    System.out.println();
+                    if(blocksDeep.get()!=0){
+                        System.out.println("blocksdeep was "+blocksDeep+", signifying an inline const");
+                        //this is an inline const, we just unconst it and do replacements, no need for searching for dependents of this
+                        tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
+                    }else{
+                        //not inline const, we need to calculate dependents of this
+                        unconst = true;
+                    }
+                    tokenList.addAll(i+1, toReplace);
+                    tokenList.remove(i);
+                    matchedConst.set(4, matchedConst.get(4) + toReplace.size() - 1);
+                }
+            }
+
+            if(unconst){
+                //this is gurenteed to be the full expansion because everything must have been declared beforehand already
+
+                List<Token> replacement = new ArrayList<>(tokenList.subList(matchedConst.get(3)+1, matchedConst.get(4)));
+                replacement.addFirst(new Token('(', -1, -1, "(", null));
+                replacement.add(new Token(')', -1, -1, ")", null));
+                toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
+
+                System.out.print("in second \n\"");
+                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                    System.out.print(tokenList.get(j).getText());
+                }
+                System.out.println("\"");
+                System.out.println("replaced all of it with empty");
+
+                for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
+                    tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
+                }
+            }
+
+            searchingIndex = matchedConst.getFirst() + 1;
+        }
+        for(int i=0;i<tokenList.size();i++){
+            Token token = tokenList.get(i);
+            if(token.getType()!=Token.IDENTIFIER){
+                continue;
+            }
+            List<Token> toReplace = toBeUnConsted.get(tokenList.get(i).getText());
+            if(toReplace!=null){
+                tokenList.addAll(i+1, toReplace);
+                tokenList.remove(i);
+            }
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i=0;i<tokenList.size();i++){
+            stringBuilder.append(tokenList.get(i).getText());
+        }
+        String result = listener.collectLines() + stringBuilder;
+        if(toPrint){
+//            String printResult = result.replaceAll("(?:\\R\\h*)+", "\n");
+//            Patch<String> diff =  DiffUtils.diff(source,result,new DiffAlgorithmListener() {
+//                @Override
+//                public void diffStart(){}
+//
+//                @Override
+//                public void diffStep(int value,int max){}
+//
+//                @Override
+//                public void diffEnd(){}
+//            });
+            List<String> origSourceLines = Arrays.asList(origSource.split("\n"));
+            Patch<String> diff = DiffUtils.diff(origSourceLines, Arrays.asList(result.split("\n")));
+            // Generate unified diff output format
+            List<String> fullDiff = UnifiedDiffUtils.generateUnifiedDiff(
+                "original.glsl",
+                "processed.glsl",
+                origSourceLines,
+                diff,
+                100000 // Context lines around changes
+            );
+
+            List<String> minDiff = UnifiedDiffUtils.generateUnifiedDiff(
+                "original.glsl",
+                "processed.glsl",
+                origSourceLines,
+                diff,
+                3 // Context lines around changes
+            );
+//            String printResult =
+//                cir.getReturnValue().replaceAll("(?m)^\\h*$\\n?", "") +
+//                    "\n\n\n\n========================================================================================================================================================================\n\n\n\n" +
+//                result.replaceAll("(?m)^\\h*$\\n?", "");
+            String printResult = String.join("\n",fullDiff);
+            try{
+                // Save to file named <hash>.txt
+                String prefixPath = "/SSD128GB/JavaProjects/Intellij/ScreenshotFeatures/run/shaderdebugout/";
+                Files.writeString(Path.of(prefixPath+name + ".txt"), printResult);
+                Files.writeString(Path.of(prefixPath+name + "_min.txt"), String.join("\n", minDiff));
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+        cir.setReturnValue(result);
+
 
 
 //        while(true){
@@ -186,10 +384,15 @@ public class ShaderPackMixin {
 
     }
 
+    @Unique
+    private static void save(String content, String name){
+
+    }
+
 
 
     @Unique
-    private static <T> List<Integer> matchIndex(List<T> list,int startingIndex,Predicate<T> ignore,List<Predicate<T>> match){
+    private static <T> List<Integer> matchIndex(List<T> list,int startingIndex,BiPredicate<Integer,T> ignore,List<Predicate<T>> match){
         List<Integer> indexes = new ArrayList<>(Collections.nCopies(match.size(),0));
         int toMatchIndex=0;
         for(int i=startingIndex;i<list.size();i++){
@@ -200,9 +403,10 @@ public class ShaderPackMixin {
                 if(toMatchIndex>=match.size()){
                     return indexes;
                 }
-            }else if(!ignore.test(item)){
+            }else if(!ignore.test(toMatchIndex,item)){
                 if(toMatchIndex>0){
-                    i = indexes.get(toMatchIndex-1);
+                    //try starting search from shifted forward one index from our original origin
+                    i = indexes.get(0);
                 }
                 toMatchIndex=0;
             }
