@@ -5,19 +5,24 @@ import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
-import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
-import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptionsBase;
-import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;
+import fi.dy.masa.malilib.gui.widgets.*;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
+import net.irisshaders.iris.Iris;
+import net.irisshaders.iris.shaderpack.option.MergedStringOption;
+import net.irisshaders.iris.shaderpack.option.OptionSet;
+import net.irisshaders.iris.shaderpack.option.ShaderPackOptions;
+import net.minecraft.client.input.CharacterEvent;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomUniformsGui extends GuiConfigsBase {
 
@@ -26,6 +31,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
     private static Field fieldSearchBox;
     private static boolean reflectionInitialized = false;
     private static boolean reflectionFailed = false;
+    private WidgetDropDownList<String> dropdown = null;
 
     public CustomUniformsGui(ConfigNamedAdjustableDoubleList listManager) {
         super(10, 90, ScreenshotFeatures.MOD_ID, null,
@@ -46,10 +52,62 @@ public class CustomUniformsGui extends GuiConfigsBase {
         // Tab buttons from the main config GUI
         ConfigsGui.createTabButtons(this, 10, 26);
 
-        addButtonAt(10, 70, StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry"), new AddEntryListener());
+        addButtonAt(230, 70, StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry"), new AddEntryListener());
+
+//        dropdown = new WidgetDropDownList<>(10, 70, 200, 20, height-120, 100, List.of("1","2","3","4","5","6","7","8","9","10"));
+        List<String> options = new ArrayList<>(getFloatDefines().keySet());
+        List<String> translatedNames = new ArrayList<>(options.size());
+        for(int i=0;i<options.size();i++){
+            String key = options.get(i);
+            String translatedName = StringUtils.translate("option."+key);
+            if(translatedName.equals("option."+key)){
+                translatedNames.add("");
+            }else{
+                translatedNames.add(translatedName);
+//                options.set(i,translatedName+"|"+key);
+            }
+        }
+        int longest = 10;
+        for(int i=0;i<options.size();i++){
+            longest=Math.max(longest, this.font.width(translatedNames.get(i)));
+        }
+        int spaceWidth = this.font.width(" ");
+        longest=longest+(spaceWidth*3);
+        List<String> paddedOptions = new ArrayList<>();
+        int totalLongest = 10;
+        for(int i=0;i<options.size();i++){
+            int spaces = ((longest-this.font.width(translatedNames.get(i)))/spaceWidth);
+            String total = translatedNames.get(i)+(" ".repeat(spaces))+"|    "+options.get(i);
+
+//            String total = String.format("%-"+(longest+3)+"s",translatedNames.get(i))+"|   "+options.get(i);
+            totalLongest=Math.max(totalLongest,this.font.width(total));
+            paddedOptions.add(total);
+        }
+
+
+
+        dropdown = new WidgetDropDownList<>(10, 70, totalLongest+10, 20, height-120, 100, paddedOptions);
+        this.addWidget(dropdown);
     }
 
-    private int addButtonAt(int x, int y, String label, IButtonActionListener listener) {
+    private int mouseX=0;
+    private int mouseY=0;
+    @Override
+    public void drawContents(GuiContext ctx,int mouseX,int mouseY,float partialTicks){
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+        super.drawContents(ctx,mouseX,mouseY,partialTicks);
+    }
+
+    @Override
+    public boolean onCharTyped(CharacterEvent input){
+        if(dropdown.isMouseOver(mouseX,mouseY)){
+            return dropdown.onCharTyped(input);
+        }
+        return super.onCharTyped(input);
+    }
+
+    private int addButtonAt(int x,int y,String label,IButtonActionListener listener) {
         int width = this.getStringWidth(label) + 10;
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
         button.setHoverStrings(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry.hover"));
@@ -159,6 +217,31 @@ public class CustomUniformsGui extends GuiConfigsBase {
                     refreshList();
                 }
             }
+        }
+    }
+    public static Map<String,Float> getFloatDefines() {
+        if(Iris.getCurrentPack().isPresent()){
+            ShaderPackOptions options = Iris.getCurrentPack().get().getShaderPackOptions();
+            OptionSet optionSet = options.getOptionSet();
+            Map<String,Float> floatDefines = new HashMap<>();
+            for(Map.Entry<String,MergedStringOption> entry : optionSet.getStringOptions().entrySet()){
+                String key = entry.getKey();
+//                boolean isNumber = false;
+//                for(String allowedValue: value.getOption().getAllowedValues()){
+//                    if(allowedValue.matches("-?\\d+(\\.\\d+)?")){
+//                        isNumber=true;
+//                        break;
+//                    }
+//                }
+//                if(isNumber){
+                    try {
+                        floatDefines.put(key,Float.valueOf(options.getOptionValues().getStringValueOrDefault(key)));
+                    }catch(NumberFormatException _){}
+//                }
+            }
+            return floatDefines;
+        }else{
+            return new HashMap<>();
         }
     }
 
