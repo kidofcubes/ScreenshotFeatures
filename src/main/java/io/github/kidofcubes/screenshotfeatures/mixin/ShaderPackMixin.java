@@ -335,8 +335,7 @@ public class ShaderPackMixin {
 //                result.replaceAll("(?m)^\\h*$\\n?", "");
             String printResult = String.join("\n",fullDiff);
             try{
-                // Save to file named <hash>.txt
-                String prefixPath = "/SSD128GB/JavaProjects/Intellij/ScreenshotFeatures/run/shaderdebugout/";
+                String prefixPath = "./run/shaderdebugout/";
                 Files.writeString(Path.of(prefixPath+name + ".txt"), printResult);
                 Files.writeString(Path.of(prefixPath+name + "_min.txt"), String.join("\n", minDiff));
             }catch(IOException e){

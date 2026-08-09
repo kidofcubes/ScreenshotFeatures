@@ -57,7 +57,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
         // Tab buttons from the main config GUI
         ConfigsGui.createTabButtons(this, 10, 26);
 
-        addButtonAt(230, 70, StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry"), new AddEntryListener());
+        addButtonAt(10, 70, StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry"), new AddEntryListener());
 
 //        dropdown = new WidgetDropDownList<>(10, 70, 200, 20, height-120, 100, List.of("1","2","3","4","5","6","7","8","9","10"));
         List<String> options = new ArrayList<>(getFloatDefines().keySet());
@@ -94,7 +94,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
 
 
 
-        dropdown = new WidgetDropDownList<>(10, 70, totalLongest+10, 20, height-120, 100, options){
+        dropdown = new WidgetDropDownList<>(75, 70, totalLongest+10, 20, height-120, 100, options){
             @Override
             protected void setSelectedEntry(int index){
                 String key = filteredEntries.get(index);
@@ -154,9 +154,9 @@ public class CustomUniformsGui extends GuiConfigsBase {
         List<IConfigBase> entries = listManager.getEntriesAsConfigBases();
         if (entries.isEmpty()) {
             List<ConfigOptionWrapper> wrappers = new ArrayList<>();
-            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext0")));
-            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext1")));
-            wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext2")));
+            for(int i=0;i<=6;i++){
+                wrappers.add(new ConfigOptionWrapper(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.placeholdertext"+i)));
+            }
             return wrappers;
         }
         return ConfigOptionWrapper.createFor(entries);
