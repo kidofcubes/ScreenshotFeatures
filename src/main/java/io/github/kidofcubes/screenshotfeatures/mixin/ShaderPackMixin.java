@@ -2,9 +2,9 @@ package io.github.kidofcubes.screenshotfeatures.mixin;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
-import com.github.difflib.algorithm.DiffAlgorithmListener;
 import com.github.difflib.patch.Patch;
 import com.google.common.collect.Streams;
+import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
 import net.irisshaders.iris.helpers.StringPair;
 import net.irisshaders.iris.shaderpack.ShaderPack;
@@ -12,7 +12,6 @@ import net.irisshaders.iris.shaderpack.include.AbsolutePackPath;
 import net.irisshaders.iris.shaderpack.include.IncludeProcessor;
 import net.irisshaders.iris.shaderpack.preprocessor.GlslCollectingListener;
 import org.anarres.cpp.*;
-import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,11 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
@@ -35,11 +31,9 @@ import java.util.regex.Pattern;
 
 @Mixin(value = ShaderPack.class, remap = false)
 public class ShaderPackMixin {
-//    @Inject(method="lambda$new$8", at=@At(value="INVOKE", target="Lnet/irisshaders/iris/shaderpack/preprocessor/JcppProcessor;glslPreprocessSource(Ljava/lang/String;Ljava/lang/Iterable;)Ljava/lang/String;"))
     @ModifyArgs(method="lambda$new$8", at=@At(value="INVOKE", target="Lnet/irisshaders/iris/shaderpack/preprocessor/JcppProcessor;glslPreprocessSource(Ljava/lang/String;Ljava/lang/Iterable;)Ljava/lang/String;"))
-//    private static void injectUniforms(CallbackInfoReturnable<String> cir,@Local(name="source") LocalRef<String> source, @Local(name="finalEnvironmentDefines1") LocalRef<Iterable<StringPair>> finalEnvironmentDefines1){
     private static void injectUniforms(Args args){
-//        source doesn't have #defines already now
+//        source still has #defines here
         // just need to try to fix anything that was using the defined variable
         // then add the uniform to the top
 
@@ -55,11 +49,12 @@ public class ShaderPackMixin {
         Iterable<StringPair> filtered = Streams.stream(iterable).filter(pair -> {
             return !overridedUniforms.contains(pair.key());
         })::iterator;
-        args.set(1,filtered);
+        args.set(1,filtered); //remove the macro from the next actuall preprocessing stage
 
 
         String source = args.get(0);
 
+        //remove all things that define the thing
         for(String overridedUniform: overridedUniforms){
             String regex = "(?m)^(\\s*#define\\s+)" + Pattern.quote(overridedUniform) + "(\\s+)[+-]?\\d*(?:\\.\\d+)?(\\s*//.*)?$";
             source = source.replaceAll(regex, "");
@@ -93,7 +88,7 @@ public class ShaderPackMixin {
         boolean toPrint = false;
         String name="NULLNAME";
 
-        if(origSource.contains("CLOUDS_CIRRUS_ALTITUDE")){
+        if(ScreenshotFeatures.DEBUG && origSource.contains("CLOUDS_CIRRUS_ALTITUDE")){
             toPrint=true;
             name=path.getPathString().replace("/","-");
 
@@ -158,13 +153,6 @@ public class ShaderPackMixin {
             (x -> x.getText().equals(";"))
         );
 
-        List<Predicate<Token>> defineMatch = List.of(
-            (x -> x.getType()==Token.HASH), // const
-            (x -> x.getText().equals("define")), // const
-            (x -> x.getType()==Token.IDENTIFIER),
-            (x -> x.getType()==Token.NUMBER),
-            (x -> x.getType()==Token.CPPCOMMENT)
-        );
         int searchingIndex = 0;
         Map<String, List<Token>> toBeUnConsted = new HashMap<>();
         AtomicInteger blocksDeep = new AtomicInteger(0);
@@ -188,11 +176,13 @@ public class ShaderPackMixin {
                 if(overridedWithUniforms.contains(tokenList.get(i).getText())){ //find consts effected by our #define removal
                     if(blocksDeep.get()!=0){ //if inline const
                         //just remove the const part, inlined ones will just work
-                        System.out.println("BLOCKSDEEP FIRST was "+blocksDeep+", signifying an inline const");
-                        for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                            System.out.print(tokenList.get(j).getText());
+                        if(ScreenshotFeatures.DEBUG){
+                            System.out.println("BLOCKSDEEP FIRST was "+blocksDeep+", signifying an inline const");
+                            for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                                System.out.print(tokenList.get(j).getText());
+                            }
+                            System.out.println();
                         }
-                        System.out.println();
                         tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
                     }else{
                         //this is a root level const define, we need to substitute this in everywhere
@@ -203,18 +193,20 @@ public class ShaderPackMixin {
             }
 
             if(unconst){
-                //todo remove the const definition, put it in parentheses, and replace usages of it everywhere else
+                //old to do (mostly works) remove the const definition, put it in parentheses, and replace usages of it everywhere else
                 List<Token> replacement = new ArrayList<>(tokenList.subList(matchedConst.get(3)+1, matchedConst.get(4)));
                 replacement.addFirst(new Token('(', -1, -1, "(", null));
                 replacement.add(new Token(')', -1, -1, ")", null));
                 toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
 
-                System.out.print("in FIRST\n\"");
-                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                    System.out.print(tokenList.get(j).getText());
+                if(ScreenshotFeatures.DEBUG){
+                    System.out.print("in FIRST\n\"");
+                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                        System.out.print(tokenList.get(j).getText());
+                    }
+                    System.out.println("\"");
+                    System.out.println("replaced all of it with empty");
                 }
-                System.out.println("\"");
-                System.out.println("replaced all of it with empty");
                 for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
                     tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
                 }
@@ -249,18 +241,22 @@ public class ShaderPackMixin {
             for(int i=matchedConst.get(3)+1;i<matchedConst.get(4);i++){
                 List<Token> toReplace = toBeUnConsted.get(tokenList.get(i).getText());
                 if(toReplace!=null){ //found usage of a tobeunconsted in this const
-                    System.out.println("in ");
-                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                        System.out.print(tokenList.get(j).getText());
+                    if(ScreenshotFeatures.DEBUG){
+                        System.out.println("in ");
+                        for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                            System.out.print(tokenList.get(j).getText());
+                        }
+                        System.out.println();
+                        System.out.println("replaced "+tokenList.get(i).getText()+" with ");
+                        for(Token token: toReplace){
+                            System.out.print(token.getText());
+                        }
+                        System.out.println();
                     }
-                    System.out.println();
-                    System.out.println("replaced "+tokenList.get(i).getText()+" with ");
-                    for(Token token: toReplace){
-                        System.out.print(token.getText());
-                    }
-                    System.out.println();
                     if(blocksDeep.get()!=0){
-                        System.out.println("blocksdeep was "+blocksDeep+", signifying an inline const");
+                        if(ScreenshotFeatures.DEBUG){
+                            System.out.println("blocksdeep was "+blocksDeep+", signifying an inline const");
+                        }
                         //this is an inline const, we just unconst it and do replacements, no need for searching for dependents of this
                         tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
                     }else{
@@ -281,12 +277,14 @@ public class ShaderPackMixin {
                 replacement.add(new Token(')', -1, -1, ")", null));
                 toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
 
-                System.out.print("in second \n\"");
-                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                    System.out.print(tokenList.get(j).getText());
+                if(ScreenshotFeatures.DEBUG){
+                    System.out.print("in second \n\"");
+                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                        System.out.print(tokenList.get(j).getText());
+                    }
+                    System.out.println("\"");
+                    System.out.println("replaced all of it with empty");
                 }
-                System.out.println("\"");
-                System.out.println("replaced all of it with empty");
 
                 for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
                     tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
@@ -312,18 +310,7 @@ public class ShaderPackMixin {
             stringBuilder.append(tokenList.get(i).getText());
         }
         String result = listener.collectLines() + stringBuilder;
-        if(toPrint){
-//            String printResult = result.replaceAll("(?:\\R\\h*)+", "\n");
-//            Patch<String> diff =  DiffUtils.diff(source,result,new DiffAlgorithmListener() {
-//                @Override
-//                public void diffStart(){}
-//
-//                @Override
-//                public void diffStep(int value,int max){}
-//
-//                @Override
-//                public void diffEnd(){}
-//            });
+        if(ScreenshotFeatures.DEBUG && toPrint){
             List<String> origSourceLines = Arrays.asList(origSource.split("\n"));
             Patch<String> diff = DiffUtils.diff(origSourceLines, Arrays.asList(result.split("\n")));
             // Generate unified diff output format
@@ -357,39 +344,7 @@ public class ShaderPackMixin {
             }
         }
         cir.setReturnValue(result);
-
-
-
-//        while(true){
-//            List<Integer> matchedDefine = matchIndex(tokenList,searchingIndex,x -> x.getType()==Token.WHITESPACE||x.getText().equals("-"),constMatch);
-//            if(matchedDefine.getFirst()==-1){
-//                break;
-//            }
-//        }
-
-
-//
-//        List<Integer> matchIndices = IntStream.rangeClosed(0, lazyIds.size() - targetSize)
-//            .filter(i -> lazyIds.subList(i, i + targetSize).equals(constMatch))
-//            .boxed()
-//            .toList();
-//
-//        for(int i=0;i<tokenList.size();i++){
-//            if(tokenList.get(i).getType()!=Token.NL && tokenList.get(i).getType()!=Token.WHITESPACE){
-//                System.out.println("token of type "+tokenList.get(i).getType()+" with string type " + Token.getTokenName(tokenList.get(i).getType()) + " text "+tokenList.get(i).getText());
-//            }else{
-////                System.out.println("nl");
-//            }
-//        }
-
     }
-
-    @Unique
-    private static void save(String content, String name){
-
-    }
-
-
 
     @Unique
     private static <T> List<Integer> matchIndex(List<T> list,int startingIndex,BiPredicate<Integer,T> ignore,List<Predicate<T>> match){

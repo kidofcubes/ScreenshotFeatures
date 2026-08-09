@@ -34,6 +34,7 @@ import static net.minecraft.commands.Commands.literal;
 @Environment(EnvType.CLIENT)
 public class ScreenshotFeatures implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("ScreenshotFeatures");
+    public static final boolean DEBUG = false;
     public static Minecraft client;
     public static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
