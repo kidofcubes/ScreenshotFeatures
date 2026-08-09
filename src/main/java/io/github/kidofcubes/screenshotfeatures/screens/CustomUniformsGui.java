@@ -1,5 +1,6 @@
 package io.github.kidofcubes.screenshotfeatures.screens;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -16,13 +17,17 @@ import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.shaderpack.option.MergedStringOption;
 import net.irisshaders.iris.shaderpack.option.OptionSet;
 import net.irisshaders.iris.shaderpack.option.ShaderPackOptions;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.FormattedCharSink;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomUniformsGui extends GuiConfigsBase {
 
@@ -72,21 +77,44 @@ public class CustomUniformsGui extends GuiConfigsBase {
             longest=Math.max(longest, this.font.width(translatedNames.get(i)));
         }
         int spaceWidth = this.font.width(" ");
-        longest=longest+(spaceWidth*3);
-        List<String> paddedOptions = new ArrayList<>();
+        longest=longest+(spaceWidth*4);
+//        List<String> paddedOptions = new ArrayList<>();
+        Map<String, String> keyToPaddedDisplay = new HashMap<>();
         int totalLongest = 10;
         for(int i=0;i<options.size();i++){
             int spaces = ((longest-this.font.width(translatedNames.get(i)))/spaceWidth);
             String total = translatedNames.get(i)+(" ".repeat(spaces))+"|    "+options.get(i);
+            keyToPaddedDisplay.put(options.get(i), total);
 
 //            String total = String.format("%-"+(longest+3)+"s",translatedNames.get(i))+"|   "+options.get(i);
             totalLongest=Math.max(totalLongest,this.font.width(total));
-            paddedOptions.add(total);
+//            paddedOptions.add(total);
         }
+        ;
 
 
 
-        dropdown = new WidgetDropDownList<>(10, 70, totalLongest+10, 20, height-120, 100, paddedOptions);
+        dropdown = new WidgetDropDownList<>(10, 70, totalLongest+10, 20, height-120, 100, options){
+            @Override
+            protected void setSelectedEntry(int index){
+                String key = filteredEntries.get(index);
+                var pack = Iris.getCurrentPack();
+                double defaultValue = 0.0;
+                if(pack.isPresent()){
+                    String defaultString = pack.get().getShaderPackOptions().getOptionValues().getStringValueOrDefault(key);
+                    try{
+                        defaultValue=Double.parseDouble(defaultString);
+                    }catch(NumberFormatException _){}
+                }
+                interactedAddedNewEntry(key, defaultValue, true);
+//                super.setSelectedEntry(index);
+            }
+
+            @Override
+            protected String getDisplayString(String entry){
+                return keyToPaddedDisplay.get(entry);
+            }
+        };
         this.addWidget(dropdown);
     }
 
@@ -203,6 +231,48 @@ public class CustomUniformsGui extends GuiConfigsBase {
         }
     }
 
+    private void interactedAddedNewEntry(String key, double value, boolean override){
+        ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(key, override);
+        if (entry != null) {
+            entry.setValue(value);
+            String translated = StringUtils.getTranslatedOrFallback("option."+key+".comment", "???");
+
+            // comment code taken from iris
+            // Strip any trailing "."s
+            if (translated.endsWith(".")) {
+                translated = translated.substring(0, translated.length() - 1);
+            }
+            // Split comment body into lines by separator ". "
+            List<MutableComponent> splitByPeriods = Arrays.stream(translated.split("\\. [ ]*")).map(Component::literal).toList();
+            // Line wrap
+            List<FormattedCharSequence> lines = new ArrayList<>();
+            for (MutableComponent text : splitByPeriods) {
+                lines.addAll(this.font.split(text, 300));
+            }
+            StringBuilder total = new StringBuilder();
+            total.append(ChatFormatting.PREFIX_CODE).append(ChatFormatting.BOLD);
+            total.append(key);
+//            total.append(ChatFormatting.PREFIX_CODE).append(ChatFormatting.RESET);
+            total.append(ChatFormatting.PREFIX_CODE); //doesn't need the reset char here for some reason??
+            total.append("\n");
+            for(FormattedCharSequence formattedCharSequence: lines){
+                total.append("\n");
+                formattedCharSequence.accept((_,_,codePoint) -> {
+                    total.appendCodePoint(codePoint);
+                    return true;
+                });
+            }
+            total.deleteCharAt(0);
+            entry.getConfig().setComment(total.toString());
+
+
+            clearSearchBarText();
+            Configs.saveToFile();
+            refreshList();
+            dropdown.setSelectedEntry(null);
+        }
+    }
+
     // --- Action Listeners ---
 
     private class AddEntryListener implements IButtonActionListener {
@@ -210,12 +280,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
         public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
             String name = getSearchBarText().trim();
             if (!name.isEmpty()) {
-                ConfigNamedAdjustableDoubleList.NamedEntry entry = listManager.addEntry(name, false);
-                if (entry != null) {
-                    clearSearchBarText();
-                    Configs.saveToFile();
-                    refreshList();
-                }
+                interactedAddedNewEntry(name, 0.0, false);
             }
         }
     }

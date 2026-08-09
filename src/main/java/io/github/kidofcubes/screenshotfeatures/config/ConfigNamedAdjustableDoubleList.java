@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
+import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 
 import java.util.ArrayList;
@@ -202,9 +203,9 @@ public class ConfigNamedAdjustableDoubleList {
                     -Double.MAX_VALUE, Double.MAX_VALUE, // min/max
                     1.0,            // multiplier/step
                     KeybindSettings.DEFAULT,
-                    "Custom uniform: " + name, // comment
-                    name,           // pretty name
-                    name            // translated name
+                    StringUtils.translate("option."+name+".comment"), // comment
+                    StringUtils.translate("option."+name),           // pretty name
+                    StringUtils.translate("option."+name) // translated name
             );
             this.override = override;
         }
