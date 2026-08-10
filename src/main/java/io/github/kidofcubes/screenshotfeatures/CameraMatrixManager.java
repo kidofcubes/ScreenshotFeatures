@@ -16,7 +16,7 @@ public class CameraMatrixManager {
     public static void register(){
         Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.setValueChangeCallback(config -> {
             if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
-                updateMatrix(true, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
+                updateMatrix(false, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_WIDTH.setValueChangeCallback(config -> {
@@ -26,7 +26,7 @@ public class CameraMatrixManager {
         });
         Configs.CameraMatrix.MATRIX_HEIGHT.setValueChangeCallback(config -> {
             if(Configs.CameraMatrix.ALWAYS_APPLY_MATRIX.getBooleanValue()&&!skipResponse){
-                updateMatrix(true, false, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
+                updateMatrix(false, true, Configs.CameraMatrix.KEEP_ASPECT_RATIO.getBooleanValue());
             }
         });
         Configs.CameraMatrix.MATRIX_FAR.setValueChangeCallback(config -> {

@@ -138,7 +138,6 @@ public class CustomUniformsGui extends GuiConfigsBase {
     private int addButtonAt(int x,int y,String label,IButtonActionListener listener) {
         int width = this.getStringWidth(label) + 10;
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
-        button.setHoverStrings(StringUtils.translate(ScreenshotFeatures.MOD_ID+".gui.customuniforms.buttons.addentry.hover"));
         this.addButton(button, listener);
         return button.getWidth() + 4;
     }
