@@ -23,7 +23,7 @@ if you have a niche need for something you think might help in your screenshot e
 
 the old features for screenshot folder and file managing will be reimplemented at some point, but have been left out for now
 
-demo video (old, only shows dof feature) (chinese): https://www.bilibili.com/video/BV1MAYqzQEAp/
+demo video (chinese): https://www.bilibili.com/video/BV1JZg36bETy/
 
 
 ## ingame tools
