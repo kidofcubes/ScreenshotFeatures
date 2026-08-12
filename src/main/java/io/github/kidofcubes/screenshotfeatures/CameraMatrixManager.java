@@ -58,7 +58,6 @@ public class CameraMatrixManager {
         if((CameraMatrixManager.matrix.properties() & PROPERTY_PERSPECTIVE) > 0){
             CameraMatrixManager.setPerspectiveDimensions(width,height,keepAspectRatio);
         }else if((CameraMatrixManager.matrix.properties() & PROPERTY_AFFINE) > 0){ //assuming its orthogonal
-            System.out.println("orthogonal");
             orthogonalNear = Configs.CameraMatrix.MATRIX_NEAR.getDoubleValue();
             orthogonalFar = Configs.CameraMatrix.MATRIX_FAR.getDoubleValue();
             if(width&&height){

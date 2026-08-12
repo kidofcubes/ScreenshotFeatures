@@ -94,9 +94,7 @@ public class ConfigsGui extends GuiConfigsBase {
     {
         INGAMETOOLS ("screenshotfeatures.gui.title.ingametools"),
         METADATA ("screenshotfeatures.gui.title.metadata"),
-        SCREENSHOTSAVING ("screenshotfeatures.gui.title.screenshotsaving"),
         SCREENSHOT_VIEWER("screenshotfeatures.gui.title.screenshotviewer"),
-//        ORTHOCAMERAINTEGRATION ("screenshotfeatures.gui.title.orthocameraintegration"),
         CAMERA_MATRIX_EDITOR("screenshotfeatures.gui.title.cameramatrixeditor"),
         CUSTOM_UNIFORMS("screenshotfeatures.gui.title.customuniforms");
 

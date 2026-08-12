@@ -21,12 +21,11 @@ public class StandardMacrosMixin {
 
     @Shadow
     private static void define(List<StringPair> defines,String key,String value){}
-    @Inject(method = "createStandardEnvironmentDefines", at = @At(value = "INVOKE", target = "Lnet/irisshaders/iris/gl/shader/StandardMacros;define(Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)V"))
+    @Inject(method = "createStandardEnvironmentDefines", at = @At(value = "INVOKE", target = "Lnet/irisshaders/iris/gl/shader/StandardMacros;define(Ljava/util/List;Ljava/lang/String;Ljava/lang/String;)V", ordinal = 0))
     private static void injectScreenshotFeaturesDefine(CallbackInfoReturnable<ImmutableList<StringPair>> cir,@Local(name="standardDefines") ArrayList<StringPair> standardDefines) {
         define(standardDefines, "SCREENSHOT_FEATURES");
         for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
             define(standardDefines, "SCREENSHOT_FEATURES_CUSTOM_UNIFORM_"+entry.getName());
-            System.out.println("defined "+"SCREENSHOT_FEATURES_CUSTOM_UNIFORM_"+entry.getName());
         }
     }
 

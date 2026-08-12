@@ -84,7 +84,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
 
 
         this.addButton(new ButtonGeneric(375,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioWidth"), (button,mouseButton) -> {
-            System.out.println("RATIO IS "+((double)this.minecraft.getWindow().getHeight() / (double)this.minecraft.getWindow().getWidth()));
+            ScreenshotFeatures.LOGGER.debug("RATIO IS "+((double)this.minecraft.getWindow().getHeight() / (double)this.minecraft.getWindow().getWidth()));
             skipResponse = true;
             Configs.CameraMatrix.MATRIX_HEIGHT.setDoubleValue(
                     Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue() *
@@ -95,7 +95,7 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
         });
 
         this.addButton(new ButtonGeneric(500,150,100, false, "screenshotfeatures.gui.cameramatrix.applyAspectRatioHeight"), (button,mouseButton) -> {
-            System.out.println("RATIO IS "+((double)this.minecraft.getWindow().getWidth() / (double)this.minecraft.getWindow().getHeight()));
+            ScreenshotFeatures.LOGGER.debug("RATIO IS "+((double)this.minecraft.getWindow().getWidth() / (double)this.minecraft.getWindow().getHeight()));
             skipResponse = true;
             Configs.CameraMatrix.MATRIX_WIDTH.setDoubleValue(
                     Configs.CameraMatrix.MATRIX_HEIGHT.getDoubleValue() *
@@ -169,46 +169,6 @@ public class CameraMatrixEditorGui extends GuiConfigsBase {
                 this.drawTooltip = !this.drawTooltip;
                 return true;
             }
-
-//            if(input.input() == KeyCodes.KEY_S){
-//                CameraMatrixManager.matrix = new Matrix4d().setPerspective((double)(PI*0.5),1,0.1f,8192.0f);
-//                double far = CameraMatrixManager.matrix.get(3,2)/(CameraMatrixManager.matrix.get(2,2)+1.0);
-//                System.out.println("FAR IS "+far);
-//                System.out.println("OTHER FAR IS "+matrixToView(new Vector3d(-1,-1,1)));
-//                return true;
-//            }
-//
-//            if(input.input() == KeyCodes.KEY_A){
-//                if((CameraMatrixManager.matrix.properties() | PROPERTY_PERSPECTIVE) > 0){
-////                    double far = (double)(matrix.get(3,2)/(matrix.get(2,2)+1.0));
-////                    far = -matrixToView(new Vector3d(-1,-1,1)).z;
-////                    double near = -matrixToView(new Vector3d(-1,-1,-1)).z;
-//
-//
-//
-////                    double origWidth = (matrixToView(new Vector3d(-1,-1,1)).x)*-2f;
-//                    double origWidth = (matrixToView(new Vector3d(-1,-1,CameraMatrixManager.matrix.transformProject(new Vector3d(0,0,-(double)Configs.CameraMatrix.MATRIX_PERSPECTIVE_SETTINGS_DISTANCE.getDoubleValue())).z)).x)*-2f;
-//
-//                    double multiplier = (double)((double)origWidth/(Configs.CameraMatrix.MATRIX_WIDTH.getDoubleValue())); //suprisingly accurate???
-//                    double origNum = CameraMatrixManager.matrix.get(0,0);
-//                    CameraMatrixManager.matrix.set(0,0,(multiplier*origNum));
-////                    System.out.println("ORIG NUM: "+origNum+" NEW NUM: "+matrix.get(0,0));
-////                    System.out.println("MATRIX: \n"+matrix);
-//
-//                    CameraMatrixManager.matrix.determineProperties();
-//                }
-////                matrix.set(2,2,matrix.get(2,2)*(isShiftDown()?0.5f:2.0f));
-//                return true;
-//            }
-//
-//            if(input.input() == KeyCodes.KEY_D){
-////                matrix.set(3,2,matrix.get(3,2)*(isShiftDown()?0.5f:2.0f));
-//                return true;
-//            }
-//
-//            if(input.input() == KeyCodes.KEY_W){
-//                return true;
-//            }
 
             return super.onKeyTypedImpl(input);
         }

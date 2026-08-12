@@ -33,7 +33,6 @@ public class CommonUniformsMixin {
             }
         });
         for(var entry: Configs.CustomUniforms.CUSTOM_UNIFORMS.getEntries()){
-            System.out.println("updating uniform "+entry.getName()+" to "+entry.getValue());
             uniforms.uniform1f(UniformUpdateFrequency.PER_FRAME,entry.getName(),entry::getValue);
         }
 

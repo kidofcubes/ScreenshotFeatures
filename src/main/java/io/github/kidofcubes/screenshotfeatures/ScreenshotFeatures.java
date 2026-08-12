@@ -1,8 +1,5 @@
 package io.github.kidofcubes.screenshotfeatures;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InitializationHandler;
 import fi.dy.masa.malilib.event.InputEventHandler;
@@ -16,36 +13,31 @@ import io.github.kidofcubes.screenshotfeatures.integrations.FabrishotIntegration
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.minecraft.commands.Commands.argument;
-import static net.minecraft.commands.Commands.literal;
 
 @Environment(EnvType.CLIENT)
 public class ScreenshotFeatures implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("ScreenshotFeatures");
-    public static final boolean DEBUG = false;
     public static Minecraft client;
     public static final InputHandler inputHandler = new InputHandler();
     public static final String MOD_ID = "screenshotfeatures";
     public static List<ConfigAdjustableDouble> adjustableValues = new ArrayList<>();
+    public static boolean configsRegistered = false;
 
     @Override
     public void onInitializeClient() {
         client = Minecraft.getInstance();
-        registerScreenshotCommands();
         InitializationHandler.getInstance().registerInitializationHandler(() -> {
-            ConfigManager.getInstance().registerConfigHandler(ScreenshotFeatures.MOD_ID, new Configs());
+            if(!configsRegistered){
+                configsRegistered=true;
+                ConfigManager.getInstance().registerConfigHandler(ScreenshotFeatures.MOD_ID, new Configs());
+            }
 
             InputEventHandler.getKeybindManager().registerKeybindProvider(inputHandler);
             InputEventHandler.getInputManager().registerMouseInputHandler(inputHandler);
@@ -81,7 +73,12 @@ public class ScreenshotFeatures implements ClientModInitializer {
         assert client.player!=null;
         for(ConfigAdjustableDouble value : adjustableValues){
             if(value.getKeybind().isKeybindHeld()){
-                value.setDoubleValue(value.getDoubleValue() + modifier);
+                if(value==Configs.IngameTools.FOV){
+                    // reversing it for fov feels more intuitive
+                    value.setDoubleValue(value.getDoubleValue() - modifier);
+                }else{
+                    value.setDoubleValue(value.getDoubleValue() + modifier);
+                }
                 String formattedFloat = String.format("%.5f",value.getDoubleValue());
                 client.player.sendOverlayMessage(Component.translatable("screenshotfeatures.messages.valueChange",value.getTranslatedName(),formattedFloat));
                 used=true;
@@ -134,59 +131,5 @@ public class ScreenshotFeatures implements ClientModInitializer {
 
             return false;
         }
-    }
-
-    private void registerScreenshotCommands() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> register(dispatcher));
-    }
-
-    private void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        // Believe me, I dislike this code duplication, but every single way of
-        // "aliasing" that I attempted through brigadier
-        // didn't work out so well.
-        dispatcher.register(literal("screenshot")
-                .executes(this::takeScreenshot)
-                .then(argument("filename", StringArgumentType.string())
-                        .executes(context ->
-                                takeScreenshot(context, StringArgumentType.getString(context, "filename"))
-                        )
-                )
-        );
-        dispatcher.register(literal("ss")
-                .executes(this::takeScreenshot)
-                .then(argument("filename", StringArgumentType.string())
-                        .executes(context ->
-                                takeScreenshot(context, StringArgumentType.getString(context, "filename"))
-                        )
-                )
-        );
-    }
-
-    private int takeScreenshot(CommandContext<CommandSourceStack> context) {
-        if (context.getSource().isPlayer()) {
-            Screenshot.grab(
-                    new File("."),
-                    client.gameRenderer.mainRenderTarget(),
-                    context.getSource()::sendSystemMessage
-            );
-        } else {
-            context.getSource().sendSystemMessage(Component.literal("This command can only be executed by players!"));
-        }
-        return 1;
-    }
-
-    private int takeScreenshot(CommandContext<CommandSourceStack> context,String filename) {
-        if (context.getSource().isPlayer()) {
-            Screenshot.grab(
-                    new File("."),
-                    filename,
-                    client.gameRenderer.mainRenderTarget(),
-                    1,
-                    context.getSource()::sendSystemMessage
-            );
-        } else {
-            context.getSource().sendSystemMessage(Component.literal("This command can only be executed by players!"));
-        }
-        return 1;
     }
 }

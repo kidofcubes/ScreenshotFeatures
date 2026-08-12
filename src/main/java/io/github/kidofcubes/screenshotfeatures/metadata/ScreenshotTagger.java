@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures.client;
+
 public class ScreenshotTagger {
     public final static Gson gson = new GsonBuilder().setFormattingStyle(FormattingStyle.COMPACT).create();
 
@@ -40,7 +42,7 @@ public class ScreenshotTagger {
             orig.getAsJsonObject(key).add(entry.getKey(),entry.getValue());
         }
     }
-    public static JsonObject getTags(final Minecraft client) {
+    public static JsonObject getTags() {
         JsonObject tags = new JsonObject();
         if(client.player == null) {
             return tags;

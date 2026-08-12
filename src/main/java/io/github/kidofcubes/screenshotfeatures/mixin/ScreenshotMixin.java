@@ -33,7 +33,7 @@ public class ScreenshotMixin {
     private static void attachMetadata(final NativeImage nativeImage,final File file,final Consumer<Component> consumer,final CallbackInfo ci) {
         if(Configs.Metadata.TAG_SCREENSHOTS.getBooleanValue()){
             try{
-                ScreenshotTagger.writeScreenshotTags(file,ScreenshotTagger.getTags(ScreenshotFeatures.client));
+                ScreenshotTagger.writeScreenshotTags(file,ScreenshotTagger.getTags());
             }catch(IOException e){
                 e.printStackTrace();
             }

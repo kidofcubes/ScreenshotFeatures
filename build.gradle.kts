@@ -6,9 +6,6 @@ plugins {
 val mod_version = project.property("mod_version")!!
 val maven_group = project.property("maven_group")!!
 val archives_base_name = project.property("archives_base_name")!!
-//val mod_version: String by project
-//val maven_group: String by project
-//val archives_base_name: String by project
 
 version = mod_version
 group = maven_group
@@ -42,8 +39,6 @@ repositories {
 
 dependencies {
     minecraft(libs.minecraft)
-//    mappings(variantOf(libs.yarn) { classifier("v2") })
-//    mappings(loom.officialMojangMappings())
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
 
@@ -63,8 +58,8 @@ dependencies {
     include(libs.jgit)
 
     //debugging
-    implementation("io.github.java-diff-utils:java-diff-utils:4.12")
-    include("io.github.java-diff-utils:java-diff-utils:4.12")
+//    implementation("io.github.java-diff-utils:java-diff-utils:4.12")
+//    include("io.github.java-diff-utils:java-diff-utils:4.12")
 }
 
 tasks.processResources {

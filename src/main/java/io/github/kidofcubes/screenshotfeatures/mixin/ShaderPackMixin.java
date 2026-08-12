@@ -1,8 +1,8 @@
 package io.github.kidofcubes.screenshotfeatures.mixin;
 
-import com.github.difflib.DiffUtils;
-import com.github.difflib.UnifiedDiffUtils;
-import com.github.difflib.patch.Patch;
+//import com.github.difflib.DiffUtils;
+//import com.github.difflib.UnifiedDiffUtils;
+//import com.github.difflib.patch.Patch;
 import com.google.common.collect.Streams;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
@@ -45,11 +45,6 @@ public class ShaderPackMixin {
         }
 
 
-        var iterable = (Iterable<StringPair>)args.get(1);
-        Iterable<StringPair> filtered = Streams.stream(iterable).filter(pair -> {
-            return !overridedUniforms.contains(pair.key());
-        })::iterator;
-        args.set(1,filtered); //remove the macro from the next actuall preprocessing stage
 
 
         String source = args.get(0);
@@ -73,8 +68,17 @@ public class ShaderPackMixin {
             uniformsBuilder.append("uniform float " + overridedUniform + ";\n");
         }
         String origBuilder = builder.toString();
-        builder.insert( builder.indexOf("\n", builder.indexOf("#version"))+1,uniformsBuilder);
-        args.set(0,builder.toString());
+        int versionPosition = builder.indexOf("#version");
+        if(versionPosition!=-1){
+            builder.insert( builder.indexOf("\n", versionPosition)+1,uniformsBuilder);
+            args.set(0,builder.toString());
+
+            var iterable = (Iterable<StringPair>)args.get(1);
+            Iterable<StringPair> filtered = Streams.stream(iterable).filter(pair -> {
+                return !overridedUniforms.contains(pair.key());
+            })::iterator;
+            args.set(1,filtered); //remove the macro from the next actuall preprocessing stage
+        }
 
 //        source.set(builder.toString());
 //
@@ -88,7 +92,7 @@ public class ShaderPackMixin {
         boolean toPrint = false;
         String name="NULLNAME";
 
-        if(ScreenshotFeatures.DEBUG && origSource.contains("CLOUDS_CIRRUS_ALTITUDE")){
+        if(origSource.contains("CLOUDS_CIRRUS_ALTITUDE")){
             toPrint=true;
             name=path.getPathString().replace("/","-");
 
@@ -101,8 +105,8 @@ public class ShaderPackMixin {
 //            }catch(NoSuchAlgorithmException e){
 //                throw new RuntimeException(e);
 //            }
-            System.out.println("====================================================");
-            System.out.println("STARTING UNCONST FOR "+name);
+            ScreenshotFeatures.LOGGER.debug("====================================================");
+            ScreenshotFeatures.LOGGER.debug("STARTING UNCONST FOR {}", name);
         }
 
         List<String> overridedWithUniforms = new ArrayList<>();
@@ -176,13 +180,12 @@ public class ShaderPackMixin {
                 if(overridedWithUniforms.contains(tokenList.get(i).getText())){ //find consts effected by our #define removal
                     if(blocksDeep.get()!=0){ //if inline const
                         //just remove the const part, inlined ones will just work
-                        if(ScreenshotFeatures.DEBUG){
-                            System.out.println("BLOCKSDEEP FIRST was "+blocksDeep+", signifying an inline const");
-                            for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                                System.out.print(tokenList.get(j).getText());
-                            }
-                            System.out.println();
+                        StringBuilder debugMsg = new StringBuilder();
+                        debugMsg.append("BLOCKSDEEP FIRST was ").append(blocksDeep).append(", signifying an inline const: ");
+                        for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                            debugMsg.append(tokenList.get(j).getText());
                         }
+                        ScreenshotFeatures.LOGGER.debug(debugMsg.toString());
                         tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
                     }else{
                         //this is a root level const define, we need to substitute this in everywhere
@@ -199,14 +202,13 @@ public class ShaderPackMixin {
                 replacement.add(new Token(')', -1, -1, ")", null));
                 toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
 
-                if(ScreenshotFeatures.DEBUG){
-                    System.out.print("in FIRST\n\"");
-                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                        System.out.print(tokenList.get(j).getText());
-                    }
-                    System.out.println("\"");
-                    System.out.println("replaced all of it with empty");
+                StringBuilder debugMsg = new StringBuilder();
+                debugMsg.append("in FIRST\n\"");
+                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                    debugMsg.append(tokenList.get(j).getText());
                 }
+                debugMsg.append("\"\nreplaced all of it with empty");
+                ScreenshotFeatures.LOGGER.debug(debugMsg.toString());
                 for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
                     tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
                 }
@@ -241,22 +243,18 @@ public class ShaderPackMixin {
             for(int i=matchedConst.get(3)+1;i<matchedConst.get(4);i++){
                 List<Token> toReplace = toBeUnConsted.get(tokenList.get(i).getText());
                 if(toReplace!=null){ //found usage of a tobeunconsted in this const
-                    if(ScreenshotFeatures.DEBUG){
-                        System.out.println("in ");
-                        for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                            System.out.print(tokenList.get(j).getText());
-                        }
-                        System.out.println();
-                        System.out.println("replaced "+tokenList.get(i).getText()+" with ");
-                        for(Token token: toReplace){
-                            System.out.print(token.getText());
-                        }
-                        System.out.println();
+                    StringBuilder debugMsg = new StringBuilder();
+                    debugMsg.append("in ");
+                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                        debugMsg.append(tokenList.get(j).getText());
                     }
+                    debugMsg.append("\nreplaced ").append(tokenList.get(i).getText()).append(" with ");
+                    for(Token token: toReplace){
+                        debugMsg.append(token.getText());
+                    }
+                    ScreenshotFeatures.LOGGER.debug(debugMsg.toString());
                     if(blocksDeep.get()!=0){
-                        if(ScreenshotFeatures.DEBUG){
-                            System.out.println("blocksdeep was "+blocksDeep+", signifying an inline const");
-                        }
+                        ScreenshotFeatures.LOGGER.debug("blocksdeep was {}, signifying an inline const", blocksDeep);
                         //this is an inline const, we just unconst it and do replacements, no need for searching for dependents of this
                         tokenList.set(matchedConst.get(0), new Token(Token.WHITESPACE, -1, -1, "", null));
                     }else{
@@ -277,14 +275,13 @@ public class ShaderPackMixin {
                 replacement.add(new Token(')', -1, -1, ")", null));
                 toBeUnConsted.put(tokenList.get(matchedConst.get(2)).getText(), replacement);
 
-                if(ScreenshotFeatures.DEBUG){
-                    System.out.print("in second \n\"");
-                    for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
-                        System.out.print(tokenList.get(j).getText());
-                    }
-                    System.out.println("\"");
-                    System.out.println("replaced all of it with empty");
+                StringBuilder debugMsg = new StringBuilder();
+                debugMsg.append("in second \n\"");
+                for(int j=matchedConst.get(0);j<=matchedConst.get(4);j++){
+                    debugMsg.append(tokenList.get(j).getText());
                 }
+                debugMsg.append("\"\nreplaced all of it with empty");
+                ScreenshotFeatures.LOGGER.debug(debugMsg.toString());
 
                 for(int i=matchedConst.get(0);i<=matchedConst.get(4);i++){
                     tokenList.set(i, new Token(Token.WHITESPACE, -1, -1, "", null));
@@ -310,37 +307,37 @@ public class ShaderPackMixin {
             stringBuilder.append(tokenList.get(i).getText());
         }
         String result = listener.collectLines() + stringBuilder;
-        if(ScreenshotFeatures.DEBUG && toPrint){
-            List<String> origSourceLines = Arrays.asList(origSource.split("\n"));
-            Patch<String> diff = DiffUtils.diff(origSourceLines, Arrays.asList(result.split("\n")));
-            // Generate unified diff output format
-            List<String> fullDiff = UnifiedDiffUtils.generateUnifiedDiff(
-                "original.glsl",
-                "processed.glsl",
-                origSourceLines,
-                diff,
-                100000 // Context lines around changes
-            );
-
-            List<String> minDiff = UnifiedDiffUtils.generateUnifiedDiff(
-                "original.glsl",
-                "processed.glsl",
-                origSourceLines,
-                diff,
-                3 // Context lines around changes
-            );
-//            String printResult =
-//                cir.getReturnValue().replaceAll("(?m)^\\h*$\\n?", "") +
-//                    "\n\n\n\n========================================================================================================================================================================\n\n\n\n" +
-//                result.replaceAll("(?m)^\\h*$\\n?", "");
-            String printResult = String.join("\n",fullDiff);
-            try{
-                String prefixPath = "./run/shaderdebugout/";
-                Files.writeString(Path.of(prefixPath+name + ".txt"), printResult);
-                Files.writeString(Path.of(prefixPath+name + "_min.txt"), String.join("\n", minDiff));
-            }catch(IOException e){
-                throw new RuntimeException(e);
-            }
+        if(toPrint){
+//            List<String> origSourceLines = Arrays.asList(origSource.split("\n"));
+//            Patch<String> diff = DiffUtils.diff(origSourceLines, Arrays.asList(result.split("\n")));
+//            // Generate unified diff output format
+//            List<String> fullDiff = UnifiedDiffUtils.generateUnifiedDiff(
+//                "original.glsl",
+//                "processed.glsl",
+//                origSourceLines,
+//                diff,
+//                100000 // Context lines around changes
+//            );
+//
+//            List<String> minDiff = UnifiedDiffUtils.generateUnifiedDiff(
+//                "original.glsl",
+//                "processed.glsl",
+//                origSourceLines,
+//                diff,
+//                3 // Context lines around changes
+//            );
+////            String printResult =
+////                cir.getReturnValue().replaceAll("(?m)^\\h*$\\n?", "") +
+////                    "\n\n\n\n========================================================================================================================================================================\n\n\n\n" +
+////                result.replaceAll("(?m)^\\h*$\\n?", "");
+//            String printResult = String.join("\n",fullDiff);
+//            try{
+//                String prefixPath = "./run/shaderdebugout/";
+//                Files.writeString(Path.of(prefixPath+name + ".txt"), printResult);
+//                Files.writeString(Path.of(prefixPath+name + "_min.txt"), String.join("\n", minDiff));
+//            }catch(IOException e){
+//                throw new RuntimeException(e);
+//            }
         }
         cir.setReturnValue(result);
     }
