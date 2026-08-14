@@ -19,7 +19,9 @@
         "WeatherChangerLevelMixin",
         "WeatherEffectRendererMixin",
         "WidgetConfigOptionMixin",
-        "ShaderPackMixin"
+        "ShaderPackMixin",
+        "WidgetSearchBarMixin",
+        "OptionAnnotatedSourceMixin"
     ],
     "injectors": {
         "defaultRequire": 1

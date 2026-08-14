@@ -1,6 +1,5 @@
 package io.github.kidofcubes.screenshotfeatures.screens;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -13,30 +12,25 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.kidofcubes.screenshotfeatures.ScreenshotFeatures;
 import io.github.kidofcubes.screenshotfeatures.config.ConfigNamedAdjustableDoubleList;
 import io.github.kidofcubes.screenshotfeatures.config.Configs;
+import io.github.kidofcubes.screenshotfeatures.mixin.OptionAnnotatedSourceMixin;
+import io.github.kidofcubes.screenshotfeatures.mixin.WidgetSearchBarMixin;
 import net.irisshaders.iris.Iris;
 import net.irisshaders.iris.shaderpack.option.MergedStringOption;
 import net.irisshaders.iris.shaderpack.option.OptionSet;
 import net.irisshaders.iris.shaderpack.option.ShaderPackOptions;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.FormattedCharSink;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class CustomUniformsGui extends GuiConfigsBase {
 
     final ConfigNamedAdjustableDoubleList listManager;
 
-    private static Field fieldSearchBox;
-    private static boolean reflectionInitialized = false;
-    private static boolean reflectionFailed = false;
-    private WidgetDropDownList<String> dropdown = null;
+    protected WidgetDropDownList<String> dropdown = null;
 
     public CustomUniformsGui(ConfigNamedAdjustableDoubleList listManager) {
         super(10, 90, ScreenshotFeatures.MOD_ID, null,
@@ -114,6 +108,11 @@ public class CustomUniformsGui extends GuiConfigsBase {
             protected String getDisplayString(String entry){
                 return keyToPaddedDisplay.get(entry);
             }
+
+            @Override
+            protected boolean entryMatchesFilter(String entry,String filterText){
+                return super.entryMatchesFilter(entry,filterText.toLowerCase());
+            }
         };
         this.addWidget(dropdown);
     }
@@ -125,6 +124,13 @@ public class CustomUniformsGui extends GuiConfigsBase {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         super.drawContents(ctx,mouseX,mouseY,partialTicks);
+    }
+
+    @Override
+    protected void drawHoveredWidget(GuiContext ctx,int mouseX,int mouseY){
+        //worst evil hack of all time
+        this.hoveredWidget = dropdown;
+        super.drawHoveredWidget(ctx,mouseX,mouseY);
     }
 
     @Override
@@ -159,69 +165,6 @@ public class CustomUniformsGui extends GuiConfigsBase {
             return wrappers;
         }
         return ConfigOptionWrapper.createFor(entries);
-    }
-
-    /**
-     * Gets the raw search bar text via reflection on WidgetSearchBar.searchBox.
-     */
-    private String getSearchBarText() {
-        try {
-            if (this.getListWidget() == null) return "";
-            WidgetSearchBar searchBar = this.getListWidget().getSearchBarWidget();
-            if (searchBar == null) return "";
-
-            if (!reflectionInitialized) {
-                initReflection();
-            }
-            if (reflectionFailed) return "";
-
-            net.minecraft.client.gui.components.EditBox searchBox =
-                    (net.minecraft.client.gui.components.EditBox) fieldSearchBox.get(searchBar);
-            if (searchBox == null) return "";
-
-            return searchBox.getValue();
-        } catch (Exception e) {
-            reflectionFailed = true;
-            ScreenshotFeatures.LOGGER.warn("Failed to access search bar text via reflection", e);
-            return "";
-        }
-    }
-
-    /**
-     * Clears the search bar text via reflection.
-     */
-    private void clearSearchBarText() {
-        try {
-            if (this.getListWidget() == null) return;
-            WidgetSearchBar searchBar = this.getListWidget().getSearchBarWidget();
-            if (searchBar == null) return;
-
-            if (!reflectionInitialized) {
-                initReflection();
-            }
-            if (reflectionFailed) return;
-
-            net.minecraft.client.gui.components.EditBox searchBox =
-                    (net.minecraft.client.gui.components.EditBox) fieldSearchBox.get(searchBar);
-            if (searchBox == null) return;
-
-            searchBox.setValue("");
-        } catch (Exception e) {
-            reflectionFailed = true;
-            ScreenshotFeatures.LOGGER.warn("Failed to clear search bar text via reflection", e);
-        }
-    }
-
-    private static void initReflection() {
-        try {
-            // WidgetSearchBar has protected field: searchBox (GuiTextFieldGeneric extends EditBox)
-            fieldSearchBox = WidgetSearchBar.class.getDeclaredField("searchBox");
-            fieldSearchBox.setAccessible(true);
-            reflectionInitialized = true;
-        } catch (Exception e) {
-            reflectionFailed = true;
-            ScreenshotFeatures.LOGGER.warn("Failed to initialize reflection for search bar access", e);
-        }
     }
 
     void refreshList() {
@@ -265,7 +208,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
             entry.getConfig().setComment(total.toString());
 
 
-            clearSearchBarText();
+            ((WidgetSearchBarMixin)getListWidget().getSearchBarWidget()).screenshotfeatures$searchBox().setValue("");
             Configs.saveToFile();
             refreshList();
             dropdown.setSelectedEntry(null);
@@ -277,7 +220,7 @@ public class CustomUniformsGui extends GuiConfigsBase {
     private class AddEntryListener implements IButtonActionListener {
         @Override
         public void actionPerformedWithButton(ButtonBase buttonBase, int mouseButton) {
-            String name = getSearchBarText().trim();
+            String name = ((WidgetSearchBarMixin)getListWidget().getSearchBarWidget()).screenshotfeatures$searchBox().getValue().trim();
             if (!name.isEmpty()) {
                 interactedAddedNewEntry(name, 0.0, false);
             }
@@ -290,6 +233,11 @@ public class CustomUniformsGui extends GuiConfigsBase {
             Map<String,Float> floatDefines = new HashMap<>();
             for(Map.Entry<String,MergedStringOption> entry : optionSet.getStringOptions().entrySet()){
                 String key = entry.getKey();
+                if(OptionAnnotatedSourceMixin.screenshotfeatures$VALID_CONST_OPTION_NAMES().contains(key)){
+                    //removes stuff like the sun angle changer
+                    // todo add custom options for changing those sun angle
+                    continue;
+                }
 //                boolean isNumber = false;
 //                for(String allowedValue: value.getOption().getAllowedValues()){
 //                    if(allowedValue.matches("-?\\d+(\\.\\d+)?")){
